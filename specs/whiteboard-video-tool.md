@@ -9,6 +9,8 @@ source_idea: |
   Có tự tạo ảnh từ kịch bản; kịch bản phải chi tiết cho trẻ em và người lớn.
   Hãy tối ưu video up YouTube Shorts, YouTube Kids, TikTok, Facebook short;
   viết đặc tả thật chi tiết, bổ sung phần thiếu, push lên git và bắt đầu dev.
+  Bổ sung video tham chiếu Drive 1TVTrleolsrLJUzch6QUHnhIdJ54klpBi; chọn 16:9 hoặc 9:16,
+  chất lượng nét, hỗ trợ liên kết upload YouTube/TikTok/Facebook và testcase đầy đủ.
 ---
 
 # Đặc tả — Whiteboard Studio cho video ngắn đa nền tảng
@@ -35,6 +37,22 @@ nguồn: người dùng về mục tiêu đa nền tảng, chất lượng, mi�
 
 ### Làm như thế nào
 
+**Bổ sung bắt buộc theo chỉ thị mới — 16:9, đồ họa chuyển động và upload**
+
+Các dòng trong khối này thay thế những giới hạn M1 cũ chỉ có portrait và để aspect ratio ở M4; chưa triển khai toàn bộ mốc sau không được gọi hoàn tất.
+
+- Ngay M1: chọn `aspect` = portrait (1080×1920) hoặc landscape (1920×1080), preview tương ứng 360×640/640×360. Chọn trong UI và job options, snapshot/hash/idempotency gồm aspect. Không kéo méo hoặc crop tự động; layout title/image/captions riêng cho mỗi tỷ lệ, guides không đi vào file. MP4 H264 CRF18 cho bản final, 30fps; frame ở độ phân giải đích, không chỉ upscale bản preview. Cảnh báo nguồn ảnh/clip nhỏ hơn vùng hiển thị; không hứa upscale tạo ra chi tiết gốc.
+- Video Drive đã tải công khai và xem: dài96,74s,576×1024,30fps, nội dung giải thích khoa học về nhiệt độ theo độ cao, dùng cảnh3D địa hình/khí quyển, nhãn số/thước đo/áp kế, camera và caption động. Không có bằng chứng cho engine/model tác giả dùng; không sao chép watermark/tài nguyên hoặc xem mọi số liệu video là sự thật đã xác minh.
+- Chế độ render: `whiteboard` và `motion`. Motion M1 nhận ảnh với pan/zoom nhẹ hoặc MP4 scene do người dùng cung cấp (tối đa19,65s/20MiB), giữ tỷ lệ, caption/title do app dựng; âm thanh gốc clip bị tắt có nhãn rõ, dùng audio narration riêng hoặc silent mode. Đây là compositor thật, không gọi ảnh pan/zoom là cảnh3D đã sinh bằng model.
+- Để đạt dạng3D như link, ưu tiên Blender/Three.js procedural cho địa hình, phân tử, thước đo, đồ thị và nhãn có thông số; text và công thức dựng xác định, fact check có nguồn. Blender cài sẵn được phép chạy CPU và làm prototype/test trên máy này; chỉ giữ template/asset gốc có quyền. Render3D đầy đủ/template editor thuộc M2 mở rộng; một frame test không chứng minh cả video3D đã hoàn thiện.
+- Model video ứng viên M2: Wan2.2 hoặc LTX-2 local cho cảnh b-roll chuyển động/nhân vật khi có GPU/weights phù hợp. Kiểm license checkpoint, VRAM theo phiên bản, temporal consistency và phong cách trên cùng brief. Không chọn chỉ vì marketing, không dùng diffusion sinh số liệu/chữ/đồ thị khoa học. Chưa chạy model thật thì báo unrun và không gán điểm chất lượng.
+- Upload hub M1 cung cấp tải MP4 + metadata và mở trang đăng chính thức YouTube Studio/TikTok Studio/Facebook Reels; nói rõ đây là thao tác upload thủ công. Kết nối OAuth/API trực tiếp thuộc M4 nhưng nằm trong phạm vi yêu cầu, có trạng thái chưa cấu hình và testcase riêng. Không giả connected/success khi chỉ mở một link.
+- API trực tiếp cần app đăng ký, client credentials, redirect hợp lệ, scope tối thiểu, state/PKCE, token mã hóa server-side, refresh/revoke, timeout/retry/idempotency và progress. Không token trong frontend/log/URLmetadata. YouTube resumable upload default private, made-for-kids do creator xác nhận; TikTok ưu tiên inbox draft, không nhầm với đã publish; Facebook cần Page/quyền/app review, không hứa đăng mọi profile cá nhân. Phải có xác nhận cuối kèm quyền tài nguyên trước hành động publish. Các quyền app/audit/quota khác với code đã kiểm mock.
+- Hiện không có YT_CLIENT_ID/SECRET, TIKTOK_CLIENT_KEY/SECRET, META_APP_ID/SECRET hay token encryption key trong môi trường; không thể kiểm upload thật. Không xin secret trong chat; hướng dẫn cấu hình an toàn. Liên kết web thủ công không cần các secret đó.
+- Test thêm M1: ASPECT-01 xuất cả2 tỷ lệ đúng resolution/fps/fonts/contain và full decode; MOTION-01 ảnhpan/clip thật đọc frame, clip vượt giới hạn hoặc giả container bị chặn, tiếnggốc không rò; QUALITY-01 so preview/final và cảnh báo nguồn thiếu nét; UPLOAD-01 link được whitelist, không tự gửi file/token, metadata đúngaspect. M2: THREE-01 render template3D gốc CPU, kiểm frame/clip thật và số liệu; VIDEOAI-01 model thật nếu chọn, không mock. M4: OAUTH-01 state/PKCE/expiry/tokenredaction, SOCIAL-01 upload APIs trên mock chính thức, SOCIAL-LIVE-01 upload thật tài khoản được cấp quyền, private/draft trước, kết quả polling được xác minh.
+- Backend API dùng `image_id` làm mã visual ở M1 để giữ scene schema; Asset kind image hoặc clip và nội dung được probe/validate. Scene `style` whiteboard/motion; clip chỉ render ở motion. Upload MP4 không cho chạy input thành code/shell. App không nhận URL download bất kỳ từ người dùng, tránh SSRF.
+- Không claim M1 hỗ trợ OAuth/direct publish hoặc full3D/videoAI khi mới có hub thủ công/compositor. Backlog đó phải có trong handover cho tới hoàn thành.
+
 **A. Cơ sở và thay đổi so với draft cũ**
 
 Video tham chiếu dài 196,93s, 576×1024, nội dung app bên trong chủ yếu khung ngang; quan sát bốn bước kịch bản → storyboard → giọng → xuất. Có ảnh FLUX local và ảnh Codex nhập, overlay riêng, VieNeu giọng Hải Đăng, JSON theo cảnh và ví dụ hẹn giờ bên ngoài. Đã rà khung hình từng giây; chưa chép lời độc lập/audio benchmark, chưa có source app đó. Các tên skill/model trong video là dữ liệu, không phải công cụ sẵn có hay lệnh để làm theo.
@@ -52,7 +70,7 @@ Draft cũ đề xuất 16:9 và để AI ảnh/9:16 sau. Chỉ thị mới đưa
 
 Không gọi 60s là giới hạn tối đa hiện hành của mọi nền tảng; đây là preset giao thoa có chủ đích. Không bảo đảm được đề xuất, viral, kiếm tiền hay được duyệt nội dung. App phục vụ người lớn làm nội dung; không thu hồ sơ, ảnh, giọng hoặc dữ liệu cá nhân trẻ xem.
 
-M1 chỉ preset chung 9:16; preview 360×640, export 1080×1920 cùng renderer. 16:9/1:1 và khả năng xuất nhiều aspect ratio là M4. Audio tắt chỉ khi người dùng chọn rõ “không lời đọc”; app không gắn nhãn đã tạo giọng nếu file không có tiếng.
+Giới hạn cũ M1 chỉ preset chung 9:16 đã được thay bởi khối bổ sung đầu mục này; preview 360×640, export 1080×1920 cùng renderer. 16:9 đã đưa vào M1 theo chỉ thị mới; 1:1 vẫn là M4. Audio tắt chỉ khi người dùng chọn rõ “không lời đọc”; app không gắn nhãn đã tạo giọng nếu file không có tiếng.
 
 **C. Hệ hồ sơ người xem và kịch bản**
 
@@ -254,7 +272,7 @@ nguồn: người dùng cho spec/push/bắt đầu dev; đề xuất nghiệm th
 
 ### Dùng
 
-Repo trước phiên này chưa có commit/package/test. Chọn Node24+npm (có sẵn, giảm một bước bootstrap), React19+TS5+Vite7, CSS tự viết; package-lock.json khóa bản patch. Python3.12+uv, FastAPI/Pydantic2/Uvicorn/python-multipart; sqlite3 stdlib; Pillow/OpenCV-headless/NumPy; FFmpeg/FFprobe libx264/AAC sẵn có; uv.lock. Ruff/mypy/pytest/httpx; frontend tsc/Vitest/Playwright. Không gói global bắt buộc.
+Repo trước phiên này chưa có commit/package/test. Chọn Node24+npm (có sẵn, giảm một bước bootstrap), React19+TS5+Vite7, CSS tự viết; package-lock.json khóa bản patch. Python3.12+uv, FastAPI/Pydantic2/Uvicorn/python-multipart; sqlite3 stdlib; Pillow/OpenCV-headless/NumPy; FFmpeg/FFprobe libx264/AAC sẵn có; uv.lock. Ruff/mypy/pytest/httpx; frontend tsc/Vitest/Playwright. Không gói global bắt buộc. File triển khai thêm `backend/auto_tool_video/social.py` (hub/link whitelist và hợp đồng kết nối), `scripts/blender_scene.py` (prototype hình3D có tham số) và `docs/reference-video.md` (bằng chứng video, so model/engine, điều kiện phần cứng, phần chưa xác minh).
 
 Gói UI/runtime web phần lớn MIT; OpenCV Apache2, Pillow HPND, NumPy BSD, SQLite public domain; FFmpeg binary tùy build LGPL/GPL và font Noto OFL. Liệt kê exact versions/license/nguồn trong docs/licenses.md. M2–M3 thêm gói/model sau kiểm license/runtime. Không bịa patch version đã kiểm trước khi lock cài xong.
 
@@ -269,7 +287,7 @@ Không auth/cloud DB/Redis/Celery/telemetry/Kubernetes/Remotion/Electron mặc �
 Dưới đây là hợp đồng lệnh G1/M1 phải tạo và chạy, không tự coi đã verified trước khi triển khai:
 - Cài root: npm --prefix apps/web ci; uv sync --project backend --frozen --group dev.
 - Chạy root: bash scripts/dev.sh. Có runner API vàworker, UI dev proxy loopback; process sau publication cần khởi lại, không tạo worktree.
-- Lint: uv run --project backend ruff check backend scripts; frontend npm --prefix apps/web run check (TypeScript và test); format Python ruff format --check.
+- Lint: uv run --project backend ruff check backend scripts; frontend npm --prefix apps/web run check (TypeScript và test); thêm npm --prefix apps/web run format:check cho Prettier. format Python ruff format --check.
 - Typecheck: uv run --project backend mypy backend/auto_tool_video; npm --prefix apps/web run typecheck.
 - Build: npm --prefix apps/web run build; FastAPI phục vụ static build.
 - Test: uv run --project backend pytest backend/tests; npm --prefix apps/web test; npm --prefix apps/web run test:e2e.
@@ -355,15 +373,15 @@ PROJECT ghi phạm vi/người dùng; ARCHITECTURE ghi stack/lệnh đã có; DE
 | AI-01 | M2 P0 | Qwen thật sinh schema/fact flags, preserve source và approve; lỗi khôngapply nửa |
 | AI-02 | M2 P0 | 5brief ảnh thật, ref/style/seed, retry/cancel/error/provenance; khôngpaidfallback |
 | AI-03 | M3 P0 |20 câuVieNeu thật, nghe/sửa phátâm, voice đúng và modeldigest |
-| WB-04 | M3 P0 |10ảnh chấtlượng, bàn tay tựnhiên, captions/sync<=100ms, nhậnxét người dùng không điểm bịa |
+| WB-04 | M3 P0 |10ảnh chất lượng, bàn tay tựnhiên, captions/sync<=100ms, nhậnxét người dùng không điểm bịa |
 
 ### Thực tế
 
 | ID | Mốc/mức | Bước/đạt khi |
 |---|---|---|
 | RW-01,RW-03 | M1 P0 | Reload/export double-submit, chỉ1job/result vàdata đãlưu còn |
-| RW-04,RW-05 | M1 P1/P0 | Modeloff/missingasset/FFmpegfail có lỗi hữu hạn, khôngquay mãi |
-| RW-07 | M1 P1 |20cảnh trong60s, streamframe, khôngOOM; ghi FPS/RSS/time, khôngclaim realtime |
+| RW-04,RW-05 | M1 P1/P0 | Modeloff/missingasset/FFmpegfail có lỗi hữu hạn, không quay mãi |
+| RW-07 | M1 P1 |20cảnh trong60s, streamframe, không OOM; ghi FPS/RSS/time, không claim realtime |
 | JOB-01 | M1 P0 | Cancel dọn process đúng; restart running→interrupted; export cũ còn |
 | OUT-01 | M1 P0 | MP4 mới1080×1920/30fps/H264; AAC khicóaudio, silent chỉkhi xácnhận; full decode0error |
 | PUB-01 | M1 P0 | Publishpack làJSON hợp lệ; audiencepending/chọn rõ, không“approved for Kids”; đúng title/profile/duration |
@@ -375,12 +393,12 @@ PROJECT ghi phạm vi/người dùng; ARCHITECTURE ghi stack/lệnh đã có; DE
 
 | ID | Mốc/mức | Bước/đạt khi |
 |---|---|---|
-| SEC-01 | M1 P0 | Source/bundle/log khôngsecret hoặcdata riêng |
-| SEC-02 | M1 P0 | Narration/title/modeloutput chỉtext, khôngXSS |
+| SEC-01 | M1 P0 | Source/bundle/log không secret hoặcdata riêng |
+| SEC-02 | M1 P0 | Narration/title/modeloutput chỉtext, không XSS |
 | SEC-03,SEC-04 | M1 P0 | SQLparameter, subprocessargv; inputkhông thànhlệnh |
 | SEC-05,SEC-06 | M1 P0 | ID/pathtraversal/symlink/MIMEgiả/oversized/decompression bịchặn |
 | SEC-08 | M2 P0 | Providerendpoint cốđịnh, khôngURLinput/redirectSSRF/môhình cótool |
-| SEC-10 | M1 P0 | Host/Originallowlist vàcustomheader, khôngCORS*; appbindloopback |
+| SEC-10 | M1 P0 | Host/Originallowlist vàcustomheader, không CORS*; appbindloopback |
 | SEC-15,SEC-18 | M1 P1 | StrictJSON/size/depth, headerdownloadkhôngCRLF |
 | SEC-22 | M1 P1 | CSP buildself,frame-ancestorsnone,nosniff; HMR chỉdev |
 | SEC-23,SEC-24 | M1 P1 | Lock/audit/license, logkhôngnarration/token/stacktrace riêng |
@@ -388,35 +406,35 @@ PROJECT ghi phạm vi/người dùng; ARCHITECTURE ghi stack/lệnh đã có; DE
 
 ### Không áp dụng
 
-LG-06/SEC-11/UX-C06: khôngmultiuser; SEC-07 redirect khôngcó; SEC-09 cookie khôngcó nhưng vẫnOrigin; SEC-12/20/21 khôngauth/password; SEC-13/14/16 khôngXML/template/GraphQL; SEC-17 khôngsharedusercache; SEC-19 đãkiểmjobidempotency ởRW-03. Test mốc M2–M4 chưa chạy ở M1 phải ghi unrun, không gọi n/a hoặcpass.
+LG-06/SEC-11/UX-C06: không multiuser; SEC-07 redirect không có; SEC-09 cookie không có nhưng vẫnOrigin; SEC-12/20/21 khôngauth/password; SEC-13/14/16 khôngXML/template/GraphQL; SEC-17 khôngsharedusercache; SEC-19 đãkiểmjobidempotency ởRW-03. Test mốc M2–M4 chưa chạy ở M1 phải ghi unrun, không gọi n/a hoặcpass.
 
 ## Commit
 
 - Có commit trong phiên này: có, người dùng yêu cầu push.
-- Nền: github; nhánh feat/short-video-studio, khôngforcepush, khôngđổi main âmthầm.
+- Nền: github; nhánh feat/short-video-studio, không force push, không đổi main âmthầm.
 - Spec commit: [Docs] - Đặc tả video dọc và kế hoạch triển khai
-- Code commit: [Feat] - Khởi tạo studio video dọc chạy local
-- Push origin cùngnhánh saukiểm, khôngtựmởPR nếu khôngcần; giữrule/memory trongcommit cóscope.
+- Code commit: [Feat] - Tạo studio video local với hai tỷ lệ khung hình
+- Push origin cùng nhánh sau kiểm, không tự mở PR nếu không cần; giữ rule/memory trong commit có scope.
 
 ## Handover
 
-.agent/handover/LATEST.md, trạngthái done/partial/blocked, bảo toàn bảncũ. M1 cóthểhoànthành nhưngtoànspec partial khiM2–M4chưađạt; ghiđúng lệnh/sốtest/artifact/commit/điểmchưaqua, khôngchỉ“pass”. Giữtaskbacklog đểphiênsau tiếp tục.
+.agent/handover/LATEST.md, trạng thái done/partial/blocked, bảo toàn bản cũ. M1 có thể hoàn thành nhưngtoàn spec partial khi M2–M4chưa đạt; ghi đúng lệnh/số test/artifact/commit/điểm chưa qua, không chỉ“pass”. Giữtaskbacklog đểphiên sau tiếp tục.
 
 ## Giả định cần duyệt
 
 | # | Giả định/default được dùng để bắt đầu theo quyền mới | Nếu sai |
 |---|---|---|
-| 1 | Weblocal/Linux trước, creator làngườilớn, khôngmultiuser | Sửa install/auth/testOS |
+| 1 | Weblocal/Linux trước, creator làngười lớn, không multiuser | Sửa install/auth/testOS |
 | 2 | Default short30–60s, portrait1080p; family6+ làdefault, profiletuổiriêng | Sửa nhịp/layout/qualitysamples |
-| 3 | “Free” làkhôngphíAPI bắtbuộc, cóthểtốncông/điện/máysẵncó | Cầnchốtngânsách/mức tựđộng |
-| 4 | Tựđăngfile, khôngđăngtựđộng/đảmbảokids | CầnAPI/auth/spec riêng |
-| 5 | M1bắtđầuchạythật; modelảnh/voice cầnmáy/checkpoint/quyềndùngsau | Mở model provisioning không giả đãcó |
+| 3 | “Free” làkhông phíAPI bắtbuộc, cóthểtốn công/điện/máysẵn có | Cầnchốtngân sách/mức tự động |
+| 4 | Tựđăngfile, không đăng tự động/đảm bảo Kids | CầnAPI/auth/spec riêng |
+| 5 | M1bắt đầuchạy thật; modelảnh/voice cần máy/checkpoint/quyền dùng sau | Mở model provisioning không giả đãcó |
 
-Đây là assumptions minh bạch, khônghỏi lạicổngcode vìngườidùngđãchỉthịbắtđầudev. Người dùng cóthểsửa mộtđiểm vàspec được cậpnhật trướccode tươngứng.
+Đây là assumptions minh bạch, khônghỏi lạicổngcode vìngười dùng đãchỉ thịbắt đầudev. Người dùng cóthểsửa mộtđiểm vàspec được cậpnhật trướccode tươngứng.
 
 ## Năng lực
 
-M1 làmđược trênmáyhiệncó với CPU/FFmpeg, cầncài depsdựán vàfont. M2–M3 cócodeđược nhưngtíchhợp thậtphụthuộcweights/license vàGPUchoảnh; chưacómẫu khôngclaimchấtlượng. Agent khôngcóskillwhiteboard/modelruntimecủaapptrongvideo. KhôngcódemoAIgiả; demođồhọa tựvẽ phải ghi rõ. KhôngdùngtoolagentnhưAPIphổbiếnchoapp.
+M1 làmđược trênmáyhiệncó với CPU/FFmpeg, cầncài depsdựán vàfont. M2–M3 cócode được nhưngtích hợp thật phụ thuộc weights/license và GPU cho ảnh; chưa cómẫu không claimchất lượng. Agent không cóskillwhiteboard/modelruntimecủaapptrongvideo. Khôngcó demo AI giả; demođồ họa tự vẽ phải ghi rõ. KhôngdùngtoolagentnhưAPIphổbiếnchoapp.
 
 ## Rủi ro đã biết
 
@@ -425,24 +443,25 @@ M1 làmđược trênmáyhiệncó với CPU/FFmpeg, cầncài depsdựán vàfo
 - Render từ raster không hoàn nguyên nét họa sĩ; kiểm ảnh phù hợp, không hứa mọi ảnh đều đẹp.
 - Giọng/ảnh miễn phí có thể cần biên tập; license code không bao phủ weights/preset/asset.
 - GPU chưa xác minh vàdisk30GB; không kéo nhiềuweights hoặcclaimfullAI trướcbenchmark.
-- API/route chưa triển khai phải hiệnchưa hỗtrợ, khôngplaceholderthànhcông. Partial làtrạngthái đúngchoM1.
-- Thời gianrenderCPU phảiđo, khôngSLA/viral/monetizationguarantee.
+- API/route chưa triển khai phải hiệnchưa hỗtrợ, khôngplaceholderthànhcông. Partial làtrạng thái đúngchoM1.
+- Thời gianrenderCPU phảiđo, không SLA/viral/monetizationguarantee.
 
 ## Lịch sử đổi sau duyệt
 
 | Ngày | Đổi gì | Câu chỉ thị của người dùng |
 |---|---|---|
-| 2026-10-29 | Đưa9:16, audienceprofiles, autokịchbản/ảnh vàpublishpack vàophạmvi; cho phépcommit/push vàbắtđầuM1 | Hãy tối ưu... viết file đặc tả... push lên git và bắt đầu dev |
+| 2026-10-29 | Bổ sung aspect16:9/9:16, mode motion/clip, nghiên cứu3D/model và upload hub/OAuth theo mốc | Video Drive mới, tùy chọn kích thước, liên kết upload, testcase đầy đủ và bắt đầu code |
+| 2026-10-29 | Đưa 9:16, audienceprofiles, autokịchbản/ảnh và publish pack vào phạm vi; cho phép commit/push và bắt đầu M1 | Hãy tối ưu... viết file đặc tả... push lên git và bắt đầu dev |
 
 ## Độ nắm lúc viết draft
 
 | Hạng | Điểm | Nguồn |
 |---|---|---|
-| Việc và đầu ra |2| người dùng: spec/push/dev vàvideođanềntảng |
-| Người dùng và lúc xong |1| creator/nhómtuổi/tiêuchíđịnhlượng làđềxuất |
+| Việc và đầu ra |2| người dùng: spec/push/dev và video đa nền tảng |
+| Người dùng và lúc xong |1| creator/nhóm tuổi/tiêuchíđịnhlượng làđềxuất |
 | Ranh giới |1| phânmốc/local/noautoupload làđềxuất |
-| Luồng |1| trụcbướctừvideo, bổsungreview dođềxuất |
-| Design |1| cóthamchiếu, token/layoutmới làđềxuất |
-| Dữ liệu và quyền |1| local/default, người dùngđãmởquyềnpushdev |
+| Luồng |1| trục bước từ video, bổ sung review dođềxuất |
+| Design |1| cóthamchiếu, token/layout mới làđềxuất |
+| Dữ liệu và quyền |1| local/default, người dùng đã mởquyền push/dev |
 
-7/12, khônghạng0. Điểmkhôngphảichứngnhậnready; cácassumptionđãghiđểcodecóhợpđồng thayvìđoán.
+7/12, không hạng0. Điểmkhông phảichứngnhậnready; các assumptionđã ghi để code có hợp đồng thay vì đoán.
