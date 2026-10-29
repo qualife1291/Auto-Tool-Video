@@ -1,0 +1,47 @@
+# Whiteboard Studio
+
+## Sản phẩm là gì
+
+Công cụ web local làm video whiteboard tiếng Việt cho từng nhóm tuổi. Bản M1 đã có lưu dự án, chia đoạn thành cảnh, nhập ảnh/clip MP4 và giọng WAV/MP3, sửa thứ tự, chọn whiteboard hoặc minh họa chuyển động, xuất MP4 dọc 9:16 hoặc ngang 16:9 ở 1080p. Có preview, phụ đề phân đoạn ước lượng và gói metadata/checklist. Không phí API bắt buộc, không watermark.
+
+AI viết kịch bản/tạo ảnh/giọng, template 3D tích hợp UI và OAuth upload trực tiếp còn trong [kế hoạch phát triển](docs/development-plan.md). Hub đăng hiện chỉ mở trang đăng chính thức sau khi bạn tải tệp; không giả kết nối hoặc đăng thành công. Nhãn made-for-kids không bảo đảm vào YouTube Kids. [Đặc tả](specs/whiteboard-video-tool.md) là hợp đồng triển khai, còn `approved` cho tới khi mọi mốc hoàn tất.
+
+## Cách chạy
+
+Cần Linux, Node24+, Python3.12+, uv và FFmpeg/FFprobe có libx264/AAC. Font Noto có dấu đã đi kèm giấy phép; không tải font qua mạng lúc render.
+
+```bash
+npm --prefix apps/web ci
+uv sync --project backend --frozen --group dev
+npm --prefix apps/web run build
+bash scripts/dev.sh
+```
+
+Mở trình duyệt local ở cổng8765. Launcher mặc định lưu vào `.data/` đã được ignore; `APP_DATA_DIR` đặt nơi khác nếu cần. Không dùng chung data directory cho hai worker; Ctrl+C dọn các process do launcher tạo. Chế độ sửa UI: `STUDIO_WEB_DEV=1 bash scripts/dev.sh`, giao diện dev ở cổng5173. Browser mobile ở đây là kiểm layout, renderer chạy ở backend.
+
+Tạo dự án → nhập lời thoại, mỗi đoạn một cảnh → nhập `assets/examples/wet-shirt.png` hoặc ảnh của bạn → nhập giọng từng cảnh (hoặc chủ động chọn không lời đọc) → chọn tỷ lệ và xuất. Clip MP4 chỉ nhận H.264, tối đa19,65s/cảnh; tắt tiếng gốc, dùng narration riêng. Nguồn thấp nét không trở thành nhiều chi tiết hơn chỉ vì xuất1080p. Video ngang không tự thành YouTube Shorts.
+
+Prototype3D có tham số, không phải model AI hay mô phỏng khoa học chính xác:
+
+```bash
+blender -b --threads 2 --python scripts/blender_scene.py -- --output /tmp/particles.mp4 --width 1920 --height 1080 --frames 60 --fps 30 --samples 32
+```
+
+Nhập clip đó vào một cảnh “Minh họa chuyển động”. Render CPU độ phân giải cao có thể lâu; mẫu smoke đã kiểm chỉ640×360/12fps/1s, không phải bằng chứng đạt chất lượng3D của toàn video tham chiếu.
+
+## Cách kiểm
+
+```bash
+uv run --project backend ruff check backend scripts
+uv run --project backend ruff format --check backend scripts
+uv run --project backend mypy backend/auto_tool_video
+uv run --project backend pytest backend/tests -q
+npm --prefix apps/web run check
+npm --prefix apps/web run build
+npm --prefix apps/web run test:e2e
+uv run --project backend python scripts/smoke_export.py --portrait1080
+npm --prefix apps/web audit --omit=dev
+uv run --project backend pip-audit --local --progress-spinner off
+```
+
+E2E dùng Chromium ở `/usr/bin/chromium`; đặt `CHROMIUM_BIN` nếu khác. Test server dùng data directory riêng dưới `/tmp`, không đổi dự án đang dùng. Trong sandbox chặn IPC/socket, chạy API/E2E bằng cơ chế cấp quyền của môi trường; không tắt assertion để làm pass. File smoke có track sine fixture, không phải giọng TTS. Xem [bằng chứng render](docs/render-benchmark.md), [giấy phép](docs/licenses.md), [nghiên cứu video](docs/reference-video.md) và [handover](.agent/handover/LATEST.md).

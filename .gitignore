@@ -19,3 +19,5 @@ playwright-report/
 *.mp3
 *.safetensors
 *.gguf
+.cache/
+*.tsbuildinfo

@@ -1,0 +1,28 @@
+[project]
+name = "auto-tool-video"
+version = "0.1.0"
+description = "Local Vietnamese whiteboard short video studio"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.135,<1", "uvicorn>=0.41,<1", "python-multipart>=0.0.22", "pillow>=12.1", "numpy>=2.4", "opencv-python-headless>=4.13"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["auto_tool_video"]
+
+[dependency-groups]
+dev = ["pytest>=9", "httpx>=0.28", "ruff>=0.15", "mypy>=1.19", "pip-audit>=2.10"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
