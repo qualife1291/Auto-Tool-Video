@@ -85,6 +85,10 @@ Official web checks performed 2026-10-30 for Manim, Blender, ComfyUI, Remotion; 
 
 **Ownership:** No agent may claim A20–A33 until integrator registers an approved spec/issue/PR, confirms prerequisite evidence, and reserves file ownership in workboard. All begin at G1 research, not feature code. If future model or upstream version changes, redo compatibility/license and fixed-fixture benchmarks. Agent should update research notes with dated official sources, exact revisions and verified experiments rather than blindly executing this plan.
 
+## FPS, fidelity and performance expansion
+
+Detailed study: [High-FPS/performance/QC dossier](high-fps-performance-qc-research.md). Versioned target profiles, rational timebase, 1080p60 native and selective clip interpolation, source-first sharpness, encoder/hardware A/B, pipeline and QC, plus unclaimed A34–A42 tasks. Do not presume 60fps/4K/AI restoration is a verified improvement without fixed-fixture benchmark and creator review.
+
 ## Sequencing and release gates
 
 - **Foundation:** Finish A02–A05; implement A12 only with A05 coordination. Do not compromise baseline for feature breadth.
