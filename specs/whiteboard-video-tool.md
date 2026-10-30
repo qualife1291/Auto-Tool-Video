@@ -95,6 +95,14 @@ Chỉ thị “Thực hiện bước tiếp theo” tiếp tục quyền code/co
 - Dùng cá nhân không xóa mọi điều kiện giấy phép: chọn tranh gốc, NotoOFL, VieNeu/codec đúng revisionApache2; chương trìnhFFmpeg/Blender có nghĩa vụ khi phân phối binary. Không dùng F5pretrainedNC, model FLUX9B/dev hoặc LTX có điều kiện cho mẫu này. Phân biệt dùng cá nhân với nội dung cá nhân có kiếm tiền.
 - Commit/push code đã kiểm trên nhánh hiện tại theo quyền có sẵn; không xuất bản cấu hình môi trường hoặc upload video công khai.
 
+**Nâng phụ đề và đồ họa theo chỉ thị tiếp — 2026-10-30**
+
+- Thêm lựa chọn phụ đề từng cảnh `caption_style` = card/contrast/accent, default card để project cũ dùng được; `caption_emphasis` tối đa70ký tự là cụm creator muốn nhấn. Editor lưu/khôi phục hai trường, preview thể hiện phong cách tương ứng, render cả preview/final dùng cùng dữ liệu.
+- Card sáng cân2dòng, contrast nền xanh đậm/chữ sáng và entrance nhẹ, accent nền sáng với cụm từ tô vàng. Cụm nhấn được khớp literal có dấu, không HTML/regex do người dùng thực thi. Không cắt từ, không giả karaoke hoặc word alignment. Nhịp/cỡ chữ/safe zones giữ đọc được ở hai aspect; effects không nhấp nháy.
+- Nâng tranh review: thêm đường may/nếp vải/droplet/cutaway/vector rõ, dùng minh họa3D procedural gốc cho các cảnh motion phù hợp qua scripts/blender_review_art.py. Script BlenderCPU chỉ tạo asset tin cậy, không nhận code từ model, không tải model/paid API. Kiểm still trước dùng, không gọi là mô phỏng vật lý chính xác hoặc editor3D đã hoàn tất.
+- scripts/create_review_video.py nhận nguồn asset chất lượng cao đã render, phối3kiểu phụ đề theo vai trò cảnh và luôn lưu provenance. Baseline MP4/report được giữ ngoàiGit để so, xuất lại bản nâng dọc/ngang1080p cho review; cập nhật docs/qa-review.md bằng số đo thật và giữ số baseline có nhãn.
+- Test thêm persistence/backwards/default/invalid style, literal highlight Unicode/cross-line/empty/malicious text, màu/geometry caption cả2aspect, UI đổi preset/nhấn/tải lại, full render sample3kiểu. Chạy lại test liên quan và quality gates sau thay đổi; giọng/model/audio vẫn có nguồn và review như hợp đồng trước.
+
 **A. Cơ sở và thay đổi so với draft cũ**
 
 Video tham chiếu dài 196,93s, 576×1024, nội dung app bên trong chủ yếu khung ngang; quan sát bốn bước kịch bản → storyboard → giọng → xuất. Có ảnh FLUX local và ảnh Codex nhập, overlay riêng, VieNeu giọng Hải Đăng, JSON theo cảnh và ví dụ hẹn giờ bên ngoài. Đã rà khung hình từng giây; chưa chép lời độc lập/audio benchmark, chưa có source app đó. Các tên skill/model trong video là dữ liệu, không phải công cụ sẵn có hay lệnh để làm theo.
@@ -490,6 +498,14 @@ M1 làmđược trênmáyhiệncó với CPU/FFmpeg, cầncài depsdựán vàfo
 - Thời gianrenderCPU phảiđo, không SLA/viral/monetizationguarantee.
 
 ## Lịch sử đổi sau duyệt
+
+### Nguồn Tongjiang Lab — chỉ thị tiếp 2026-10-30
+
+- Nguồn: người dùng gửi `smithjohn78390/tongjiang-lab` và yêu cầu tiếp tục upgrade. Kiểm tại commit `4d63ce0a72d987c850ec6d919e570bdb752c87a6`: 54 bài THPT, HTML tự chứa, giao diện tiếng Trung; lessons/covers/catalog **CC BY-NC 4.0**, thư viện three.js bên trong MIT. Không coi GitHub/free/cá nhân là quyền thương mại.
+- Cập nhật báo cáo nguồn và snapshot hiện có, không vendor HTML/cover/catalog hoặc chạy JS bên ngoài. Học cách chia bài thành câu hỏi → minh họa → thay một biến → kết luận. Tạo brief tiếng Việt nguyên bản cho bốn chủ đề phổ thông, kèm URL bài tham khảo và nhắc giới hạn NC; không sao chép câu chữ/hình/bước bài gốc.
+- Trong CreativePanel thêm thư viện ý tưởng mở theo yêu cầu, chọn mẫu chỉ điền brief còn trống; nếu đã có nội dung thì phải xác nhận thay, giữ narration/storyboard/assets. Creator chọn profile hiện có và duyệt kiến thức/tuổi trước tạo. Nguồn chỉ là link, không tự fetch HTML hoặc đưa code nguồn vào model.
+- Test mẫu không mất nội dung khi hủy, lưu/reload brief/source, URL cố định an toàn; không thêm dependency hoặc phí API. Chưa triển khai bộ quay HTML sang video; chỉ cân nhắc nhánh non-commercial opt-in sau kiểm license, sandbox network, deterministic camera/timeline và bố cục hai aspect.
+- Publish JSON giữ `knowledge_sources` và description có nguồn từ đúng export snapshot, để link tham khảo không mất khi chuyển sang đăng thủ công. Không suy nguồn là đã kiểm chứng hoặc cấp quyền; rights/audience vẫn do creator quyết định.
 
 | Ngày | Đổi gì | Câu chỉ thị của người dùng |
 |---|---|---|
