@@ -141,6 +141,7 @@ describe('estimated caption pages (browser preview, not pixel-exact export)', ()
 
 /* C02_TEMP_FORMAT_DIAGNOSTIC — delete after extracting exact Prettier output. */
 it('prints exact formatter output for this allowed test file', async () => {
+  // @ts-expect-error Vitest runs in Node; this web tsconfig excludes Node's type declarations.
   const { readFileSync } = await import('node:fs');
   const { format } = await import('prettier');
   const source = readFileSync(new URL('./domain.test.ts', import.meta.url), 'utf8');
