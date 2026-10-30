@@ -198,14 +198,35 @@ def technical_checks(
     )
     fps = _number(video.get("r_frame_rate"))
     add("fps", fps is not None and abs(fps - 30) < 0.001, fps, "Preset 30fps.")
+    # A constant-rate PTS sequence alone is insufficient: losing the first or
+    # final frame can still look CFR and satisfy the container ±100ms tolerance.
+    expected_frames = sum(frames_for(scene["duration"]) for scene in snapshot["scenes"])
     valid_pts = len(pts) > 1 and all(math.isfinite(t) for t in pts)
     gaps = np.diff(pts) if valid_pts else np.array([])
-    cfr = bool(valid_pts and np.all(np.abs(gaps - 1 / 30) <= 0.002))
+    on_frame_grid = bool(
+        valid_pts
+        and len(pts) == expected_frames
+        and np.all(np.abs(np.asarray(pts) - np.arange(len(pts)) / 30) <= 0.002)
+    )
+    encoded_frames = video.get("nb_frames")
+    reported_frames = _number(encoded_frames) if encoded_frames is not None else None
+    count_matches = encoded_frames is None or (
+        reported_frames is not None
+        and reported_frames.is_integer()
+        and int(reported_frames) == expected_frames
+    )
+    cfr = bool(on_frame_grid and count_matches and np.all(np.abs(gaps - 1 / 30) <= 0.002))
     add(
         "frame_timestamps",
         cfr,
-        {"frames": len(pts), "max_gap_seconds": float(gaps.max()) if len(gaps) else None},
-        "PTS tăng đều; frame gap/repeat timestamp không bị che bằng average fps.",
+        {
+            "frames": len(pts),
+            "expected_frames": expected_frames,
+            "reported_frames": encoded_frames,
+            "first_pts_seconds": pts[0] if valid_pts else None,
+            "max_gap_seconds": float(gaps.max()) if len(gaps) else None,
+        },
+        "PTS 30fps từ mốc 0, đúng đủ số frame theo scene; kiểm cả nb_frames khi có.",
     )
     actual_duration = _number(info.get("format", {}).get("duration"))
     add(
