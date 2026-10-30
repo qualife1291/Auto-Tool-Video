@@ -82,9 +82,19 @@ def create_wav_set(root: Path) -> dict:
         try:
             subprocess.run(
                 [
-                    "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", "-y",
-                    "-i", str(untreated), "-af", FIXTURE_COMPRESSOR,
-                    "-c:a", "pcm_s16le", str(output),
+                    "ffmpeg",
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-nostdin",
+                    "-y",
+                    "-i",
+                    str(untreated),
+                    "-af",
+                    FIXTURE_COMPRESSOR,
+                    "-c:a",
+                    "pcm_s16le",
+                    str(output),
                 ],
                 check=True,
                 capture_output=True,
@@ -118,7 +128,6 @@ def create_wav_set(root: Path) -> dict:
         "engine_rate": SPEECH_RATE,
         "fixture_mastering": FIXTURE_COMPRESSOR,
         "mastering_scope": "test-source-WAV-only; no change to production renderer",
-
         "license_note": "Internal QA fixture; review voice/tool rights before distributing",
         "approval": "NOT APPROVED — no listening, factual, safety or quality sign-off",
         "cue_count": len(CUES),
