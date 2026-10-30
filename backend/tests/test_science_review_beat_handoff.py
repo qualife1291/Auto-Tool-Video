@@ -18,6 +18,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
+from auto_tool_video.domain import ProjectInput, Scene
 from auto_tool_video.store import Store
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -143,3 +144,104 @@ def test_build_persists_proposed_beats_after_real_media_import(tmp_path, monkeyp
         assert all(beat["visual_state"] and beat["action"] for beat in beats)
         assert all(beat["narration_cue"] and beat["continuity"] for beat in beats)
         assert any("dự kiến" in beat["narration_cue"] for beat in beats)
+
+
+def science_source(duration: float) -> dict:
+    return {
+        "title": "Nước đã đi đâu?",
+        "narration": "Áo ướt rồi khô. Nước đã đi đâu nhỉ?",
+        "template": "shirt",
+        "caption_emphasis": "Nước",
+        "visual_description": "Giữ chiếc áo xanh, zoom nhẹ vào giọt nước.",
+        "duration": duration,
+    }
+
+
+@pytest.mark.parametrize("duration", [3.0, 91 / 30, 599 / 30, 20.0])
+def test_fractional_and_twenty_second_beats_validate_and_roundtrip(
+    tmp_path, duration
+):
+    """Real Scene validation and Store.save cover 30fps and <=20-second limits."""
+    store = Store(tmp_path / "studio")
+    project = store.create(
+        ProjectInput(title="Áo khô: nước đã đi đâu?", narration="Nước đi đâu?").model_dump()
+    )
+    source = science_source(duration)
+    scene = Scene(
+        title=source["title"],
+        narration=source["narration"],
+        duration=duration,
+        style="motion",
+        layout="full_frame",
+        visual_description=source["visual_description"],
+    ).model_dump()
+    project = store.save(project["id"], {**project, "scenes": [scene]})
+    old_id = scene["id"]
+    planned = review._proposed_science_beats(project["scenes"], [source])
+    assert planned[0]["id"] == old_id
+    assert planned[0]["beat_plan_status"] == "needs_review"
+    assert [beat["second"] for beat in planned[0]["second_by_second"]] == list(
+        range(math.ceil(duration))
+    )
+    assert planned[0]["second_by_second"][0]["narration_cue"].startswith(
+        "Cue dự kiến (chưa forced-align):"
+    )
+    project = store.save(project["id"], {**project, "scenes": planned})
+    restored = Store(tmp_path / "studio").get("projects", project["id"])
+    assert restored["revision"] == project["revision"]
+    assert restored["scenes"][0]["id"] == old_id
+    assert restored["scenes"][0]["second_by_second"] == planned[0]["second_by_second"]
+    assert restored["scenes"][0]["beat_plan_status"] == "needs_review"
+
+
+@pytest.mark.parametrize(
+    "invalid",
+    ["missing-template", "bad-template", "other-narration", "missing-caption", "existing-plan"],
+)
+def test_invalid_science_source_fails_without_mutating_existing_scene(invalid):
+    scene_source = science_source(91 / 30)
+    scene = Scene(
+        title=scene_source["title"],
+        narration=scene_source["narration"],
+        duration=scene_source["duration"],
+    ).model_dump()
+    before = json.dumps(scene, sort_keys=True)
+    if invalid == "missing-template":
+        scene_source.pop("template")
+    elif invalid == "bad-template":
+        scene_source["template"] = "nonexistent"
+    elif invalid == "other-narration":
+        scene_source["narration"] = "Nội dung khác."
+    elif invalid == "missing-caption":
+        scene_source.pop("caption_emphasis")
+    else:
+        scene["beat_plan_status"] = "authored"
+        before = json.dumps(scene, sort_keys=True)
+
+    with pytest.raises(ValueError, match="Science scene|Invalid science beat plan"):
+        review._proposed_science_beats([scene], [scene_source])
+    assert json.dumps(scene, sort_keys=True) == before
+
+
+def test_source_count_mismatch_fails_before_writing_any_plan():
+    source = science_source(2.0)
+    first = Scene(title=source["title"], narration=source["narration"]).model_dump()
+    second = Scene(title="Cảnh khác", narration="Giữ nguyên!").model_dump()
+    original = json.dumps([first, second], sort_keys=True)
+
+    with pytest.raises(ValueError, match="count mismatch"):
+        review._proposed_science_beats([first, second], [source])
+    assert json.dumps([first, second], sort_keys=True) == original
+
+
+def test_synthetic_multiscene_timing_stays_under_sixty_seconds():
+    sources = [science_source(599 / 30), science_source(20), science_source(3)]
+    scenes = [
+        Scene(title=source["title"], narration=source["narration"], duration=source["duration"])
+        .model_dump()
+        for source in sources
+    ]
+    result = review._proposed_science_beats(scenes, sources)
+    assert sum(scene["duration"] for scene in result) <= 60
+    assert [len(scene["second_by_second"]) for scene in result] == [20, 20, 3]
+    assert all(scene["beat_plan_status"] == "needs_review" for scene in result)
