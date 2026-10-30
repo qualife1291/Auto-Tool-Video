@@ -4,6 +4,20 @@
 
 **Stable role/job definitions, replacement and succession policy:** [BA01-approved Agent Role Charter](agent-role-charter.md), merged [PR #45](https://github.com/qualife1291/Auto-Tool-Video/pull/45). **This file is the dated task/owner/status matrix**; if a permanent role description differs, the charter governs and BA01 must reconcile the inconsistency.
 
+## Live role/task refresh — 2026-10-31 02:35 ICT (overrides older historical snapshots)
+
+| Role | Current BA assignment / live GitHub status |
+| --- | --- |
+| **BA01** | Product/PM/Technology Scout; stable charter #45 merged, update [PR #51](https://github.com/qualife1291/Auto-Tool-Video/pull/51) adds TR01 proposal and C01/C02 workflow, but **A04 E2E failed, PR not merged**. |
+| **C01** | Owner-reactivated [#52](https://github.com/qualife1291/Auto-Tool-Video/issues/52), BA-assigned peg motion [#55](https://github.com/qualife1291/Auto-Tool-Video/issues/55); [PR #63](https://github.com/qualife1291/Auto-Tool-Video/pull/63) **Draft**, main CI failed; no merge. |
+| **C02** | Owner-activated [#54](https://github.com/qualife1291/Auto-Tool-Video/issues/54), BA-assigned caption preview [#57](https://github.com/qualife1291/Auto-Tool-Video/issues/57); [PR #62](https://github.com/qualife1291/Auto-Tool-Video/pull/62) **Draft**, CI ongoing; no merge. |
+| **C03** | Harness [#48 / PR #56](https://github.com/qualife1291/Auto-Tool-Video/pull/56) **merged** at `980b7185b4cbcabf02d33edd1b4ba98ca9f89328`; urgent [Playwright issue #58](https://github.com/qualife1291/Auto-Tool-Video/issues/58) assigned/claim pending; P2 research [#49 / PR #65](https://github.com/qualife1291/Auto-Tool-Video/pull/65) paused/Draft. |
+| **C04** | [P1-B #44 / PR #47](https://github.com/qualife1291/Auto-Tool-Video/pull/47) Ready for T01 but QA **BLOCKED** by #58 shared E2E failure; [P1-D #61 / PR #64](https://github.com/qualife1291/Auto-Tool-Video/pull/64) Draft. |
+| **T01** | Independent QA/merge upon current-base exact-SHA PASS; [scenario #37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) actual MP4 QC blocked, [GitHub watcher #59 / PR #60](https://github.com/qualife1291/Auto-Tool-Video/pull/60) Draft; creator feedback [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36). |
+| **C05** | New [onboarding #66](https://github.com/qualife1291/Auto-Tool-Video/issues/66), awaiting BA01 reservation, not yet claimed an active task. |
+
+**Required coder handoff:** `ASSIGNED → CLAIMED → DRAFT PR → SELF-TEST exact SHA → READY FOR REVIEW → T01 independent QA → QA PASS / FIX REQUESTED → T01 gated MERGE → postmerge CI → creator human approval`. Draft and pending/failed CI cannot be merged. GitHub identity and agent role ID are not interchangeable. Historical statuses below are evidence snapshots, not current assignments.
+
 ## Roles and authority
 
 | Agent | Accountable job and output | Decision boundary |
