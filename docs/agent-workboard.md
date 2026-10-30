@@ -4,6 +4,20 @@ Updated: 2026-10-31 · **Development-in-progress**, technical code merges ≠ cr
 
 **Canonical branch:** `feat/short-video-studio`. All new agent tasks branch from it and submit PRs back to it. This document is the single source of truth for open task ownership, status and acceptance criteria. `.agent/memory/short-term/TASKS.md` is a brief index; `.agent/handover/LATEST.md` gives the latest evidence; `docs/development-plan.md` is the long-term roadmap.
 
+## Live role/task refresh — 2026-10-31 02:35 ICT (overrides older historical snapshots)
+
+| Role | Current BA assignment / live GitHub status |
+| --- | --- |
+| **BA01** | Product/PM/Technology Scout; stable charter #45 merged, update [PR #51](https://github.com/qualife1291/Auto-Tool-Video/pull/51) adds TR01 proposal and C01/C02 workflow, but **A04 E2E failed, PR not merged**. |
+| **C01** | Owner-reactivated [#52](https://github.com/qualife1291/Auto-Tool-Video/issues/52), BA-assigned peg motion [#55](https://github.com/qualife1291/Auto-Tool-Video/issues/55); [PR #63](https://github.com/qualife1291/Auto-Tool-Video/pull/63) **Draft**, main CI failed; no merge. |
+| **C02** | Owner-activated [#54](https://github.com/qualife1291/Auto-Tool-Video/issues/54), BA-assigned caption preview [#57](https://github.com/qualife1291/Auto-Tool-Video/issues/57); [PR #62](https://github.com/qualife1291/Auto-Tool-Video/pull/62) **Draft**, CI ongoing; no merge. |
+| **C03** | Harness [#48 / PR #56](https://github.com/qualife1291/Auto-Tool-Video/pull/56) **merged** at `980b7185b4cbcabf02d33edd1b4ba98ca9f89328`; urgent [Playwright issue #58](https://github.com/qualife1291/Auto-Tool-Video/issues/58) assigned/claim pending; P2 research [#49 / PR #65](https://github.com/qualife1291/Auto-Tool-Video/pull/65) paused/Draft. |
+| **C04** | [P1-B #44 / PR #47](https://github.com/qualife1291/Auto-Tool-Video/pull/47) Ready for T01 but QA **BLOCKED** by #58 shared E2E failure; [P1-D #61 / PR #64](https://github.com/qualife1291/Auto-Tool-Video/pull/64) Draft. |
+| **T01** | Independent QA/merge upon current-base exact-SHA PASS; [scenario #37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) actual MP4 QC blocked, [GitHub watcher #59 / PR #60](https://github.com/qualife1291/Auto-Tool-Video/pull/60) Draft; creator feedback [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36). |
+| **C05** | New [onboarding #66](https://github.com/qualife1291/Auto-Tool-Video/issues/66), awaiting BA01 reservation, not yet claimed an active task. |
+
+**Required coder handoff:** `ASSIGNED → CLAIMED → DRAFT PR → SELF-TEST exact SHA → READY FOR REVIEW → T01 independent QA → QA PASS / FIX REQUESTED → T01 gated MERGE → postmerge CI → creator human approval`. Draft and pending/failed CI cannot be merged. GitHub identity and agent role ID are not interchangeable. Historical statuses below are evidence snapshots, not current assignments.
+
 ## VERIFIED CURRENT ASSIGNMENTS — 2026-10-31 (supersedes historical A01 snapshot below)
 
 **[Stable agent role charter](agent-role-charter.md)** (BA01-owned) and **[current role/task responsibility, file ownership and QA gates](agent-role-task-contracts.md)** are mandatory before assigning or testing. Agent IDs: **BA01 coordinator/Product/PM/Technology Scout; C01, C02, C03, C04 are four active coder seats; T01 independent tester; human creator final perceptual reviewer**. Owner has newly activated [C01 #52](https://github.com/qualife1291/Auto-Tool-Video/issues/52) and [C02 #53](https://github.com/qualife1291/Auto-Tool-Video/issues/53); both AVAILABLE/UNASSIGNED with no code claims. Earlier retired aliases are historical. This workboard is a status index; for latest timing and exact SHA consult GitHub task issues/PRs.
