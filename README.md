@@ -6,6 +6,12 @@ Công cụ web local làm video whiteboard tiếng Việt cho từng nhóm tuổ
 
 Đã có adapter/form AI viết storyboard qua Ollama và tạo ảnh candidate qua ComfyUI, luôn duyệt trước áp dụng; cần dịch vụ/model local được cấu hình theo [hướng dẫn AI](docs/local-ai.md). Có ba kiểu phụ đề từng cảnh và nhấn cụm từ; thư viện ý tưởng khoa học với brief tiếng Việt nguyên bản kèm nguồn Tongjiang Lab, điều kiện dùng lại nguồn ở [báo cáo](docs/source-review.md). Script review tạo tranh Blender/Pillow và giọng local để nhập vào renderer; UI tạo giọng, template3D editor và OAuth upload trực tiếp còn trong [kế hoạch phát triển](docs/development-plan.md). Hub đăng hiện mở trang đăng chính thức sau khi tải tệp; không giả kết nối/đăng thành công. Nhãn made-for-kids không bảo đảm vào YouTube Kids. [Đặc tả](specs/whiteboard-video-tool.md) còn `approved` tới khi đủ mọi mốc.
 
+## Tài liệu chung cho AI agent
+
+- [Bảng công việc A01–A10](docs/agent-workboard.md): nơi duy nhất theo dõi task, ưu tiên, tiêu chí nghiệm thu và cách phối hợp.
+- [Bàn giao hiện tại](.agent/handover/LATEST.md), [các việc còn mở](.agent/memory/short-term/TASKS.md), [lộ trình M1–M4](docs/development-plan.md), [đặc tả đã duyệt](specs/whiteboard-video-tool.md).
+- **Branch làm việc chung:** `feat/short-video-studio`. Các phần storyboard từng giây, áo chuyển trạng thái và caption bounce mới nhập là WIP chưa kiểm thử lại; video 0,92× chưa render/xác minh. Không lấy kết quả QC cũ làm chứng nhận cho code mới.
+
 ## Cách chạy
 
 Sau mỗi lần xuất, tool kiểm kỹ thuật/audio và đưa cảnh báo kèm timestamp; creator điền phiếu1–5 theo đúng hash video. Có JSON/CSV và [rubric kiểm thủ công](docs/video-quality-standard.md). Đây là QC local và người duyệt, chưa chạy learned scores VBench/AIGCBench hoặc chứng nhận pháp lý. MP4 vẫn tải được để review khi chưa duyệt.
