@@ -101,9 +101,7 @@ describe('estimated caption pages (browser preview, not pixel-exact export)', ()
     expect(estimateCaptionPages('', 'portrait')).toEqual([]);
     expect(estimateCaptionPages('   \n\t  ', 'landscape')).toEqual([]);
     for (const aspect of ['portrait', 'landscape'] as const) {
-      expect(estimateCaptionPages('Nước bay hơi.', aspect)).toEqual([
-        'Nước bay hơi.',
-      ]);
+      expect(estimateCaptionPages('Nước bay hơi.', aspect)).toEqual(['Nước bay hơi.']);
     }
   });
 
