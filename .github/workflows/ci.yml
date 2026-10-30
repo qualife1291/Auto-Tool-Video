@@ -46,6 +46,11 @@ jobs:
           uv run --project backend mypy backend/auto_tool_video
       - name: Backend tests
         run: uv run --project backend pytest backend/tests -q
+      - name: Show expected Prettier diff (temporary diagnostic)
+        run: |
+          (cd apps/web && npx prettier --write src/main.tsx)
+          git --no-pager diff -- apps/web/src/main.tsx
+          git diff --exit-code -- apps/web/src/main.tsx
       - name: Web typecheck, unit tests, and build
         run: |
           npm --prefix apps/web run check
