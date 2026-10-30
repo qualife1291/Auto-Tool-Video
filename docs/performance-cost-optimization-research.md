@@ -39,6 +39,21 @@ Optimizing one metric must not invisibly worsen another.
 | **Diffusers precision/offload/compile** | https://huggingface.co/docs/diffusers/optimization/memory ; https://huggingface.co/docs/diffusers/optimization/fp16 | Optional local AI generator | Tune memory/steps/precision, cold/warm costs and failures | Model-specific; CPU offload can be *much slower*; never treat low VRAM as free speed |
 | **ComfyUI partial-graph reuse** | https://docs.comfy.org/ (verify installed version and actual graph behavior) | AI candidate iteration | Avoid re-executing unchanged graph nodes | Exact node/model hash, seeds and custom-node cache policy required; not verified live |
 
+### License and packaging checkpoints (source snapshot only)
+
+| Tool | Upstream license documented | Runtime packaging consequence |
+|---|---|---|
+| py-spy | MIT | Standalone profiler, not needed in production runtime; attach permissions OS dependent |
+| Scalene | Apache-2.0 (upstream project metadata) | Local diagnostics only; GPU reporting NVIDIA-limited; do not invoke optional AI recommendation service without separate consent |
+| Memray | Apache-2.0 | Memory investigations on Linux/macOS; avoid mandatory Windows package dependency |
+| hyperfine | MIT OR Apache-2.0 | Standalone benchmark CLI; only test machines need it |
+| libvips | LGPL-2.1-or-later | Native library binary obligations must be assessed before distribution; pyvips binding terms independently verified |
+| DiskCache | Apache-2.0 | Third-party runtime package only if built-in file/SQLite cache cannot meet acceptance |
+| FFmpeg | Build-dependent LGPL/GPL | Existing x264 build and distributed binary licensing must be separately audited |
+| Diffusers | Apache-2.0 code (subject to per-version check) | Weights, LoRA, datasets and graph nodes may have distinct terms |
+
+Package license does **not** certify binary bundle, plugin/custom-node, model weights or content ownership. At implementation G1, pin exact git commit/tag and read LICENSE file rather than relying on this summary. Source references: https://github.com/benfred/py-spy , https://github.com/plasma-umass/scalene , https://github.com/bloomberg/memray , https://github.com/sharkdp/hyperfine , https://github.com/libvips/libvips , https://github.com/grantjenks/python-diskcache .
+
 **Decisions:** Prioritize built-in profiling and immutable scene cache before introducing many dependencies. Avoid full renderer rewrites, globally replacing Pillow with libvips, mandatory cloud observability, gratuitous parallel workers or GPU acceleration without measured gains.
 
 ## Experiment A — stage-level instrumentation (A12 + A36 + proposed A43)
