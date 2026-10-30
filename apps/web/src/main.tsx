@@ -28,6 +28,7 @@ import {
   steps,
   sourceNeedsUpscale,
   captionParts,
+  estimateCaptionPages,
   type Job,
   type Project,
   type Scene,
@@ -55,6 +56,7 @@ function App() {
   const [notice, setNotice] = useState('');
   const [dirty, setDirty] = useState(false);
   const [guides, setGuides] = useState(true);
+  const [captionPageIndex, setCaptionPageIndex] = useState(0);
   const [visualKinds, setVisualKinds] = useState<Record<string, string>>({});
   const [sourceWarnings, setSourceWarnings] = useState<Record<string, boolean>>({});
   const [hub, setHub] = useState<{
@@ -74,6 +76,14 @@ function App() {
   const generation = useRef(0);
   const exportKey = useRef<string | null>(null);
   const scene = project?.scenes[sceneIndex];
+  const estimatedCaptionPages = scene
+    ? estimateCaptionPages(scene.narration, project?.aspect ?? 'portrait')
+    : [];
+  const captionPage = Math.min(captionPageIndex, Math.max(0, estimatedCaptionPages.length - 1));
+  const currentCaption = estimatedCaptionPages[captionPage] || '';
+  useEffect(() => {
+    setCaptionPageIndex(0);
+  }, [scene?.id, scene?.narration, project?.aspect]);
   const running = job && ['queued', 'running'].includes(job.state);
   const issues = project ? preflight(project, silent) : [];
 
@@ -739,13 +749,13 @@ function App() {
                           </div>
                         )}
                       </div>
-                      {captions && scene?.narration && (
+                      {captions && currentCaption && (
                         <div
                           className={`portrait-caption caption-${scene.caption_style || 'card'}`}
                         >
                           {(scene.caption_style === 'accent'
-                            ? captionParts(scene.narration, scene.caption_emphasis || '')
-                            : [{ text: scene.narration, emphasis: false }]
+                            ? captionParts(currentCaption, scene.caption_emphasis || '')
+                            : [{ text: currentCaption, emphasis: false }]
                           ).map((part, index) =>
                             part.emphasis ? (
                               <mark key={index}>{part.text}</mark>
@@ -761,6 +771,38 @@ function App() {
                         </div>
                       )}
                     </div>
+                    {captions && currentCaption && (
+                      <div className="caption-preview-controls" aria-label="Phân trang phụ đề ước lượng">
+                        <span className="caption-preview-status" role="status">
+                          Trang {captionPage + 1}/{estimatedCaptionPages.length} (ước lượng)
+                        </span>
+                        {estimatedCaptionPages.length > 1 && (
+                          <div className="caption-preview-navigation">
+                            <button
+                              type="button"
+                              aria-label="Trang phụ đề trước"
+                              disabled={captionPage === 0}
+                              onClick={() => setCaptionPageIndex((index) => Math.max(0, index - 1))}
+                            >
+                              Trước
+                            </button>
+                            <button
+                              type="button"
+                              aria-label="Trang phụ đề tiếp"
+                              disabled={captionPage >= estimatedCaptionPages.length - 1}
+                              onClick={() =>
+                                setCaptionPageIndex((index) =>
+                                  Math.min(index + 1, estimatedCaptionPages.length - 1),
+                                )
+                              }
+                            >
+                              Tiếp
+                            </button>
+                          </div>
+                        )}
+                        <small>Ước lượng — xem video xuất để xác nhận</small>
+                      </div>
+                    )}
                     <label className="checkbox small">
                       <input
                         type="checkbox"
