@@ -79,8 +79,8 @@ def test_60s_accepted_but_61s_rejected():
     permitted = module.SCENARIOS["energy-60s"]
     module.validate_scenario(permitted)
     over = module.Scenario(
-        "over-limit", "61 seconds", 1,
-        permitted.cues * 2,
+        "over-limit", "65 seconds", 5,
+        permitted.cues + permitted.cues[:1],
     )
     with pytest.raises(ValueError):
         module.validate_scenario(over)
