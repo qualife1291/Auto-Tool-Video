@@ -4,6 +4,22 @@ Updated: 2026-10-31 · **Development-in-progress**, technical code merges ≠ cr
 
 **Canonical branch:** `feat/short-video-studio`. All new agent tasks branch from it and submit PRs back to it. This document is the single source of truth for open task ownership, status and acceptance criteria. `.agent/memory/short-term/TASKS.md` is a brief index; `.agent/handover/LATEST.md` gives the latest evidence; `docs/development-plan.md` is the long-term roadmap.
 
+## Latest verified handoff after T01 merged QA race fix — 2026-10-31
+
+**Canonical code:** `ba58bc8e9b48abdfd327d97b14d3e620c6795ace` after independent T01 [PR #67](https://github.com/qualife1291/Auto-Tool-Video/pull/67) merge. C03 beat-persistence E2E test now waits for matching async PUT/save revision and verifies persisted GET; main/dual1080 CI on **merge SHA queued at audit**, so do not count merged-SHA PASS early. Prior `C03 #58 claim pending` entries below are historical.
+
+| Role | Verified current role / task |
+| --- | --- |
+| **BA01** | Owns assignments, reusable role charter [PR #51](https://github.com/qualife1291/Auto-Tool-Video/pull/51) about TR01/C01–C05/Draft→Ready, **QA-BLOCKED** on old exact-head A04 E2E until integrated retest; [Epic #26](https://github.com/qualife1291/Auto-Tool-Video/issues/26). |
+| **C01** | [#55](https://github.com/qualife1291/Auto-Tool-Video/issues/55) / [PR #63](https://github.com/qualife1291/Auto-Tool-Video/pull/63) peg-anchor art **Ready for review but old main CI FAILED at beat-persistence E2E**, must sync/retest with merged #67. |
+| **C02** | [#57](https://github.com/qualife1291/Auto-Tool-Video/issues/57) / [PR #62](https://github.com/qualife1291/Auto-Tool-Video/pull/62) caption preview **Draft**, latest code integration tests ongoing. |
+| **C03** | [#58 / PR #67](https://github.com/qualife1291/Auto-Tool-Video/pull/67) **QA-PASS-CODE / MERGED** `ba58bc8...`; [#49 / PR #65](https://github.com/qualife1291/Auto-Tool-Video/pull/65) research **Draft/paused**, may be reprioritized by BA01. |
+| **C04** | [#44 / PR #47](https://github.com/qualife1291/Auto-Tool-Video/pull/47) Fit Audio **Ready but old main CI red from #58**, needs fresh integrated tests; [#61 / PR #64](https://github.com/qualife1291/Auto-Tool-Video/pull/64) imported frame-grid **Draft** at latest inspection. |
+| **C05** | [#68 / PR #69](https://github.com/qualife1291/Auto-Tool-Video/pull/69) proposed science beats **Ready + three old-base HEAD CI green**, independent T01 **integration HOLD** until sync with #67 merged SHA and new combined CI. |
+| **T01/T02** | T01 primary independent merge authority; T02 independent supplementary QA/test sharing, no implied release signoff. [#37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) QA scenario FullHD artifact still strict-audio QC blocked; [#60](https://github.com/qualife1291/Auto-Tool-Video/pull/60) watcher fix Draft. Human creator review [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36) remains separate. |
+
+**Gate:** Only coder-submitted non-Draft **Ready for review** PR with exact-current-base integrated CI, owned diff, complete T01 QA can merge; no old-SHA CI reuse. `QA-PASS-CODE` ≠ creator video approval. Earlier snapshot headings below are kept for history, not current assignments.
+
 ## Live role/task refresh — 2026-10-31 02:35 ICT (overrides older historical snapshots)
 
 | Role | Current BA assignment / live GitHub status |
