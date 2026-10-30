@@ -1,0 +1,140 @@
+# T01 infrastructure QA watcher. This is NOT a release-approval workflow.
+# Runtime code is the trusted default-branch workflow only; never checkout a PR head.
+name: T01 PR QA Watch
+
+on:
+  schedule:
+    # UTC, every 15 minutes. Offset from top-of-hour to reduce GitHub queue delays.
+    - cron: '7,22,37,52 * * * *'
+  workflow_run:
+    workflows:
+      - Whiteboard Studio CI
+      - QA Dual FullHD MP4 Integrity
+      - QA Exact-SHA Multi-PR Integration
+      - A04 full regression
+      - A02 Real Blender Art QA
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: t01-pr-qa-watch
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    name: Check exact-SHA PR CI and route verified failures
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Inspect open PRs without executing PR code
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const base = 'feat/short-video-studio';
+            const monitored = new Set([
+              'Whiteboard Studio CI',
+              'QA Dual FullHD MP4 Integrity',
+              'QA Exact-SHA Multi-PR Integration',
+              'A04 full regression',
+              'A02 Real Blender Art QA'
+            ]);
+            const failures = new Set(['failure', 'timed_out', 'cancelled', 'action_required']);
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner, repo, base, state: 'open', per_page: 100
+            });
+            const summary = [['PR', 'SHA', 'CI state', 'Failed workflows']];
+            let blocked = 0;
+            let notRun = 0;
+
+            for (const pr of prs) {
+              // Query only runs attached to this exact HEAD, never reuse older SHA evidence.
+              const response = await github.rest.actions.listWorkflowRunsForRepo({
+                owner, repo, head_sha: pr.head.sha, per_page: 100
+              });
+              const latest = new Map();
+              for (const run of response.data.workflow_runs) {
+                if (run.head_sha !== pr.head.sha || !monitored.has(run.name)) continue;
+                if (run.event !== 'pull_request') continue;
+                if (!latest.has(run.name)) latest.set(run.name, run);
+              }
+
+              const failed = [];
+              for (const [name, run] of latest.entries()) {
+                const failedNow = run.status === 'completed' && failures.has(run.conclusion);
+                if (failedNow) failed.push({name, run});
+                const marker = '<!-- T01-CI-WATCH ' + pr.number + ' ' +
+                  pr.head.sha + ' ' + name.replace(/[^a-zA-Z0-9]+/g, '-') + ' -->';
+                const commentBody = (candidate) => {
+                  const lane = /^agent\/C03[-/]/i.test(pr.head.ref) ||
+                    /^\[C03\]/i.test(pr.title) ? 'C03 / A02 issue #24' :
+                    /^agent\/C04[-/]/i.test(pr.head.ref) ||
+                    /^\[C04\]/i.test(pr.title) ? 'C04 / A03 issue #25' :
+                    'BA01 / Epic #26: ownership needs triage';
+                  return marker + '\n' +
+                    '**T01 automated CI gate: ' + (candidate ? 'BLOCKED' : 'CI RECHECK PASSED') + '**\n\n' +
+                    '- PR: #' + pr.number + ', exact head SHA: `' + pr.head.sha + '`\n' +
+                    '- Workflow: **' + name + '**\n' +
+                    '- GitHub run: ' + run.html_url + '\n' +
+                    '- Result: `' + (run.conclusion || run.status) + '`\n' +
+                    '- Initial routing: **' + lane + '**. Confirm actual claim/file ownership with BA01.\n' +
+                    '- Action: ' + (candidate ?
+                      'review failing job logs, reproduce, add RED→GREEN regression, rerun exact SHA; QA approval blocked.' :
+                      'failure previously reported at this SHA is cleared by rerun; other QA/creator gates remain independent.') +
+                    '\n\nThis is automated CI triage, **not** a human T01 code review or feature-DONE approval.';
+                };
+
+                // Do not create boilerplate comments for green CI.
+                // Resolve only our previous failure notice if a rerun fixed it.
+                if (failedNow || run.conclusion === 'success') {
+                  const comments = await github.paginate(github.rest.issues.listComments, {
+                    owner, repo, issue_number: pr.number, per_page: 100
+                  });
+                  const existing = comments.find(c => c.body && c.body.includes(marker));
+                  if (failedNow && !existing) {
+                    await github.rest.issues.createComment({
+                      owner, repo, issue_number: pr.number, body: commentBody(true)
+                    });
+                  } else if (existing && existing.body !== commentBody(failedNow)) {
+                    await github.rest.issues.updateComment({
+                      owner, repo, comment_id: existing.id, body: commentBody(failedNow)
+                    });
+                  }
+                }
+              }
+
+              if (failed.length) blocked += 1;
+              if (!latest.has('Whiteboard Studio CI') ||
+                  !latest.has('QA Dual FullHD MP4 Integrity')) notRun += 1;
+              const running = [...latest.values()].some(run => run.status !== 'completed');
+              const state = failed.length ? 'BLOCKED' :
+                running ? 'RUNNING' :
+                (!latest.has('Whiteboard Studio CI') ||
+                !latest.has('QA Dual FullHD MP4 Integrity')) ? 'NOT RUN / INCOMPLETE' :
+                'CI PASSED (not feature-DONE)';
+              summary.push([
+                '#' + pr.number + (pr.draft ? ' (draft)' : ''),
+                pr.head.sha.slice(0, 12),
+                state,
+                failed.map(x => x.name).join(', ') || '—'
+              ]);
+            }
+
+            await core.summary
+              .addHeading('T01 PR QA Watch — automated technical checks', 2)
+              .addRaw('Default branch: ' + base +
+                '. Failed runs are linked to exact PR HEAD SHA. No creator sign-off inferred.\n')
+              .addTable(summary)
+              .addRaw('\nOpen PRs: ' + prs.length + ', blocked: ' + blocked +
+                ', missing CI: ' + notRun + '.\n')
+              .write();
+            core.info('T01 scan complete: ' + prs.length + ' open PRs; ' +
+              blocked + ' with confirmed failed checks; ' + notRun + ' missing mandatory checks.');
+            // Do NOT automatically merge, approve, or close PRs.
