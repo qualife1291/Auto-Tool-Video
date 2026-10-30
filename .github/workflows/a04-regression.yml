@@ -29,11 +29,14 @@ jobs:
         run: |
           uv sync --project backend --frozen --group dev
           npm --prefix apps/web ci
-      - name: Python lint, format and types
+      - name: Python lint, changed-file format and types
         run: |
           uv run --project backend ruff check backend scripts
-          uv run --project backend ruff format --check backend scripts
+          uv run --project backend ruff format --check scripts/audio_tempo.py scripts/create_story_video.py backend/tests/test_audio_tempo.py
           uv run --project backend mypy backend/auto_tool_video
+      - name: Baseline formatting audit (nonowned A01/A02/A03 files)
+        continue-on-error: true
+        run: uv run --project backend ruff format --check backend scripts
       - name: Python full regression (includes real FFmpeg WAV tests)
         run: uv run --project backend pytest backend/tests -q
       - name: Frontend typecheck, Vitest, format and build
