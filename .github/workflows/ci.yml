@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      APP_DATA_DIR: ${{ runner.temp }}/auto-tool-video-data
+      APP_DATA_DIR: /tmp/auto-tool-video-data
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
