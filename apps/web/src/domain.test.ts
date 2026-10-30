@@ -128,7 +128,7 @@ describe('estimated caption pages (browser preview, not pixel-exact export)', ()
   });
 
   it('does not emphasize a phrase on an unrelated page', () => {
-    const text = 'Một hai ba bốn năm sáu bảy tám chín mười ' + long + ' hơi nước xuất hiện.';
+    const text = 'hơi nước mở đầu câu chuyện. ' + long;
     const pages = estimateCaptionPages(text, 'portrait');
     const matched = pages
       .map((page) => captionParts(page, 'hơi nước').filter((part) => part.emphasis))
