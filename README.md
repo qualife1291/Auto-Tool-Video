@@ -8,7 +8,7 @@ Công cụ web local làm video whiteboard tiếng Việt cho từng nhóm tuổ
 
 ## Tài liệu chung cho AI agent
 
-- [Bảng công việc A01–A10/P1](docs/agent-workboard.md): trạng thái và ưu tiên; [mô tả vai trò, phạm vi sở hữu và quy trình BA01/C03/C04/T01](docs/agent-role-task-contracts.md): nguồn phân quyền và SDLC cập nhật, tránh hiểu nhầm C01/C02 là coder hiện hành.
+- [Bảng công việc A01–A10/P1](docs/agent-workboard.md): trạng thái và ưu tiên; [vai trò BA/Tester/Coder lâu dài](docs/agent-role-charter.md) và [phân công, file ownership, QA gates hiện tại](docs/agent-role-task-contracts.md): nguồn phân quyền và SDLC cập nhật, tránh hiểu nhầm C01/C02 là coder hiện hành.
 - [Bàn giao hiện tại](.agent/handover/LATEST.md), [các việc còn mở](.agent/memory/short-term/TASKS.md), [lộ trình M1–M4](docs/development-plan.md), [đặc tả đã duyệt](specs/whiteboard-video-tool.md).
 - **Branch làm việc chung:** `feat/short-video-studio`. Các phần storyboard từng giây, áo chuyển trạng thái và caption bounce mới nhập là WIP chưa kiểm thử lại; video 0,92× chưa render/xác minh. Không lấy kết quả QC cũ làm chứng nhận cho code mới.
 
