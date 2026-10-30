@@ -4,6 +4,8 @@
 
 **Research-first gate G0–G6:** [Quy trình nghiên cứu, đo lường và nghiệm thu](research-first-quality-gates.md). Mọi AI agent phải khảo sát source và phương án thay thế, xác minh version/license/chi phí/rủi ro, lập test matrix và quyết định GO trước khi code. Không có evidence thực tế thì ghi NOT RUN; không merge chỉ vì unit test pass. Mọi tính năng mới phải được đăng ký task ID và phân quyền file trên [workboard](agent-workboard.md). Không thay đổi phạm vi spec chưa duyệt.
 
+**Danh mục video tương lai:** [Hồ sơ nghiên cứu 15 định dạng, kiến trúc Scene IR, test matrix và backlog A20–A33](future-video-formats-research.md). Đây là đề xuất nghiên cứu, không phải cam kết đã hỗ trợ hoặc quyền tự triển khai. Mỗi agent phải cập nhật nguồn, giấy phép và thử nghiệm theo G0–G6 trước khi code.
+
 **Lộ trình mở rộng sau baseline:** A11 quy trình nghiên cứu/QC → A12 benchmark và CI render thật → A13 Animate POC độc lập, A15 alignment tiếng Việt → A14 renderer adapter → A16 orchestration, A17 learned QC, A18 AI video consistency, A19 UX. Đây là backlog đề xuất, chưa được triển khai; A02–A05 vẫn là P0 chặn phát triển engine mới.
 
 ## Ưu tiên hiện tại: Hoàn thiện video 2D
