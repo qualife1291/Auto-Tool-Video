@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import itertools
 import json
 import math
 import re
@@ -121,7 +122,7 @@ def validate_frame_pts(frames: list[dict[str, Any]], seconds: float) -> dict[str
         pts.append(value)
     if abs(pts[0]) > 0.001:
         raise IntegrityError(f"Frame PTS does not begin at zero: {pts[0]}")
-    jumps = [b - a for a, b in zip(pts, pts[1:], strict=False)]
+    jumps = [b - a for a, b in itertools.pairwise(pts)]
     if any(abs(jump - (1 / 30)) > 0.001 for jump in jumps):
         raise IntegrityError("Non-CFR, repeated or missing frame timestamps")
     if abs(pts[-1] - (expected - 1) / 30) > 0.001:
