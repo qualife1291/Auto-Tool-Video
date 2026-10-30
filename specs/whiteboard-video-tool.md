@@ -2,7 +2,7 @@
 status: approved
 slug: whiteboard-video-tool
 level: full
-updated: 2026-10-29
+updated: 2026-10-30
 approved: 2026-10-29
 source_idea: |
   Xem video, lập kế hoạch tool whiteboard, ưu tiên chất lượng và giải pháp free.
@@ -11,6 +11,8 @@ source_idea: |
   viết đặc tả thật chi tiết, bổ sung phần thiếu, push lên git và bắt đầu dev.
   Bổ sung video tham chiếu Drive 1TVTrleolsrLJUzch6QUHnhIdJ54klpBi; chọn 16:9 hoặc 9:16,
   chất lượng nét, hỗ trợ liên kết upload YouTube/TikTok/Facebook và testcase đầy đủ.
+  Tìm source GitHub/skill liên quan để tích hợp hoặc học hỏi, tăng chất lượng,
+  tối ưu tài nguyên và đa dạng hình thức video; kiểm chi phí và giải pháp free.
 ---
 
 # Đặc tả — Whiteboard Studio cho video ngắn đa nền tảng
@@ -52,6 +54,33 @@ Các dòng trong khối này thay thế những giới hạn M1 cũ chỉ có po
 - Test thêm M1: ASPECT-01 xuất cả2 tỷ lệ đúng resolution/fps/fonts/contain và full decode; MOTION-01 ảnhpan/clip thật đọc frame, clip vượt giới hạn hoặc giả container bị chặn, tiếnggốc không rò; QUALITY-01 so preview/final và cảnh báo nguồn thiếu nét; UPLOAD-01 link được whitelist, không tự gửi file/token, metadata đúngaspect. M2: THREE-01 render template3D gốc CPU, kiểm frame/clip thật và số liệu; VIDEOAI-01 model thật nếu chọn, không mock. M4: OAUTH-01 state/PKCE/expiry/tokenredaction, SOCIAL-01 upload APIs trên mock chính thức, SOCIAL-LIVE-01 upload thật tài khoản được cấp quyền, private/draft trước, kết quả polling được xác minh.
 - Backend API dùng `image_id` làm mã visual ở M1 để giữ scene schema; Asset kind image hoặc clip và nội dung được probe/validate. Scene `style` whiteboard/motion; clip chỉ render ở motion. Upload MP4 không cho chạy input thành code/shell. App không nhận URL download bất kỳ từ người dùng, tránh SSRF.
 - Không claim M1 hỗ trợ OAuth/direct publish hoặc full3D/videoAI khi mới có hub thủ công/compositor. Backlog đó phải có trong handover cho tới hoàn thành.
+
+**M2 — hợp đồng triển khai phiên tiếp theo, 2026-10-30**
+
+Chỉ thị “Thực hiện bước tiếp theo” tiếp tục quyền code/commit/push đã có; không đổi phạm vi sản phẩm. Bước này thực hiện brief → đề xuất storyboard → duyệt áp dụng, tạo ảnh từng cảnh qua local provider và duyệt chọn ảnh. M3 giọng và M4 upload giữ nguyên backlog.
+
+- Creative brief lưu trong JSON project (không migration SQL): chủ đề, mục tiêu, tối đa3 takeaway, thời lượng30/45/60s, tone, kiến thức bắt buộc, tối đa10 nguồn do creator nhập, điều tránh, style bible, character bible. Profile/aspect lấy từ project, không có URL provider ở form. Các nguồn chỉ là dữ liệu tham khảo, app không tự fetch và không chứng nhận fact.
+- Planner có hai mode: `brief` tạo lời thoại mới từ brief, và `preserve` giữ nguyên lời thoại có sẵn. Preserve gửi các source chunk có ID do server đánh số; kết quả phải phủ mọi chunk đúng thứ tự, không thiếu/lặp. Server lấy narration từ source nguyên văn, không dùng lời thoại viết lại của model. Chunk dài được chia ở ranh giới từ; không đánh chỉ số Unicode bằng model.
+- Model trả strict JSON: scene title/role/narration hoặc source IDs, visual description/image prompt, thứ tự reveal, ghi chú cần kiểm và chỉ số nguồn hợp lệ. Thời lượng là ước lượng, tổng không vượt60s; không cắt chữ để ép thời gian. Chuỗi output được hiển thị dạng text, không HTML/eval/shell/tool; fact flags luôn phải review.
+- Job `plan` bền vững, có revision snapshot/idempotency/cancel, tối đa1 lần retry khi JSON/schema sai; token/output/timeout có trần. Proposal lưu trong job result, không thay project. Chỉ endpoint apply với expected revision và confirm mới thay storyboard trong transaction. Apply cùng proposal lại không nhân đôi; revision xung đột không ghi đè. Project M1 không có brief vẫn mở/lưu được bằng default.
+- Ollama chạy loopback, mặc định `qwen3:8b`, structured output, think=false, không công cụ. Capabilities kiểm model name+digest thật từ tags, không chỉ port. Không auto pull model lúc mở app. Có thể cài runtime/weights có license trong đường dẫn local để kiểm CPU, giữ TLS và checksum; không global installer/paid API.
+- ComfyUI dùng URL loopback do quản trị cấu hình và workflow API JSON tin cậy qua `COMFY_WORKFLOW_PATH`; workflow không nhận từ model/browser. JSON template xác định bindings positive/negative/seed/width/height/checkpoint và output node. Mẫu SDXL có tên checkpoint phải được cài thực; FLUX dùng workflow API được quản trị export/kiểm, không giả một graph FLUX chưa thử.
+- Job `image` chỉ tạo một candidate cho scene trước, seed có hiển thị; prompt/style/character/checkpoint/workflow hash lưu provenance. Ảnh PNG/JPEG được kiểm content/size/pixels, file mới không tự thay ảnh đã duyệt. Apply candidate với revision/confirm mới cập nhật scene. Đổi project trong lúc generate không trộn revision, ảnh cũ giữ nguyên. Cần duyệt ít nhất một ảnh mẫu trước khi bổ sung batch tự động; không chạy queue hàng loạt chưa được duyệt.
+- Capabilities trạng thái ready/not_configured/unreachable/model_missing/config_error có lý do tiếng Việt. Không có fallback trả phí hoặc giả ảnh. Ollama/ComfyUI requests chỉ loopback, không theo redirect; Comfy outputs chỉ filename/subfolder tương đối và output node đã cấu hình, không fetch URL model trả về. Có timeout/poll/cancel/giới hạn response; không in prompt/narration vào log.
+- Hủy job Comfy chỉ xóa đúng prompt đang chờ; không gọi global interrupt có thể ảnh hưởng người khác. Job local ngừng chờ/bỏ kết quả muộn, giao diện nói rõ Comfy có thể còn chạy tác vụ đã bắt đầu. Tái khởi động worker báo interrupted, không gửi lại provider vô hạn.
+- API thêm GET /api/capabilities; POST /api/projects/{id}/plan; POST /api/projects/{id}/plans/{job_id}/apply; POST /api/projects/{id}/scenes/{scene_id}/images; POST /api/projects/{id}/images/{job_id}/apply. GET jobs trả proposal/candidate và provenance, không trả cấu hình nhạy cảm; cross-project job/asset bị chặn. Frontend poll/restore job, review đủ scene/fact flags, confirm khi thay cảnh, xem ảnh mới trước khi dùng.
+- Gói mới: `httpx` BSD-3-Clause chuyển thành dependency runtime để gọi provider local, pin bằng uv.lock. File mới: backend/auto_tool_video/providers.py (client loopback/capabilities/workflow), planning.py (brief/schema/source coverage), generation.py (jobs/apply/candidates), apps/web/src/CreativePanel.tsx (brief/proposal), ImageGenerationPanel.tsx (candidate), config/comfy-sdxl-api.example.json (graph/bindings), scripts/live_planner.py (live evidence), docs/local-ai.md (setup/config/test/giới hạn). Không thêm DB/cloud/queue service.
+- Test M2 bổ sung AI-PLAN: strict schema, hai mode/coverage tiếng Việt, retry hữu hạn, lỗi provider, preserve source, proposal không tự apply, confirm/conflict/idempotency và restart; AI-IMAGE: bindings không đổi graph, checkpoint/capability, provenance/candidate/apply, output traversal/MIME/size/redirect, cancel và giữ ảnh cũ; SEC-08/25: loopback-only, prompt injection không thành tool, no secret/log leak; UI review/cancel/reload/mobile/keyboard. Mock contract là kiểm hành vi, live planner/ảnh có report riêng. Thiếu GPU/model ảnh thì live image ghi unrun, không giả pass.
+
+**Nghiên cứu nguồn/skill và tiêu chí tích hợp — 2026-10-30**
+
+- Bổ sung `docs/source-review.md`: báo cáo nguồn chính thức, lựa chọn ưu tiên, giấy phép code/weights riêng, phần cứng/chi phí, sáu hướng thể hiện, kế hoạch tích hợp và test chất lượng. Phân biệt số liệu upstream với đo local, adapter với model chạy thật; không nâng trạng thái M2/M3/M4 chỉ từ nghiên cứu.
+- Bổ sung `docs/source-snapshot.json`: ngày kiểm, repository/commit, model/revision, URL nguồn và SHA256 tài liệu đã đọc, trạng thái archived/gated/lỗi truy cập. Đây là bằng chứng nghiên cứu, không phải lockfile dependency hoặc cấu hình model mặc định. Pin release/dependency riêng sau thử nghiệm.
+- Bổ sung `.agents/skills/video-quality-review/SKILL.md`: skill nguyên bản cho QA video thực tế, gồm khung hình/âm thanh/caption/continuity/hai tỷ lệ/chi phí và báo cáo giới hạn. Không tự tải/chạy skill bên ngoài, cài engine, mua API hoặc thay runtime từ metadata nghiên cứu.
+- Ưu tiên hoàn thiện provider Ollama/ComfyUI hiện tại, rồi preset ảnh đã benchmark; giữ FFmpeg streaming và Blender prototype. Manim/Motion Canvas/Three.js là phương án thử theo loại cảnh, không cài mọi engine. Wan/LTX chỉ tùy chọn sau license/hardware/live gate; Remotion chỉ tham khảo khi chưa đủ điều kiện license.
+- Sáu hướng nội dung để thử: whiteboard, sơ đồ/vector, 3D có tham số, truyện minh họa nhất quán, b-roll tạo sinh, typography giải thích. `scene.style` hiện vẫn chỉ whiteboard/motion; không claim sáu editor/preset đã có. Chữ/số liệu quan trọng dựng ở renderer đích; layout ngang/dọc riêng; provenance phân biệt native/upscaled.
+- Gate trước khi bật provider: mẫu đã lưu kèm checksum/revision, chất lượng người duyệt, thời gian/RAM/VRAM/disk thật, hai tỷ lệ, lỗi/cancel/restart, không fallback trả phí. Cảnh số liệu dùng template tin cậy với tham số typed; không eval code model trả về. Công cụ đo tự động hỗ trợ review, không bảo đảm khoa học đúng, phù hợp mọi tuổi hoặc viral.
+- Bước nghiên cứu chỉ commit/push tài liệu/spec/skill và handover đã kiểm; bảo toàn code M2 chưa kiểm xong trong working tree. Không trộn nó vào commit tài liệu hoặc tuyên bố hoàn thành AI. Ghi rõ trạng thái test nền còn lỗi trong bàn giao.
 
 **A. Cơ sở và thay đổi so với draft cũ**
 
@@ -300,8 +329,9 @@ Dưới đây là hợp đồng lệnh G1/M1 phải tạo và chạy, không t�
 | Skill | Mở trước khi đụng | Đọc file nào | Xong khi | Không được |
 |---|---|---|---|---|
 | cloud-environment:cloud-environment-runtime | Cài/chạy trong cloud | skill://plugin_connector_1p_c5b7d5df5d7081918f2c4be5a633ed5d/cloud-environment-runtime/SKILL.md | Kiểm policy/runtime, dùng proxy vàtrust | Không in secret/bypass policy |
+| video-quality-review (local, bổ sung ở bước nghiên cứu) | Kiểm asset/video render thật hoặc so provider | .agents/skills/video-quality-review/SKILL.md | Bằng chứng theo artifact, hai tỷ lệ, giới hạn/chi phí và người duyệt | Không giả điểm chất lượng, tự cài engine hoặc tải video người dùng ra dịch vụ ngoài |
 
-Không có skill whiteboard có sẵn. Không tự áp lại draft môi trường hoặc publish; chỉ Git push theo yêu cầu. File AGENT-CODING-STANDARD.md đi cùng repo để quy trình phiên sau có nguồn thực.
+Không có skill whiteboard có sẵn trong catalog cloud. Skill local QA được viết riêng; skill Remotion là nguồn tham khảo theo docs/source-review.md, chưa cài/chưa áp quy trình Remotion vào renderer hiện tại. Không tự áp lại draft môi trường hoặc publish; chỉ Git push theo yêu cầu. File AGENT-CODING-STANDARD.md đi cùng repo để quy trình phiên sau có nguồn thực.
 
 ## Quyền hạn của agent
 
@@ -450,6 +480,7 @@ M1 làmđược trênmáyhiệncó với CPU/FFmpeg, cầncài depsdựán vàfo
 
 | Ngày | Đổi gì | Câu chỉ thị của người dùng |
 |---|---|---|
+| 2026-10-30 | Cụ thể hóa M2 brief/planner/candidate images, provider local, review/apply và kiểm thử | Thực hiện bước tiếp theo |
 | 2026-10-29 | Bổ sung aspect16:9/9:16, mode motion/clip, nghiên cứu3D/model và upload hub/OAuth theo mốc | Video Drive mới, tùy chọn kích thước, liên kết upload, testcase đầy đủ và bắt đầu code |
 | 2026-10-29 | Đưa 9:16, audienceprofiles, autokịchbản/ảnh và publish pack vào phạm vi; cho phép commit/push và bắt đầu M1 | Hãy tối ưu... viết file đặc tả... push lên git và bắt đầu dev |
 

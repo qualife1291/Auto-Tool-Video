@@ -13,11 +13,12 @@
 
 ## M2 — Tạo nội dung và nguồn ảnh/video
 
+- Kết quả [rà nguồn GitHub/skill](source-review.md) và [snapshot nguồn](source-snapshot.json) phân biệt code/weights/license, chi phí và số đo upstream/local. Có [skill QA nguyên bản](../.agents/skills/video-quality-review/SKILL.md) cho các phiên kiểm render/provider; chưa thêm các engine nghiên cứu vào runtime.
 - Form brief đầy đủ; Ollama/Qwen schema và source spans; duyệt thay đổi trước áp dụng.
 - Adapter ComfyUI local cho FLUX.2 Klein4B; benchmark SDXL dự phòng và license từng model/LoRA.
 - Style/character bible, reference/seed, một ảnh thử trước batch; cancel/retry/provenance.
 - Template Blender/Three.js có các đối tượng giáo dục và thông số đã kiểm; không dùng diffusion viết số liệu.
-- Đánh giá Wan2.2 TI2V5B và LTX theo checkpoint/license/VRAM thật cho b-roll. Chưa tải/chạy model, chưa có điểm chất lượng.
+- Đánh giá Wan2.2 TI2V5B trước khi có GPU phù hợp; LTX tùy checkpoint/Community License và benchmark thật. Không gọi LTX luôn free hoặc suy Apache từ code đời cũ. LightX2V chỉ thử tối ưu sau baseline đạt chất lượng; chưa tải/chạy model video, chưa có điểm chất lượng.
 
 ## M3 — Giọng và chất lượng
 

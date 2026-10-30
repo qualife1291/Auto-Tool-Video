@@ -1,0 +1,947 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-30",
+  "captured_at_utc": "2026-10-30T01:09:43.604423+00:00",
+  "purpose": "Bằng chứng nghiên cứu nguồn, không phải lockfile hoặc cấu hình auto-download/runtime.",
+  "method": "Đọc GitHub API, README/license tại commit và Hugging Face API/model card tại revision; không cài/chạy mã hoặc tải weights từ các nguồn nghiên cứu.",
+  "counts": {
+    "repositories_attempted": 29,
+    "repositories_accessible": 28,
+    "model_cards_attempted": 9,
+    "model_cards_accessible": 8,
+    "skill_files_read": 12
+  },
+  "repositories": [
+    {
+      "requested_repo": "Comfy-Org/ComfyUI",
+      "repo": "Comfy-Org/ComfyUI",
+      "url": "https://github.com/Comfy-Org/ComfyUI",
+      "archived": false,
+      "license_api": "GPL-3.0",
+      "default_branch": "master",
+      "pushed_at": "2026-10-30T00:59:37Z",
+      "stars": 143993,
+      "description": "The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface. The fastest local inference engine in the world.",
+      "commit": "8c4f1f240426eb3ffad9791cad52bd9890e9833d",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "1f5452375de6170925930393ade6380f73a01974d00c7e784d1521a86e5b388a",
+          "url": "https://github.com/Comfy-Org/ComfyUI/blob/8c4f1f240426eb3ffad9791cad52bd9890e9833d/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+          "url": "https://github.com/Comfy-Org/ComfyUI/blob/8c4f1f240426eb3ffad9791cad52bd9890e9833d/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "black-forest-labs/flux2",
+      "repo": "black-forest-labs/flux2",
+      "url": "https://github.com/black-forest-labs/flux2",
+      "archived": false,
+      "license_api": "Apache-2.0",
+      "default_branch": "main",
+      "pushed_at": "2026-03-12T15:06:20Z",
+      "stars": 2820,
+      "description": "Official inference repo for FLUX.2 models",
+      "commit": "50fe5162777813d869182b139e83b10743caef15",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "435753749320bbb395c15983e63e3dc73936c03f0f1870c628e7bf922c55eef7",
+          "url": "https://github.com/black-forest-labs/flux2/blob/50fe5162777813d869182b139e83b10743caef15/README.md"
+        },
+        {
+          "path": "LICENSE.md",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "url": "https://github.com/black-forest-labs/flux2/blob/50fe5162777813d869182b139e83b10743caef15/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "requested_repo": "QwenLM/Qwen3",
+      "repo": "QwenLM/Qwen3",
+      "url": "https://github.com/QwenLM/Qwen3",
+      "archived": false,
+      "license_api": null,
+      "default_branch": "main",
+      "pushed_at": "2026-01-09T03:05:47Z",
+      "stars": 27695,
+      "description": "Qwen3 is the large language model series developed by Qwen team, Alibaba Cloud.",
+      "commit": "7a2f61ffc7a20d47efcd2bf97f6f2bf52729042e",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "0b2c2bb11806f7a00c8465f2586e2e99f15de28622fd5c9b70b83ae1ab18c75d",
+          "url": "https://github.com/QwenLM/Qwen3/blob/7a2f61ffc7a20d47efcd2bf97f6f2bf52729042e/README.md"
+        }
+      ]
+    },
+    {
+      "requested_repo": "Wan-Video/Wan2.2",
+      "repo": "Wan-Video/Wan2.2",
+      "url": "https://github.com/Wan-Video/Wan2.2",
+      "archived": false,
+      "license_api": "Apache-2.0",
+      "default_branch": "main",
+      "pushed_at": "2026-09-21T06:16:22Z",
+      "stars": 18265,
+      "description": "Wan: Open and Advanced Large-Scale Video Generative Models",
+      "commit": "1ea34ff48f87168174e12956e200b1d908b1c5ff",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "40222cb3a66cc89aa1cd84589d1fa696806c93c09cf1c4383b3994139202dfa1",
+          "url": "https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/README.md"
+        },
+        {
+          "path": "LICENSE.txt",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "url": "https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/LICENSE.txt"
+        }
+      ]
+    },
+    {
+      "requested_repo": "Wan-Video/Wan2.1",
+      "repo": "Wan-Video/Wan2.1",
+      "url": "https://github.com/Wan-Video/Wan2.1",
+      "archived": false,
+      "license_api": "Apache-2.0",
+      "default_branch": "main",
+      "pushed_at": "2026-03-05T09:38:07Z",
+      "stars": 17343,
+      "description": "Wan: Open and Advanced Large-Scale Video Generative Models",
+      "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "3bdaca69aa116222a49859dc21d4a735b60a580af7e1b81531085c87227e4486",
+          "url": "https://github.com/Wan-Video/Wan2.1/blob/9737cba9c1c3c4d04b33fcad41c111989865d315/README.md"
+        },
+        {
+          "path": "LICENSE.txt",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "url": "https://github.com/Wan-Video/Wan2.1/blob/9737cba9c1c3c4d04b33fcad41c111989865d315/LICENSE.txt"
+        }
+      ]
+    },
+    {
+      "requested_repo": "Lightricks/LTX-Video",
+      "repo": "Lightricks/LTX-Video",
+      "url": "https://github.com/Lightricks/LTX-Video",
+      "archived": false,
+      "license_api": "Apache-2.0",
+      "default_branch": "main",
+      "pushed_at": "2026-01-05T22:37:07Z",
+      "stars": 11230,
+      "description": "Official repository for LTX-Video",
+      "commit": "4b2d053057623ddd4d0a1d3e9cd28890e9ef487f",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "09d0cbcec65734a07a67c6b5e96fa16989792633020d993e157b76f35ff68c3a",
+          "url": "https://github.com/Lightricks/LTX-Video/blob/4b2d053057623ddd4d0a1d3e9cd28890e9ef487f/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "url": "https://github.com/Lightricks/LTX-Video/blob/4b2d053057623ddd4d0a1d3e9cd28890e9ef487f/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "Lightricks/LTX-2",
+      "repo": "Lightricks/LTX-2",
+      "url": "https://github.com/Lightricks/LTX-2",
+      "archived": false,
+      "license_api": "NOASSERTION",
+      "default_branch": "main",
+      "pushed_at": "2026-10-18T17:41:34Z",
+      "stars": 9969,
+      "description": "Official Python inference and LoRA trainer package for the LTX-2 audio–video generative model.",
+      "commit": "e98f6d927d83c92ef2be6aec76c8440b19306e39",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "0e62adfa16cf401b34cb0e6cc511d8dd9ea597526cde53c75e26c945bacc0de5",
+          "url": "https://github.com/Lightricks/LTX-2/blob/e98f6d927d83c92ef2be6aec76c8440b19306e39/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "ac628c687b48adb26d8523b967e7f0573590a166157c99c95eb8d070805e739a",
+          "url": "https://github.com/Lightricks/LTX-2/blob/e98f6d927d83c92ef2be6aec76c8440b19306e39/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "manimCommunity/manim",
+      "repo": "ManimCommunity/manim",
+      "url": "https://github.com/ManimCommunity/manim",
+      "archived": false,
+      "license_api": "MIT",
+      "default_branch": "main",
+      "pushed_at": "2026-10-29T13:06:31Z",
+      "stars": 41994,
+      "description": "A community-maintained Python framework for creating mathematical animations. ",
+      "commit": "16ea443e2a5f1d79db0a721161411ce916d6e733",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "41cac8aeb33a726c1b0a70d10233ee06d9cd73c6df0bace8145637d75c5fc283",
+          "url": "https://github.com/ManimCommunity/manim/blob/16ea443e2a5f1d79db0a721161411ce916d6e733/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "c6a922fc1cfaed7ac0f87aa1dc77ebf5a3c8d1ccc5ab01da33153f0d013bf019",
+          "url": "https://github.com/ManimCommunity/manim/blob/16ea443e2a5f1d79db0a721161411ce916d6e733/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "motion-canvas/motion-canvas",
+      "repo": "motion-canvas/motion-canvas",
+      "url": "https://github.com/motion-canvas/motion-canvas",
+      "archived": false,
+      "license_api": "MIT",
+      "default_branch": "main",
+      "pushed_at": "2026-07-02T20:01:32Z",
+      "stars": 19589,
+      "description": "Visualize Your Ideas With Code",
+      "commit": "7b91435c301d530351dcf5ebb91dd139c002e405",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "9895daa20be79849a312b5cb5b9ed36db2d1a6dfe9731b5e53a67b222abe9cd9",
+          "url": "https://github.com/motion-canvas/motion-canvas/blob/7b91435c301d530351dcf5ebb91dd139c002e405/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "b3f12201916c5d478263cd210cf17f3d0c007d03bd574e0b77cac6307953068e",
+          "url": "https://github.com/motion-canvas/motion-canvas/blob/7b91435c301d530351dcf5ebb91dd139c002e405/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "mrdoob/three.js",
+      "repo": "mrdoob/three.js",
+      "url": "https://github.com/mrdoob/three.js",
+      "archived": false,
+      "license_api": "MIT",
+      "default_branch": "dev",
+      "pushed_at": "2026-10-30T00:59:19Z",
+      "stars": 117189,
+      "description": "JavaScript 3D Library.",
+      "commit": "9a0827bc3c35db2341c670c17adfb79fed06af67",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "d553d824625a07d7690de93af6f8daf13d6aaed42700929d7ce4e725fa5ef10d",
+          "url": "https://github.com/mrdoob/three.js/blob/9a0827bc3c35db2341c670c17adfb79fed06af67/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc",
+          "url": "https://github.com/mrdoob/three.js/blob/9a0827bc3c35db2341c670c17adfb79fed06af67/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "blender/blender",
+      "repo": "blender/blender",
+      "url": "https://github.com/blender/blender",
+      "archived": false,
+      "license_api": "NOASSERTION",
+      "default_branch": "main",
+      "pushed_at": "2026-10-30T00:52:53Z",
+      "stars": 21420,
+      "description": "Official mirror of Blender",
+      "commit": "745ab9a3e3c58439ee4071cbcb3197f21dc7915d",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "1bbb333e5196ba3d5cdc42830e5f1db6b77c311da96d4ff4d9a6f8143d9821e1",
+          "url": "https://github.com/blender/blender/blob/745ab9a3e3c58439ee4071cbcb3197f21dc7915d/README.md"
+        },
+        {
+          "path": "COPYING",
+          "sha256": "19e6f4b541772f9d7b98a52bdbca3ebd5ef9e404956a9a6de68bfc3c1a178387",
+          "url": "https://github.com/blender/blender/blob/745ab9a3e3c58439ee4071cbcb3197f21dc7915d/COPYING"
+        }
+      ]
+    },
+    {
+      "requested_repo": "remotion-dev/remotion",
+      "repo": "remotion-dev/remotion",
+      "url": "https://github.com/remotion-dev/remotion",
+      "archived": false,
+      "license_api": "NOASSERTION",
+      "default_branch": "main",
+      "pushed_at": "2026-10-29T21:16:29Z",
+      "stars": 68901,
+      "description": "🎥      Make videos programmatically with React",
+      "commit": "3b7e7008a495094424859e9cf4f66f4844d2dfd9",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "9ee273c36a11621a2ad89f44e984b5069e48019cc440ffed79795ad5915387c0",
+          "url": "https://github.com/remotion-dev/remotion/blob/3b7e7008a495094424859e9cf4f66f4844d2dfd9/README.md"
+        },
+        {
+          "path": "LICENSE.md",
+          "sha256": "bd65083b940f61904f6ef298aade918a7cad72a3e35bc406e36fab365844b673",
+          "url": "https://github.com/remotion-dev/remotion/blob/3b7e7008a495094424859e9cf4f66f4844d2dfd9/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "requested_repo": "remotion-dev/skills",
+      "repo": "remotion-dev/skills",
+      "url": "https://github.com/remotion-dev/skills",
+      "archived": false,
+      "license_api": null,
+      "default_branch": "main",
+      "pushed_at": "2026-10-26T11:37:35Z",
+      "stars": 5880,
+      "description": "Agent Skills",
+      "commit": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "aefb2c5438ef70ed050af4ef1e450ecea7aef66d11390761032c349fd9666450",
+          "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/README.md"
+        }
+      ]
+    },
+    {
+      "requested_repo": "pnnbao-ump/VieNeu-TTS",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "requested_repo": "OHF-Voice/piper1-gpl",
+      "repo": "OHF-Voice/piper1-gpl",
+      "url": "https://github.com/OHF-Voice/piper1-gpl",
+      "archived": false,
+      "license_api": "GPL-3.0",
+      "default_branch": "main",
+      "pushed_at": "2026-10-25T01:02:19Z",
+      "stars": 6080,
+      "description": "Fast and local neural text-to-speech engine",
+      "commit": "74ac24e7e8e2e57a5e1fada5505c74e3d9c1843a",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "a73f576020071a1d58701a40026a451385ef4dad4c9ba0a2499544d988d06e84",
+          "url": "https://github.com/OHF-Voice/piper1-gpl/blob/74ac24e7e8e2e57a5e1fada5505c74e3d9c1843a/README.md"
+        },
+        {
+          "path": "COPYING",
+          "sha256": "0ae0485a5bd37a63e63603596417e4eb0e653334fa6c7f932ca3a0e85d4af227",
+          "url": "https://github.com/OHF-Voice/piper1-gpl/blob/74ac24e7e8e2e57a5e1fada5505c74e3d9c1843a/COPYING"
+        }
+      ]
+    },
+    {
+      "requested_repo": "SYSTRAN/faster-whisper",
+      "repo": "SYSTRAN/faster-whisper",
+      "url": "https://github.com/SYSTRAN/faster-whisper",
+      "archived": false,
+      "license_api": "MIT",
+      "default_branch": "master",
+      "pushed_at": "2026-10-25T07:17:13Z",
+      "stars": 26304,
+      "description": "Faster Whisper transcription with CTranslate2",
+      "commit": "9e472ae9de8bb374552f531f752654554b76b2d6",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "43efe4a6eb9046d5ba4dcdcf2abcc27ad9e021f3edfc00bd6eb4913a9abe065b",
+          "url": "https://github.com/SYSTRAN/faster-whisper/blob/9e472ae9de8bb374552f531f752654554b76b2d6/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "af6798135e729f8aa6c853936d037dfdea449734d26b8ea6a89805fca758c0d5",
+          "url": "https://github.com/SYSTRAN/faster-whisper/blob/9e472ae9de8bb374552f531f752654554b76b2d6/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "m-bain/whisperX",
+      "repo": "m-bain/whisperX",
+      "url": "https://github.com/m-bain/whisperX",
+      "archived": false,
+      "license_api": "BSD-2-Clause",
+      "default_branch": "main",
+      "pushed_at": "2026-10-22T14:53:44Z",
+      "stars": 24935,
+      "description": "WhisperX:  Automatic Speech Recognition with Word-level Timestamps (& Diarization)",
+      "commit": "5d3678b8535698a2826a5db9eb3e4105aef85dd9",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "98ebee691ebee0ca5bdd9257dad72e1e74a9c216ff3adb7fa68d5164007a84ea",
+          "url": "https://github.com/m-bain/whisperX/blob/5d3678b8535698a2826a5db9eb3e4105aef85dd9/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "cddc25bce26226b4a04ed12839d9006b7a4403da9020ef6428ef7282a6567441",
+          "url": "https://github.com/m-bain/whisperX/blob/5d3678b8535698a2826a5db9eb3e4105aef85dd9/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "xinntao/Real-ESRGAN",
+      "repo": "xinntao/Real-ESRGAN",
+      "url": "https://github.com/xinntao/Real-ESRGAN",
+      "archived": false,
+      "license_api": "BSD-3-Clause",
+      "default_branch": "master",
+      "pushed_at": "2024-08-06T13:15:18Z",
+      "stars": 37272,
+      "description": "Real-ESRGAN aims at developing Practical Algorithms for General Image/Video Restoration.",
+      "commit": "a4abfb2979a7bbff3f69f58f58ae324608821e27",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "d0a13607913ea94e65a91ac864b969683a41a45b0aec16e0ae64271649d0364d",
+          "url": "https://github.com/xinntao/Real-ESRGAN/blob/a4abfb2979a7bbff3f69f58f58ae324608821e27/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "4a699ec4863d96a91fc265948a0c90033f7e8735d515524dcf3444736406e0c2",
+          "url": "https://github.com/xinntao/Real-ESRGAN/blob/a4abfb2979a7bbff3f69f58f58ae324608821e27/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "harry0703/MoneyPrinterTurbo",
+      "repo": "harry0703/MoneyPrinterTurbo",
+      "url": "https://github.com/harry0703/MoneyPrinterTurbo",
+      "archived": false,
+      "license_api": "MIT",
+      "default_branch": "main",
+      "pushed_at": "2026-10-29T12:42:40Z",
+      "stars": 136310,
+      "description": "利用 AI 大模型和自动化工作流，根据主题或关键词一键生成高清短视频。Generate HD short videos from a topic or keyword with an automated AI workflow.",
+      "commit": "04f16047fc13e3d8911694ed80373b65050738e2",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "4e1333e3f1cbe90bf0210854a1dcb5a82d5f1a379555e47e4c4f7f72ff93858f",
+          "url": "https://github.com/harry0703/MoneyPrinterTurbo/blob/04f16047fc13e3d8911694ed80373b65050738e2/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "87dd19b6a0779e14a91c1b06423ef251df37e89666160c031130a26bae68c229",
+          "url": "https://github.com/harry0703/MoneyPrinterTurbo/blob/04f16047fc13e3d8911694ed80373b65050738e2/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "Zulko/moviepy",
+      "repo": "Zulko/moviepy",
+      "url": "https://github.com/Zulko/moviepy",
+      "archived": false,
+      "license_api": "MIT",
+      "default_branch": "master",
+      "pushed_at": "2026-08-26T06:17:08Z",
+      "stars": 15054,
+      "description": "Video editing with Python",
+      "commit": "211e4b15f6ce4f34a6a9efbfff40590e43a68f77",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "34b932b6bb7320500bd1c1693ba615482f576672ea72a205eb017529cc714120",
+          "url": "https://github.com/Zulko/moviepy/blob/211e4b15f6ce4f34a6a9efbfff40590e43a68f77/README.md"
+        }
+      ]
+    },
+    {
+      "requested_repo": "Jianfch/stable-ts",
+      "repo": "jianfch/stable-ts",
+      "url": "https://github.com/jianfch/stable-ts",
+      "archived": true,
+      "license_api": "MIT",
+      "default_branch": "main",
+      "pushed_at": "2026-05-30T18:41:03Z",
+      "stars": 2282,
+      "description": "Transcription, forced alignment, and audio indexing with OpenAI's Whisper",
+      "commit": "e312072cc024ae9fceb25b057d7d18524873a02b",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "18daa39d22a5f3d4978eb6c3aa28e3aec35fac670b592289dbb7c84d230b7f90",
+          "url": "https://github.com/jianfch/stable-ts/blob/e312072cc024ae9fceb25b057d7d18524873a02b/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "69ac6d54d38598c96443b5314597568bb8fa21726c46168fcec98764de33dc23",
+          "url": "https://github.com/jianfch/stable-ts/blob/e312072cc024ae9fceb25b057d7d18524873a02b/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "FFmpeg/FFmpeg",
+      "repo": "FFmpeg/FFmpeg",
+      "url": "https://github.com/FFmpeg/FFmpeg",
+      "archived": false,
+      "license_api": "NOASSERTION",
+      "default_branch": "master",
+      "pushed_at": "2026-10-30T00:33:58Z",
+      "stars": 66042,
+      "description": "Mirror of https://git.ffmpeg.org/ffmpeg.git",
+      "commit": "b6d737a49c3422ea81381851fa49ef750c9fd367",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "86474c8f0806772f831a9c7a4982fd2398507372c577d229b76f60bbb3e7dead",
+          "url": "https://github.com/FFmpeg/FFmpeg/blob/b6d737a49c3422ea81381851fa49ef750c9fd367/README.md"
+        },
+        {
+          "path": "LICENSE.md",
+          "sha256": "e6dc72d5665a1ebd6dcc841de59278dad4ca77ecc47b03f1064a55c3e9ea8bb8",
+          "url": "https://github.com/FFmpeg/FFmpeg/blob/b6d737a49c3422ea81381851fa49ef750c9fd367/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "requested_repo": "Netflix/vmaf",
+      "repo": "Netflix/vmaf",
+      "url": "https://github.com/Netflix/vmaf",
+      "archived": false,
+      "license_api": "NOASSERTION",
+      "default_branch": "master",
+      "pushed_at": "2026-10-26T19:53:10Z",
+      "stars": 5578,
+      "description": "Perceptual video quality assessment based on multi-method fusion.",
+      "commit": "74f930d17de8c58e7c2ce55e2b897b0030ebd8ef",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "8715aef04da031857bee5f7d395c970131abf8750542918ea40d55707d6bd649",
+          "url": "https://github.com/Netflix/vmaf/blob/74f930d17de8c58e7c2ce55e2b897b0030ebd8ef/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "a6fdb51d02b9dfe198e55534bb8047fe6d756eda117f4ff83de98f92c1952710",
+          "url": "https://github.com/Netflix/vmaf/blob/74f930d17de8c58e7c2ce55e2b897b0030ebd8ef/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "tencent-ailab/IP-Adapter",
+      "repo": "tencent-ailab/IP-Adapter",
+      "url": "https://github.com/tencent-ailab/IP-Adapter",
+      "archived": false,
+      "license_api": "Apache-2.0",
+      "default_branch": "main",
+      "pushed_at": "2024-06-28T02:47:03Z",
+      "stars": 6704,
+      "description": "The image prompt adapter is designed to enable a pretrained text-to-image diffusion model to generate images with image prompt. ",
+      "commit": "62e4af9d0c1ac7d5f8dd386a0ccf2211346af1a2",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "037e938b36d35d819a6fbf5a701ccad9b76dab31648f0dff4322cf020c3b741a",
+          "url": "https://github.com/tencent-ailab/IP-Adapter/blob/62e4af9d0c1ac7d5f8dd386a0ccf2211346af1a2/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "url": "https://github.com/tencent-ailab/IP-Adapter/blob/62e4af9d0c1ac7d5f8dd386a0ccf2211346af1a2/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "SWivid/F5-TTS",
+      "repo": "SWivid/F5-TTS",
+      "url": "https://github.com/SWivid/F5-TTS",
+      "archived": false,
+      "license_api": "MIT",
+      "default_branch": "main",
+      "pushed_at": "2026-10-23T22:59:22Z",
+      "stars": 15484,
+      "description": "Official code for \"F5-TTS: A Fairytaler that Fakes Fluent and Faithful Speech with Flow Matching\"",
+      "commit": "45868abaabd74aabf03cd673d6dd00cc9d9c01ae",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "3c74da9760857de03a0fe22d6124fd50000b986c6aeba6c23bb14635e20e4ae1",
+          "url": "https://github.com/SWivid/F5-TTS/blob/45868abaabd74aabf03cd673d6dd00cc9d9c01ae/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "c70811d1402134de900e811d3eaa349eb60f4d38a8f635b27b1e378c630facd2",
+          "url": "https://github.com/SWivid/F5-TTS/blob/45868abaabd74aabf03cd673d6dd00cc9d9c01ae/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "pnnbao97/VieNeu-TTS",
+      "repo": "pnnbao97/VieNeu-TTS",
+      "url": "https://github.com/pnnbao97/VieNeu-TTS",
+      "archived": false,
+      "license_api": "Apache-2.0",
+      "default_branch": "main",
+      "pushed_at": "2026-10-29T09:10:54Z",
+      "stars": 3035,
+      "description": "Vietnamese TTS with instant voice cloning • On-device • Real-time CPU inference • 48kHz audio quality • Chuyển văn bản thành giọng nói tiếng Việt • Text to speech tiếng Việt • TTS tiếng Việt ",
+      "commit": "04044e1b8f822f946bafb2c88b716459f4164152",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "2991064db0951965178660c53d12bdd74817f9b5a733d6ece6954cd69fd2f76e",
+          "url": "https://github.com/pnnbao97/VieNeu-TTS/blob/04044e1b8f822f946bafb2c88b716459f4164152/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "url": "https://github.com/pnnbao97/VieNeu-TTS/blob/04044e1b8f822f946bafb2c88b716459f4164152/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "leejet/stable-diffusion.cpp",
+      "repo": "leejet/stable-diffusion.cpp",
+      "url": "https://github.com/leejet/stable-diffusion.cpp",
+      "archived": false,
+      "license_api": "MIT",
+      "default_branch": "master",
+      "pushed_at": "2026-10-29T20:25:52Z",
+      "stars": 7826,
+      "description": "Diffusion model(SD,Flux,Wan,Qwen Image,Z-Image,...) inference in pure C/C++",
+      "commit": "e239e4b0fd3de49834cec67031a44796ca465abc",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "2a3443f23f4bfc10565f39abcf4dc21523dce8a778c110fa7671c23aa36c45df",
+          "url": "https://github.com/leejet/stable-diffusion.cpp/blob/e239e4b0fd3de49834cec67031a44796ca465abc/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "b53fa08f515cb5a6fff7b9fd8fcd0961a4b80df29d74372d25e1f9171aa042ee",
+          "url": "https://github.com/leejet/stable-diffusion.cpp/blob/e239e4b0fd3de49834cec67031a44796ca465abc/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "ModelTC/LightX2V",
+      "repo": "ModelTC/LightX2V",
+      "url": "https://github.com/ModelTC/LightX2V",
+      "archived": false,
+      "license_api": "Apache-2.0",
+      "default_branch": "main",
+      "pushed_at": "2026-10-29T15:32:25Z",
+      "stars": 2972,
+      "description": "Lightweight Image Video Action Generation Inference Framework",
+      "commit": "880b7b156a4eb3ae8af8979a8d44b5e5945e17d2",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "ec4a529ed7ae1eae9d515226eac3ff24bea9696d344c3b45c3a9436173fa25d8",
+          "url": "https://github.com/ModelTC/LightX2V/blob/880b7b156a4eb3ae8af8979a8d44b5e5945e17d2/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "url": "https://github.com/ModelTC/LightX2V/blob/880b7b156a4eb3ae8af8979a8d44b5e5945e17d2/LICENSE"
+        }
+      ]
+    },
+    {
+      "requested_repo": "huggingface/diffusers",
+      "repo": "huggingface/diffusers",
+      "url": "https://github.com/huggingface/diffusers",
+      "archived": false,
+      "license_api": "Apache-2.0",
+      "default_branch": "main",
+      "pushed_at": "2026-10-29T23:14:05Z",
+      "stars": 34833,
+      "description": "🤗 Diffusers: State-of-the-art diffusion models for image, video, and audio generation in PyTorch.",
+      "commit": "d8c1b13c756df0059bcdb6e477a1eafcd502098d",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "7983ae4d23ec43664c587027d7462ba8a742ddff784430dfb7fd3cea8ba5523c",
+          "url": "https://github.com/huggingface/diffusers/blob/d8c1b13c756df0059bcdb6e477a1eafcd502098d/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "f9e2070c247517b1ddf65f7b11b393484a18da91a958fd18a97bd0f241c3125c",
+          "url": "https://github.com/huggingface/diffusers/blob/d8c1b13c756df0059bcdb6e477a1eafcd502098d/LICENSE"
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "model": "black-forest-labs/FLUX.2-klein-4B",
+      "revision": "e7b7dc27f91deacad38e78976d1f2b499d76a294",
+      "gated": false,
+      "license": "apache-2.0",
+      "files": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "ca02bc51900ab07789d1b70283329e7137f5af98f5161c23a1c81fc38a4af1fe",
+          "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/blob/e7b7dc27f91deacad38e78976d1f2b499d76a294/LICENSE.md"
+        },
+        {
+          "path": "README.md",
+          "sha256": "bd447051cf2db4bf67b992e563d89c35ebf1123f009c063361a222ab14e1c4f7",
+          "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/blob/e7b7dc27f91deacad38e78976d1f2b499d76a294/README.md"
+        }
+      ]
+    },
+    {
+      "model": "Qwen/Qwen3-8B",
+      "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "gated": false,
+      "license": "apache-2.0",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+          "url": "https://huggingface.co/Qwen/Qwen3-8B/blob/b968826d9c46dd6066d109eabc6255188de91218/LICENSE"
+        },
+        {
+          "path": "README.md",
+          "sha256": "0f36caaff9c2516411a7738db384606263ba653c1e63e61d72f511606164d5a6",
+          "url": "https://huggingface.co/Qwen/Qwen3-8B/blob/b968826d9c46dd6066d109eabc6255188de91218/README.md"
+        }
+      ]
+    },
+    {
+      "model": "Wan-AI/Wan2.2-TI2V-5B",
+      "revision": "921dbaf3f1674a56f47e83fb80a34bac8a8f203e",
+      "gated": false,
+      "license": "apache-2.0",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "e357cb3ac077f8739755b0fb38fe8424c76534b19b4a84f6138856abb00abf69",
+          "url": "https://huggingface.co/Wan-AI/Wan2.2-TI2V-5B/blob/921dbaf3f1674a56f47e83fb80a34bac8a8f203e/README.md"
+        }
+      ]
+    },
+    {
+      "model": "Lightricks/LTX-2.5",
+      "revision": "49b093a39c19169a8a81721dcc541e07e945232f",
+      "gated": "auto",
+      "license": "other",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "07ed7cb528c690572a3b09a70cd81796b21a55f56cc124598fedb7acdc91cdd5",
+          "url": "https://huggingface.co/Lightricks/LTX-2.5/blob/49b093a39c19169a8a81721dcc541e07e945232f/README.md"
+        }
+      ]
+    },
+    {
+      "model": "Lightricks/LTX-Video",
+      "revision": "8984fa25007f376c1a299016d0957a37a2f797bb",
+      "gated": false,
+      "license": "other",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "9d847f02c010f00a3164ff92b0f94b6a5b63e1c790ec7387f3200307e04fb2e1",
+          "url": "https://huggingface.co/Lightricks/LTX-Video/blob/8984fa25007f376c1a299016d0957a37a2f797bb/README.md"
+        }
+      ]
+    },
+    {
+      "model": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+      "revision": "61b85e3d937fbbacb387714180e8182823512523",
+      "gated": false,
+      "license": "apache-2.0",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "5d5bb2de661fabc0e073b3b844dc131696fac3dddd5ea882d10fd9a849108eb7",
+          "url": "https://huggingface.co/pnnbao-ump/VieNeu-TTS-v3-Turbo/blob/61b85e3d937fbbacb387714180e8182823512523/README.md"
+        }
+      ]
+    },
+    {
+      "model": "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano",
+      "revision": "6aa02b01e445cc585582cf0ba480bc3ea6c8dd68",
+      "gated": false,
+      "license": "apache-2.0",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "83cae343211c7c482433c9758f16fc9d17046a0cd450d185b473542e87e35ef8",
+          "url": "https://huggingface.co/OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano/blob/6aa02b01e445cc585582cf0ba480bc3ea6c8dd68/README.md"
+        }
+      ]
+    },
+    {
+      "model": "stabilityai/stable-diffusion-xl-base-1.0",
+      "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+      "gated": false,
+      "license": "openrail++",
+      "files": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "19b6998b569b53ac1fc2158a8a3202c8699a9a4605b47075715d9c96be7fb6d0",
+          "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/462165984030d82259a11f4367a4eed129e94a7b/LICENSE.md"
+        },
+        {
+          "path": "README.md",
+          "sha256": "40d263065b8a3e9a41996c257e11463fd97ae956ebf4e3f8b9625e0d78183893",
+          "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/462165984030d82259a11f4367a4eed129e94a7b/README.md"
+        }
+      ]
+    },
+    {
+      "model": "SWivid/F5-TTS_v1_Base",
+      "error": "HTTP Error 401: Unauthorized"
+    }
+  ],
+  "skills": {
+    "repository": "remotion-dev/skills",
+    "license_review": "Chưa tìm thấy file LICENSE riêng trong cây tại revision đã kiểm; không vendor/cài; tham khảo link và ý tưởng kỹ thuật.",
+    "files": [
+      {
+        "path": "skills/remotion-best-practices/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-best-practices/SKILL.md",
+        "sha256": "b4cfddd463ca44b6127aac813c5f8330f5fe2587f516af5ddfdb0fda453cf8eb"
+      },
+      {
+        "path": "skills/remotion-captions/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-captions/SKILL.md",
+        "sha256": "ceb2615a1c4dfd14c1c01de60671d622b600a9ceb9ca666706dda932cb83b01b"
+      },
+      {
+        "path": "skills/remotion-create/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-create/SKILL.md",
+        "sha256": "d3d5978743a255589459661376cc146b743b1464011f409409c66043925ef8e4"
+      },
+      {
+        "path": "skills/remotion-docs/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-docs/SKILL.md",
+        "sha256": "4da69568779e63fc59675f096be4ea7c1636b166a909b32845858cb23590a554"
+      },
+      {
+        "path": "skills/remotion-interactivity/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-interactivity/SKILL.md",
+        "sha256": "fc2573a7baf7b5b54996fa1c3ca1b6c97f3d8bfeee72d43f59ab8bf3e80479d9"
+      },
+      {
+        "path": "skills/remotion-maps/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-maps/SKILL.md",
+        "sha256": "19b8b3b18bbddfd494ecac5c602c261b661344520cea1989f16d73c61c2335ad"
+      },
+      {
+        "path": "skills/remotion-markup/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-markup/SKILL.md",
+        "sha256": "8b7b89f2fee338c4fa77afec5cc353e78227262246bb062c378a77de29b64258"
+      },
+      {
+        "path": "skills/remotion-multimedia/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-multimedia/SKILL.md",
+        "sha256": "c7dd92f7ec6480a283649b077ca3c70f051d6886789525687a1ae201bb0f02ed"
+      },
+      {
+        "path": "skills/remotion-render/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-render/SKILL.md",
+        "sha256": "f0a0cdb799a01793861faa9a81be004d48eac4df77b659479c91038b13c9436c"
+      },
+      {
+        "path": "skills/remotion-saas/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-saas/SKILL.md",
+        "sha256": "c7e0b31069296a4fc7bc3ea8902a256cb629abdc8c18f4d15d5f1d53f96aaa34"
+      },
+      {
+        "path": "skills/remotion-studio/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-studio/SKILL.md",
+        "sha256": "24277f37e24354a3c04bad303e2b07cbeb4076344bbbc686b7389dbe4b5bacb4"
+      },
+      {
+        "path": "skills/remotion-upgrade/SKILL.md",
+        "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+        "url": "https://github.com/remotion-dev/skills/blob/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-upgrade/SKILL.md",
+        "sha256": "8dcfbe598ace53ae0bc7015dce573294c9653285b14e58e7021fc8d0454b5294"
+      }
+    ]
+  },
+  "references": [
+    {
+      "id": "ltx2x-license",
+      "url": "https://raw.githubusercontent.com/Lightricks/LTX-2/e98f6d927d83c92ef2be6aec76c8440b19306e39/LICENSE-2_x",
+      "revision": "e98f6d927d83c92ef2be6aec76c8440b19306e39",
+      "resolved_url": "https://raw.githubusercontent.com/Lightricks/LTX-2/e98f6d927d83c92ef2be6aec76c8440b19306e39/LICENSE-2_x",
+      "sha256": "ee5b0c880c1516e15bd51c8576a05ea1d2c6e5bb2d070ca098e847e42a75af34"
+    },
+    {
+      "id": "ltx2-license",
+      "url": "https://raw.githubusercontent.com/Lightricks/LTX-2/e98f6d927d83c92ef2be6aec76c8440b19306e39/LICENSE-2",
+      "revision": "e98f6d927d83c92ef2be6aec76c8440b19306e39",
+      "resolved_url": "https://raw.githubusercontent.com/Lightricks/LTX-2/e98f6d927d83c92ef2be6aec76c8440b19306e39/LICENSE-2",
+      "sha256": "c325da090976a313b214bf0d6a1738003b96505c01c46043e80edc200a72c147"
+    },
+    {
+      "id": "ltx-requirements",
+      "url": "https://raw.githubusercontent.com/Lightricks/LTX-2/e98f6d927d83c92ef2be6aec76c8440b19306e39/packages/ltx-pipelines/docs/installation.md",
+      "revision": "e98f6d927d83c92ef2be6aec76c8440b19306e39",
+      "resolved_url": "https://raw.githubusercontent.com/Lightricks/LTX-2/e98f6d927d83c92ef2be6aec76c8440b19306e39/packages/ltx-pipelines/docs/installation.md",
+      "sha256": "a5f1d531ed2d2c481338d450ce865ca27468fa66a91cb71d98d23e8f215c8ab9"
+    },
+    {
+      "id": "whisperx-alignment",
+      "url": "https://raw.githubusercontent.com/m-bain/whisperX/5d3678b8535698a2826a5db9eb3e4105aef85dd9/whisperx/alignment.py",
+      "revision": "5d3678b8535698a2826a5db9eb3e4105aef85dd9",
+      "resolved_url": "https://raw.githubusercontent.com/m-bain/whisperX/5d3678b8535698a2826a5db9eb3e4105aef85dd9/whisperx/alignment.py",
+      "sha256": "df1e565ebe9e039c9c32f2fafff427ee1b7107bdb45699f0fe636163a62957f2"
+    },
+    {
+      "id": "moviepy-license",
+      "url": "https://raw.githubusercontent.com/Zulko/moviepy/211e4b15f6ce4f34a6a9efbfff40590e43a68f77/LICENCE.txt",
+      "revision": "211e4b15f6ce4f34a6a9efbfff40590e43a68f77",
+      "resolved_url": "https://raw.githubusercontent.com/Zulko/moviepy/211e4b15f6ce4f34a6a9efbfff40590e43a68f77/LICENCE.txt",
+      "sha256": "05ecc6144af83d1b87b64f3e36f4367349ac4486afbf29e57341b7c4745dd38a"
+    },
+    {
+      "id": "remotion-layout",
+      "url": "https://raw.githubusercontent.com/remotion-dev/skills/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-create/video-layout.md",
+      "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+      "resolved_url": "https://raw.githubusercontent.com/remotion-dev/skills/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-create/video-layout.md",
+      "sha256": "7ad94c22e3ad87671292ebb9b22f234c544d6c7fed13f8cb112b84b0f7077d4c"
+    },
+    {
+      "id": "remotion-transcription",
+      "url": "https://raw.githubusercontent.com/remotion-dev/skills/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-captions/transcribe-captions.md",
+      "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+      "resolved_url": "https://raw.githubusercontent.com/remotion-dev/skills/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-captions/transcribe-captions.md",
+      "sha256": "0830184ed1f634a6912536768a3aabc0092313db22796c4455e8b46dad874803"
+    },
+    {
+      "id": "remotion-display",
+      "url": "https://raw.githubusercontent.com/remotion-dev/skills/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-captions/display-captions.md",
+      "revision": "30d4553ecd46fbc5212fd0ff006ae43af522158b",
+      "resolved_url": "https://raw.githubusercontent.com/remotion-dev/skills/30d4553ecd46fbc5212fd0ff006ae43af522158b/skills/remotion-captions/display-captions.md",
+      "sha256": "12676a7250f33f126a8ccb0a2b28de22f5ccc9cad0d5baab53a736e205690a17"
+    },
+    {
+      "id": "piper-vi-voice",
+      "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/vi/vi_VN/vais1000/medium/MODEL_CARD",
+      "revision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+      "resolved_url": "https://huggingface.co/api/resolve-cache/models/rhasspy/piper-voices/5041a7a49ae5b3a0f30e6837769eb03fdbb231bd/vi%2Fvi_VN%2Fvais1000%2Fmedium%2FMODEL_CARD?%2Frhasspy%2Fpiper-voices%2Fresolve%2Fmain%2Fvi%2Fvi_VN%2Fvais1000%2Fmedium%2FMODEL_CARD=&etag=%22d77035517b7e2e9446d43b2c83769890e14b000c%22",
+      "sha256": "302db8a930ffc2b1c2181db26deaf8272116eca2b08b8f80da6375b0a994af7b",
+      "immutable_url": "https://huggingface.co/rhasspy/piper-voices/blob/5041a7a49ae5b3a0f30e6837769eb03fdbb231bd/vi/vi_VN/vais1000/medium/MODEL_CARD"
+    }
+  ],
+  "execution_evidence": "Bước này là nghiên cứu; số liệu VRAM/tốc độ trong tài liệu upstream không phải phép đo local và không xác nhận chất lượng video đã đạt."
+}

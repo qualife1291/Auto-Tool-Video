@@ -1,87 +1,87 @@
 ---
 status: partial
 slug: whiteboard-video-tool
-updated: 2026-10-29
+updated: 2026-10-30
 ---
 
 # Handover — whiteboard-video-tool
 
 ## Kết quả
 
-Đã bắt đầu dev và giao M1 chạy thật: studio tiếng Việt, hồ sơ tuổi, nhập lời thoại/ảnh/clip/giọng, sửa cảnh, chọn16:9/9:16, dựng preview/MP41080p, metadata và link upload chính thức. Prototype Blender gốc xuất clip3D thực có thể nhập lại app. Toàn sản phẩm chưa hoàn thành AI/OAuth/SRT/quality gates các mốc sau, giữ specapproved và handoverpartial.
+Hoàn thành bước nghiên cứu theo yêu cầu mới: đọc 28 repository GitHub, 8 model card và 12 file skill Remotion, chọn phương án free trước theo chất lượng/giấy phép/phần cứng. Có báo cáo so sánh, snapshot commit/revision/hash và skill QA nguyên bản của dự án. Chưa tích hợp/cài/chạy các engine mới từ nghiên cứu, không tuyên bố video AI đã đạt chất lượng. Toàn sản phẩm vẫn partial: M1 đã push ở da54821; code M2 có trong working tree và chưa kiểm xong/chưa commit; M3/M4 còn backlog.
 
 ## Đối chiếu đặc tả
 
-- File: specs/whiteboard-video-tool.md.
-- Khớp: lõi M1 và bổ sung aspect/motion/manual hub, không giả model hay public upload.
-- Lệch đã được duyệt: chỉ thị mới nâng16:9/motion vào M1 đã ghi trước thay đổi code.
-- Lệch chưa duyệt: không về scope M1; vẫn chưa đủ các mục toàn sản phẩm, xem Chưa làm.
+- File: specs/whiteboard-video-tool.md, status approved; đã bổ sung hợp đồng nghiên cứu trước khi tạo tài liệu/skill.
+- Khớp: tìm nguồn chính thức/skill, kiểm code và weights riêng, free/conditional/paid, phương án theo cấu hình máy; kế hoạch cho sáu hướng thể hiện, hai aspect và các gate chất lượng.
+- Lệch đã được duyệt: không. Người dùng tiếp tục quyền code/commit/push đã có; bước hiện tại ưu tiên yêu cầu nghiên cứu mới.
+- Lệch chưa duyệt: không. Không thay runtime từ danh sách nguồn và không publish cấu hình cloud.
 
 ## Đã làm
 
-- React/TS/Vite UI responsive390px/desktop, bốn bước và profile riêng; source scaling warning và guides không xuất video.
-- FastAPI, SQLite revision, asset validation/size/duration/type, local Host/Origin guard, streaming body limit.
-- Whiteboard contour/hand/color, motionảnh/clip, native1080 haiaspect/30fps/H264CRF18, audioimport/resample/pad và captions phân đoạn ước lượng.
-- Queue worker durable, one-worker lock, idempotency/concurrent claim, cancel encoder, interrupted restart và snapshot bất biến; full decode trước success.
-- Tải MP4/JSON snapshot, audience/rights checklist; linkYouTube/TikTok/Facebook chỉmanual, không giảOAuthconnected.
-- Blender CPU script mesh/material/animation gốc và research model/engine/video link; dependency locks/fontlicenses/README/docs/benchmark.
-- Spec đã push trướcdev; nhánhfeat/short-video-studio, commitDocs9d4e33c và7925abc; code commit là commit chứa handover này.
+- docs/source-review.md: bảng nguồn, hướng Blender/vector/ảnh/video/TTS/caption/upscale, skill Remotion và QA local, chi phí thực tế, kiến trúc adapter, benchmark/gates và thứ tự triển khai.
+- docs/source-snapshot.json: 29 repo đã thử/28 truy cập được, 9 model card đã thử/8 truy cập được, 12 file skill; giữ cả lỗi404/401. Chỉ metadata/link/hash, không vendor mã/weights hoặc auto-download.
+- .agents/skills/video-quality-review/SKILL.md: quy trình QA nguyên bản cho artifact thật, không cần dependency hoặc dịch vụ tính phí.
+- Cập nhật docs/development-plan.md, docs/licenses.md và bộ nhớ. Không đổi app/backend trong lượt nghiên cứu này.
+- D-003: ghi nguồn và kiểm chất lượng có bằng chứng trước mở provider, không coi README hoặc mock là live validation.
+- Đã chép nguyên handover M1 cũ sang .agent/handover/2026-10-29-whiteboard-video-tool.md trước ghi bản này.
 
 ## Chưa làm
 
-- M2 model/script/image/video generation tự động và Blender template editor; mới có compositor và CLIprototype.
-- M3 giọng VieNeu thật, nghe 20 câu, alignment thật, naturalness/quality review 10 ảnh và xuất LUFS/truepeak đo đầy đủ. Tonefixture không phải TTS.
-- M4 OAuth/directupload. Chưa có các clientcredentials/appreview/accountpermissions; liveupload chưa chạy, không có bài đăng nào được tạo.
-- SRT/import/timing, coverpack,180sShorts,1:1, packagingWindows/macOS và device/platformQA; chưa tuyên bố phát hành.
+- M2: sửa 1 lỗi Ruff/3 mypy và test health đang lệch hợp đồng; thêm test planner/Comfy/job/apply/UI; hoàn thiện config/comfy-sdxl-api.example.json, scripts/live_planner.py, docs/local-ai.md; live Qwen/ảnh có report riêng. Frontend brief/candidate và backend planner/generation/providers mới vẫn là code local chưa commit.
+- Runtime Ollama0.40.13 trước outage đã tải/kiểm checksum ở đường dẫn local; pull qwen3:8b khi đó chưa được xác nhận hoàn thành. Kiểm lại process/model/digest trước inference; không suy model có sẵn từ file tải.
+- Các engine Manim/Motion Canvas/Three.js/Wan/LTX/LightX2V chưa cài hoặc benchmark trong lượt này. Sáu hướng trong tài liệu chưa phải sáu preset UI; scene.style hiện chỉ whiteboard/motion.
+- M3 TTS/forced alignment/loudness và M4 OAuth/live uploads/SRT/180s/cover/packaging chưa hoàn tất.
 
 ## Cách chạy
 
-- npm --prefix apps/web ci
-- uv sync --project backend --frozen --group dev
-- npm --prefix apps/web run build
-- bash scripts/dev.sh
-- Dùng app local cổng8765; task không tạo preview link công khai. Script mặc địnhdata.data/ đã ignore.
-- Phần kiểu videoDrive: mode motion nhậnMP4/ảnh; BlenderCLI tạo clip mẫu. Đây chưa là full tự động sinhvideo96s nhưreference.
+- Lệnh app/check giữ như README.md; không có lệnh cài engine mới trong bước nghiên cứu.
+- Đọc docs/source-review.md và source-snapshot.json để chọn thử; runtime không được đọc snapshot để tự tải model.
+- Khi kiểm video/provider thật, đọc .agents/skills/video-quality-review/SKILL.md cùng đặc tả.
 
 ## Test sẵn có
 
-- Trước code: không có test/source/package, không gọi0test làpass.
-- Sau code:32pytest,5Vitest,4Playwright qua; khôngskip trong lần chạy này. TestClient/httpx có1cảnh báo upstreamdeprecated, khôngfail và không tắttest.
+- Sau workspace kết nối lại, trước thay đổi tài liệu: backend/.venv/bin/python -m pytest backend/tests -q — 31 passed, 1 failed, 1 upstream Starlette/httpx deprecation warning. Fail tại test_source_origin_host_and_security_headers: health ai.image hiện local_provider trong code M2, assertion M1 chờ not_implemented. Đây là trạng thái code dở có từ trước lượt nghiên cứu.
+- npm --prefix apps/web run check — TypeScript qua, Vitest 5 passed.
+- backend/.venv/bin/ruff check backend scripts — 1 TRY004 providers.py:136 (kiểu lỗi nên dùng TypeError).
+- backend/.venv/bin/mypy backend/auto_tool_video — 3 lỗi: config Optional đưa vào Comfy.identity; callback generate trả dict thay None; kiểu result dict suy luận thiếu bool. Không tắt rule/assertion và chưa ghi pass cho M2.
+- Sau tài liệu: không đổi code/dependency nên không chạy lặp lại regression. Bằng chứng 41 test M1 lịch sử chỉ áp commit da54821; xem archive, không dùng cho working tree M2 hiện tại.
 
 ## Test đã chạy
 
-- LG-01/02/03/05/07,SEC-03/05/06/10/15: pytest backend/tests32pass, gồm stale audio, revision conflict, upload MIME giả, body chunked limit/path/symlink, source/host guard, missing asset vàduration.
-- RW-01/03,JOB-01: concurrent double-submit chỉ1job; runningcancel dọn encoder/tmp vàgiữ file cũ; restartinterrupted; snapshotđúng.
-- ASPECT-01/OUT-01/MOTION-01: bốn ca render preview/finalcả2aspect, H26430fps/full decode; MP4 nhập vànarration decode PCM nonzero. Smoke3cảnhfull1080 cả2aspect3,021333s, AACtone fixture.
-- UI/UX/SEC-02/UPLOAD-01:4E2EChromium, desktop 1366/mobile 390, import→render→downloadMP4/metadata→reloadrestore, HTMLinput hiệndạngtext, keyboardfocus, linkwhitelist vàaxeWCAG2A/AAlabels/contrasthai màn. Lỗi contrast tìm được đã sửa, lượt cuối qua.
-- FREE-01/QUALITY-01:5Vitest readiness/silent/stale/missing/time/sourcecontain; đườngimport/renderkhôngkey/APIfee/watermark.
-- THREE-01(prototype): pytestCPUBlender320×180/2frame pass; manual12frame640×360/12fps clipthật. Khônggọi làfull3Dqualitygate.
-- RW-07 benchmark:20cảnh600framepreview360×640,8,493s≈70,64fps, PythonpeakRSS114404KiB; full decode 20,021333s. KhôngápFPSnàycho1080/AI.
-- Cổngchấtlượngcode:ruffcheck/formatcheck,mypy9sourcefiles,tsc,Vitebuild,Prettiercheckqua. npm runtimeaudit0vulnerability; pip-auditkhông có advisory được biết, package nội bộ không có PyPIskip auditdatabase.
-- Launcher: đã chạy API cổng8767 với Vite5173, GET health và POST tạo project qua proxy thành công; Ctrl+C dọn process của lượt test.
-- Frozeninstall:uvsync--frozen xácminh57packages; npmci vàaudit lại đượcchạy với lockfile.
+- Nguồn: GitHub/Hugging Face API và tài liệu được đọc ở commit/revision; hash đối chiếu 85 tài liệu đã tải ngoài Git khớp snapshot. Xác minh 28 commit repo, 8 model revision và 12 skill records có định danh hợp lệ.
+- Tài liệu: kiểm một H1/file ở4 file tài liệu/skill mới hoặc cập nhật và8 link tương đối resolve; JSON parse/counts/hash hợp lệ.
+- Format: apps/web/node_modules/.bin/prettier --check docs/source-review.md docs/source-snapshot.json .agents/skills/video-quality-review/SKILL.md docs/development-plan.md docs/licenses.md — qua sau format.
+- Whitespace: git diff --check và git diff --cached --check — qua trước commit.
+- Commit chỉ tài liệu/spec/memory/skill; app/backend/lockfile M2 không được stage hoặc push trong commit nghiên cứu.
 
 ## Test không chạy
 
-- AI-01/02/03,VIDEOAI-01,WB-04: adapter/model chưa tích hợp, không có weights/GPU/license/voice samples thật; không dùngmockđểthaylive.
-- OAUTH-01/SOCIAL-01/SOCIAL-LIVE-01,KIDS-01/OUT-02: cácmốc chưa triển khai, thiếuapp/credentials đểlive; no OAuth/directpublishclaim.
-- Chưa kiểm nativeWindows/macOS, khônghứa mọiOS/platform.
+- Không chạy video/model mới, không chấm điểm chất lượng hình/giọng từ README. Số VRAM/tốc độ trong báo cáo ghi upstream, chưa là số đo local.
+- Không chạy lại E2E/render vì bước này không đổi runtime; các test M2 mới còn thiếu. Không lấy mock hoặc test M1 thay live AI.
+- Chưa live upload, chưa có app credentials/tài khoản được cấp quyền cho bước M4; không kết nối hoặc tự đăng.
+- Chưa kiểm native Windows/macOS hay mọi thiết bị, không hứa mọi nền tảng.
 
 ## Quyết định đã ghi vào nhớ dài hạn
 
-D-001 vàD-002: profile/portrait/qualityfree, haidiệnaspect vàreference3D/motion/manualhub.
+D-003 bổ sung bên cạnh D-001/D-002; PROJECT cập nhật trạng thái thực M1/M2/M3/M4.
 
 ## Rủi ro và nợ
 
-M1 làlát cắt dùng được, không full sản phẩm. Scene motionpanảnhkhôngphải3D, modelvideochưa chạy; CLIBlenderprototype samples thấp khôngchứngminh qualityphát hành. Captionước lượngchưa căn từng từ. Audio loudnorm/limitercó nhưngchưa đo LUFS/true peak hoặc nghe final bằng giọng người. Nguồn thấp nét không sinh chi tiết mới. UploadlinkkhácOAuth; chính sách/Kids/rights cần creator review. Không biết 3D engine của tác giả chỉ từ file. Khôngcóuser secrettrongrepo.
+- Code M2 chưa commit vẫn cần giữ nguyên và hoàn thiện; không reset/checkout đè để làm tree sạch. Chỉ tài liệu được commit trong lượt này.
+- Model repository có thể đổi; snapshot nghiên cứu không phải lockfile triển khai. Pin release/weights/components sau benchmark. Skill Remotion chưa tìm thấy license riêng trong cây đã kiểm nên chỉ link/tham khảo, không vendor/cài.
+- Remotion/LTX có điều kiện phát sinh chi phí; F5 pretrained NC, Piper voice riêng, custom node/LoRA riêng. Free không loại chi phí máy/điện/thời gian.
+- Chất lượng cảm nhận/nội dung/độ tuổi cần creator duyệt, không chỉ độ phân giải hay điểm tự động. Không bảo đảm viral hoặc Kids inclusion.
+- Không đọc secret, không đưa dữ liệu/video riêng vào nguồn nghiên cứu hoặc Git; không có external install/paid API ở bước này.
 
 ## File đã đụng
 
-specs/,AGENTS.md,AGENT-CODING-STANDARD.md,.agent/,.gitignore,.env.example,README.md,backend/,apps/web/,assets/fonts/,assets/examples/,scripts/,docs/. Khôngcommitruntime.data,node_modules,venv,video/userassets hoặcvideoDrive.
+specs/whiteboard-video-tool.md; docs/source-review.md; docs/source-snapshot.json; docs/development-plan.md; docs/licenses.md; .agents/skills/video-quality-review/SKILL.md; .agent/handover/LATEST.md và archive; .agent/memory/long-term/DECISIONS.md, PROJECT.md; .agent/memory/short-term/SESSION.md. Các file app/backend/lockfile M2 được bảo toàn ngoài index.
 
 ## Agent sau đọc gì
 
-1. specs/whiteboard-video-tool.md và AGENTS.md.
-2. .agent/memory/long-term/PROJECT.md,ARCHITECTURE.md,DECISIONS.md,CONVENTIONS.md.
-3. .agent/handover/LATEST.md vàdocs/development-plan.md.
-4. TASKS.md/SESSION.md để tiếp tục các mốc chưa xong, không xin lại quyền code/push đã cấp.
+1. AGENTS.md, AGENT-CODING-STANDARD.md và specs/whiteboard-video-tool.md.
+2. .agent/memory/long-term/PROJECT.md, ARCHITECTURE.md, DECISIONS.md, CONVENTIONS.md.
+3. Handover này, archive M1 và TASKS.md/SESSION.md; không xin lại quyền code/push.
+4. docs/source-review.md, source-snapshot.json, development-plan.md; skill QA local khi tới kiểm render/model thật.
+5. git status/diff để tiếp tục code M2 đang dở; sửa lỗi/test trước commit code. Không áp lại/publish môi trường cloud.

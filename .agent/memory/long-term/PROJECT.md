@@ -2,7 +2,7 @@
 
 ## Sản phẩm là gì
 
-Công cụ tạo video whiteboard tiếng Việt. Đặc tả đang được cập nhật theo yêu cầu video dọc đa nền tảng.
+Studio video tiếng Việt local; M1 đã có whiteboard/motion, nhập ảnh/clip/giọng, hai tỷ lệ16:9/9:16 và xuất1080p. M2 AI đang dở; M3 giọng/alignment và M4 OAuth upload còn backlog. Đặc tả vẫn approved, chưa implemented.
 
 ## Người dùng
 
