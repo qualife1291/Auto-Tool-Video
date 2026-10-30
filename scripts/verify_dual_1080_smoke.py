@@ -159,8 +159,8 @@ def verify_video(path: Path, aspect: str, seconds: float) -> dict[str, Any]:
                 "-v",
                 "error",
                 "-show_entries",
-                "format=duration:stream=codec_type,codec_name,width,height,pix_fmt,"
-                "r_frame_rate,avg_frame_rate,sample_rate,duration",
+                ("format=duration:stream=codec_type,codec_name,width,height,pix_fmt,"
+                "r_frame_rate,avg_frame_rate,sample_rate,duration"),
                 "-of",
                 "json",
                 str(path),
