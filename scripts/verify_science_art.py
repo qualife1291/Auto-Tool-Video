@@ -10,8 +10,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import itertools
-import time
 import json
+import time
 from pathlib import Path
 
 import numpy as np
@@ -380,8 +380,8 @@ def temporal_evidence(
         for row, kind in enumerate(kinds):
             art = Art(width, height, root, kind, supersample=1)
 
-            def paste(index, frame, row=row):
-                sheet.paste(frame, ((index - indices[0]) * width, row * height))
+            def paste(index, frame, row=row, canvas=sheet, step_x=width, step_y=height):
+                canvas.paste(frame, ((index - indices[0]) * step_x, row * step_y))
 
             kind_records[kind] = record_temporal_sequence(
                 _garment_samples(art, indices, kind),
