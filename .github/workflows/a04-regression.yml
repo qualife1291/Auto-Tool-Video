@@ -32,7 +32,7 @@ jobs:
       - name: Install and verify FFmpeg, FFprobe and Blender
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg blender
+          sudo apt-get install -y ffmpeg blender espeak
           ffmpeg -hide_banner -version | head -1
           ffprobe -hide_banner -version | head -1
           blender --version | head -1
@@ -62,3 +62,22 @@ jobs:
         run: npm --prefix apps/web run test:e2e
       - name: Real 1080p portrait export smoke
         run: uv run --project backend python scripts/smoke_export.py --portrait1080
+      - name: Create 12 voiced Vietnamese WAVs and render both 1080p videos
+        run: |
+          uv run --project backend python scripts/voice_wav_acceptance.py --output-dir .data/voice-acceptance --render
+      - name: Upload 12-scene source, retimed WAVs and technical MP4 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a04-vietnamese-espeak-12scenes
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            .data/voice-acceptance/raw-wav/*.wav
+            .data/voice-acceptance/audio-tempo/*.wav
+            .data/voice-acceptance/story.json
+            .data/voice-acceptance/tts-provenance.json
+            .data/voice-acceptance/audio-timing.json
+            .data/voice-acceptance/voice-source-manifest.json
+            .data/voice-acceptance/voice-report-*.json
+            .data/voice-acceptance/voice-review-*.mp4
