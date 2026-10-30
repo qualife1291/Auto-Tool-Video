@@ -85,6 +85,10 @@ Official web checks performed 2026-10-30 for Manim, Blender, ComfyUI, Remotion; 
 
 **Ownership:** No agent may claim A20–A33 until integrator registers an approved spec/issue/PR, confirms prerequisite evidence, and reserves file ownership in workboard. All begin at G1 research, not feature code. If future model or upstream version changes, redo compatibility/license and fixed-fixture benchmarks. Agent should update research notes with dated official sources, exact revisions and verified experiments rather than blindly executing this plan.
 
+## Frame/sample-level screenplay, light and sound design research
+
+The current integer-second `SecondBeat` lacks formally structured millisecond events, environmental state, lens/camera settings, lighting rigs, SFX/music/ambience, object identity, edit intent and audio sample alignment. Propose **A49 (RESEARCH ONLY)**: review OpenTimelineIO's rational-time/track concepts (https://opentimelineio.readthedocs.io/en/latest/) and OpenUSD time-sampled scene concepts (https://openusd.org/release/), define optional typed `cinematic_events` with lighting/SFX/camera/scene state and frame/audio sample quantization; validate semantic event timelines against real render capabilities. Coordinate A49 jointly with A20 Scene IR and A34 FPS clock; never assume 1ms means a distinct image frame at 30/60fps. Require G1 source/license evaluation, grammar and negative tests, migration/legacy round-trips, human semantic review and no generator arbitrary code execution before implementation.
+
 ## FPS, fidelity and performance expansion
 
 Detailed study: [High-FPS/performance/QC dossier](high-fps-performance-qc-research.md). Versioned target profiles, rational timebase, 1080p60 native and selective clip interpolation, source-first sharpness, encoder/hardware A/B, pipeline and QC, plus unclaimed A34–A42 tasks. Do not presume 60fps/4K/AI restoration is a verified improvement without fixed-fixture benchmark and creator review.
