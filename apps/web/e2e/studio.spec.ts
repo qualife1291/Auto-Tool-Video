@@ -108,43 +108,30 @@ test('input stays text and keyboard focus is visible', async ({ page }) => {
   await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
   await expect(page.locator('h1')).toHaveText('<img src=x onerror=alert(1)>');
   expect(await page.locator('h1 img').count()).toBe(0);
-  // Diagnostic RED only: retain the original programmatic-focus assertion until
-  // both viewports prove whether real keyboard focus has a visible indicator.
   const titleInput = page.getByLabel('Tên dự án');
-  const programmaticOutlines: string[] = [];
   for (const width of [390, 1366]) {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
-    await page.mouse.click(1, 1);
-    await titleInput.focus();
-    const programmatic = await titleInput.evaluate((element) => ({
-      active: document.activeElement === element,
-      focus: element.matches(':focus'),
-      focusVisible: element.matches(':focus-visible'),
-      outlineStyle: getComputedStyle(element).outlineStyle,
-      outlineWidth: getComputedStyle(element).outlineWidth,
-      outlineColor: getComputedStyle(element).outlineColor,
-      boxShadow: getComputedStyle(element).boxShadow,
-    }));
-    await page.keyboard.press('Shift+Tab');
-    const shiftTabTarget = await page.evaluate(() => document.activeElement?.tagName ?? null);
-    await page.keyboard.press('Tab');
-    const keyboard = await titleInput.evaluate((element) => ({
-      active: document.activeElement === element,
-      focus: element.matches(':focus'),
-      focusVisible: element.matches(':focus-visible'),
-      outlineStyle: getComputedStyle(element).outlineStyle,
-      outlineWidth: getComputedStyle(element).outlineWidth,
-      outlineColor: getComputedStyle(element).outlineColor,
-      boxShadow: getComputedStyle(element).boxShadow,
-    }));
-    console.log(
-      `FOCUS_DIAGNOSTIC ${JSON.stringify({ width, programmatic, shiftTabTarget, keyboard })}`,
-    );
+    // Exercise actual keyboard navigation; programmatic locator.focus() does not
+    // guarantee the browser's :focus-visible keyboard-modality heuristic.
+    for (let repeat = 0; repeat < 3; repeat++) {
+      await titleInput.click();
+      await page.keyboard.press('Shift+Tab');
+      await expect(titleInput).not.toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(titleInput).toBeFocused();
+      const focus = await titleInput.evaluate((element) => ({
+        focusVisible: element.matches(':focus-visible'),
+        outlineStyle: getComputedStyle(element).outlineStyle,
+        outlineWidth: getComputedStyle(element).outlineWidth,
+        outlineColor: getComputedStyle(element).outlineColor,
+      }));
+      expect(focus.focusVisible).toBe(true);
+      expect(focus.outlineStyle).not.toBe('none');
+      expect(parseFloat(focus.outlineWidth)).toBeGreaterThanOrEqual(3);
+      console.log(`FOCUS_KEYBOARD ${JSON.stringify({ width, repeat, focus })}`);
+    }
     await page.screenshot({ path: test.info().outputPath(`focus-visible-${width}.png`) });
-    programmaticOutlines.push(programmatic.outlineStyle);
   }
-  // Preserve the original RED expectation (not yet a corrected keyboard test).
-  expect(programmaticOutlines).not.toContain('none');
 });
 
 test('accessible labels and contrast on initial and storyboard screens', async ({ page }) => {
