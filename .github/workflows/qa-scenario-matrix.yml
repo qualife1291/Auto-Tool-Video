@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      APP_DATA_DIR: ${{ runner.temp }}/scenario-fixtures-only
+      APP_DATA_DIR: /tmp/t01-scenario-fixtures
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      APP_DATA_DIR: ${{ runner.temp }}/fullhd-scenario-isolated
+      APP_DATA_DIR: /tmp/t01-fullhd-fixtures
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
