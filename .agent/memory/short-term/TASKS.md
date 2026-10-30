@@ -1,5 +1,16 @@
 # Việc đang code
 
+## Điều phối nhiều AI agent — 2026-10-30
+
+- **Draft PR điều phối:** https://github.com/qualife1291/Auto-Tool-Video/pull/1
+- **Workboard A01–A10:** https://github.com/qualife1291/Auto-Tool-Video/blob/feat/second-by-second-motion-voice/docs/agent-workboard.md
+- **Branch WIP:** `feat/second-by-second-motion-voice`. Agent mới nhận một task A01–A10, tạo branch task từ WIP, PR ngược về WIP. Không tự merge vào branch mặc định trước test/QA.
+- **Baseline mặc định vẫn an toàn:** trước đợt này có báo cáo 205 test qua và video 12 cảnh 38,7s; **code mới không được kiểm thử, audio 0,92×/video 41,9s chưa được tạo/kiểm chứng trong nhánh WIP**.
+- Những chỉnh sửa local chưa push ở môi trường AI khác không được lưu trong GitHub; branch WIP mới là bản tái dựng, không được nhận là đã lấy lại nguyên bản.
+
+## Backlog M1–M4 trước đợt phối hợp
+
+
 - Creator review `.data/story-upgrade`:12cảnh/38,7s, QC technicalpass;6warning motion nhẹ/so sánh mỗi aspect và ASR9/12khớp, câu3/5/6cần nghe đối chiếu. Chưa có điểm manual/playback/listening, không coi205test là nghiệm thu cảm nhận. Giữ baseline khi sửa tiếp; ưu tiên diễn biến semantic ở các cảnh so sánh nếu feedback yêu cầu.
 - M2: kiểm Qwen/Comfy model live trên phần cứng đủ tài nguyên, benchmark Klein4B/SDXL, reference/character control và batch có duyệt; template3D editor. Tongjiang HTML capture chỉ nghiên cứu opt-in phi thương mại/quyền riêng, không execute nguồn ngoài bằng backend.
 - M3: learned benchmark VBench/AIGCBench chỉ bật sau pin/checkpoint-license/hardware; hiệu chuẩn proxies bằng mẫu có người chấm.  TTS UI/voice/jobs/cache bằng packaging inference đúng, nghe20câu/người duyệt, phrase alignment/SRT và polish whiteboard10ảnh; creator review clip đã giao, không dùng ASR thay nghe.
