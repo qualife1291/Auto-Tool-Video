@@ -21,8 +21,8 @@
 | P1 | DOC-3 | BA02 triage + PR owners | Audit/salvage #27/#21/#23 conflicts, preserve unique research/skills; either rebase or explicit Superseded with link; no silent delete/history rewrite | After #46 ownership resolved |
 | P1 | QA-1 | T01/T02 | Independent QA on Ready #62/#69/#47 and docs #46/#51, assign one QA_OWNER, verify checks **on current head+merge-ref**, no auto merge if red | #62 needs current 390/1366px+pagination evidence; #47 old red and must refresh |
 | P1 | QA-2 | T01 code + T02 independent QA | Fix #59 watcher 403 and #71 obsolete C03/C04 routing, prove benign degraded behavior and no spam; PR #60 Draft; no new workflow without approved scope | No comment event storm, budget/permissions considered |
-| P1 | ART-1 | C01 (proposed dedicated issue) / T01 or T02 QA | Real Blender A02 temporal continuity, peg/head/hem stability, wet/dry mask, fold/spread 9:16 and 16:9; regression+hash/contact sheets; human still pending | Fresh narrow claim, no science_story.py edit without contract |
-| P2 | HARN-1 | C03 / BA01+BA02 acceptance, independent tester | Resume #49, review docs-only PR #65 on latest canonical; FREE-first evidence manifest, license, version, costs, benchmark, no CI enforcement or paid provider | #58 merged and main+dual postmerge green; fresh claim |
+| P1 | ART-1 | C01 ASSIGNED #74, awaiting personal CLAIM / T01 or T02 QA | Real Blender A02 temporal continuity, peg/head/hem stability, wet/dry mask, fold/spread 9:16 and 16:9; regression+hash/contact sheets; human still pending | Fresh narrow claim, no science_story.py edit without contract |
+| P2 | HARN-1 | C03 BA-UNPAUSED #49 (awaiting personal RE-CLAIM) / BA01+BA02 acceptance, independent tester | Resume #49, review docs-only PR #65 on latest canonical; FREE-first evidence manifest, license, version, costs, benchmark, no CI enforcement or paid provider | #58 merged and main+dual postmerge green; fresh claim |
 | P2 | MEDIA-1 | Creator + T01/T02 and BA | Original Vietnamese voiced dual-1080 sample, evidence G4–G9 + full G10 human watch/listen and rights, then release decision | Not satisfied by eSpeak sample, no automatic approval |
 
 ## Cleanup acceptance standard
@@ -34,3 +34,10 @@
 5. Update plans only via scoped PR and independent review; run Markdown links, conflict/Prettier tests where configured. Documentation pass is not code/video release pass.
 
 **Next checkpoint:** after PR #46/#51 reviewers act, use current GitHub to revise this dated plan, not overwrite historical audit or blindly infer fixed issues.
+
+## BA02 executable issue links and verified source inconsistencies
+
+- [Documentation cleanup action ledger #75](https://github.com/qualife1291/Auto-Tool-Video/issues/75) owns DOC-0..DOC-6, direct 30-Markdown source audit and PR #46/#51/#27/#21/#23 interlock; **do not merge duplicates or rewrite immutable handovers**.
+- [C01 assigned visual evidence #74](https://github.com/qualife1291/Auto-Tool-Video/issues/74), `ASSIGNED / PERSONAL CLAIM PENDING`; new scope `scripts/verify_science_art.py` and new test file only. [C03 existing H1 #49](https://github.com/qualife1291/Auto-Tool-Video/issues/49) BA-unpaused after #58/#67 merged and current canonical main+dual CI passed, `PERSONAL RE-CLAIM PENDING`.
+- Direct canonical role-charter audit: `docs/agent-role-charter.md:19` incorrectly calls C01/C02 inactive; `:54` and `:80` still describe T01-only merge/QA. T01-owned current-state docs still stale: `docs/agent-workboard.md:14`, `.agent/memory/short-term/TASKS.md:8–10`, `docs/development-plan.md:7–8`. These are **verified source-text inconsistencies**, not evidence any historical videos are approved; actual change owners BA01 PR #51 and T01 PR #46 respectively.
+- T02 is independent `QA_OWNER` for T01-authored #46/#37/#60; one current reviewer per PR, no BA or author self-verdict. Existing T02 comments must be reconciled before declaring PASS. QA owner for BA-owned PR #73 must be assigned separately.
