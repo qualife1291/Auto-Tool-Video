@@ -2,7 +2,7 @@
 
 ## Kết quả lựa chọn
 
-Kiểm trực tiếp nguồn chính thức ngày **2026-10-30**: 28 repository truy cập được, 8 model card truy cập được và 12 file `SKILL.md` của Remotion. Commit/revision, link tài liệu và SHA256 nằm trong [source-snapshot.json](source-snapshot.json). Một URL GitHub sai trả 404 và một model API trả 401 cũng được giữ trong bằng chứng; không coi là nguồn đã xác minh. GitHub stars không phải tiêu chí chất lượng.
+Kiểm trực tiếp nguồn chính thức ngày **2026-10-30**: 29 repository truy cập được (gồm Tongjiang Lab do người dùng bổ sung), 8 model card truy cập được và 12 file `SKILL.md` của Remotion. Commit/revision, link tài liệu và SHA256 nằm trong [source-snapshot.json](source-snapshot.json). Một URL GitHub sai trả 404 và một model API trả 401 cũng được giữ trong bằng chứng; không coi là nguồn đã xác minh. GitHub stars không phải tiêu chí chất lượng.
 
 Đề xuất giữ kiến trúc local hiện tại: **FFmpeg dựng thành phẩm + Blender cho cảnh 3D + Ollama cho storyboard + ComfyUI cho ảnh tùy chọn**. Bổ sung nguồn theo từng loại cảnh, dùng cùng một timeline và compositor, thay vì cài tất cả engine. Chữ tiếng Việt, nhãn khoa học và số liệu luôn được dựng riêng ở độ phân giải đích.
 
@@ -117,6 +117,22 @@ Tối ưu theo thứ tự: cache theo input/model/workflow/ref hash → reuse nh
 6. **Hai aspect từ đầu.** Chọn layout/camera/framing theo 9:16 hoặc 16:9 trước render; reflow chữ, không stretch hoặc center-crop mù. Model resolution có ràng buộc latent thì contain/reframe được duyệt; native final1080p không đồng nghĩa mọi nguồn là native1080p.
 7. **Audio và nhịp dẫn timeline.** Đo giọng thật, align script đã duyệt; không cắt/time-stretch âm thầm để ép 60s. Tắt tiếng b-roll AI mặc định, dùng narration riêng. Chuyển 24fps nguồn sang timeline30fps phải báo/kiểm cadence; frame interpolation chỉ opt-in sau kiểm artifacts.
 8. **Xuất và đăng tách nhau.** Final H.264/AAC, full decode, download được; upload APIs ở M4. Các repo kể trên không làm OAuth/quyền tài khoản/duyệt ứng dụng tự xuất hiện; không đưa cookie automation vào pipeline.
+
+## Tongjiang Lab do người dùng bổ sung
+
+Đọc [repo](https://github.com/smithjohn78390/tongjiang-lab) tại commit `4d63ce0a72d987c850ec6d919e570bdb752c87a6`: README, LICENSE, THIRD_PARTY_NOTICES, catalog và nguồn hai bài water-cycle/brownian. Catalog có **54 bài: 10 vật lý, 25 hóa học, 5 sinh học, 14 địa lý**; đối tượng gốc là THPT theo chương trình Trung Quốc, giao diện tiếng Trung. Chưa chạy hoặc đánh giá tính đúng của toàn bộ 54 bài.
+
+**Giấy phép:** lessons/covers/catalog là [CC BY-NC 4.0](https://github.com/smithjohn78390/tongjiang-lab/blob/4d63ce0a72d987c850ec6d919e570bdb752c87a6/LICENSE). Chia sẻ/chỉnh sửa cần ghi “Tongjiang Lab (https://lab.tongjiang.app)”, link license và nêu thay đổi, chỉ phi thương mại. three.js đi kèm là MIT; điều này không chuyển cả bài học sang MIT. Kênh cá nhân có quảng cáo/tài trợ/kinh doanh không được tự coi là phi thương mại. Cần quyền riêng từ tác giả trước nhánh thương mại nếu dùng lại nội dung có bảo hộ. Không cần mua API để đọc nguồn công khai.
+
+Phần có thể học: câu hỏi dẫn dắt, tiết lộ từng lớp, điều khiển một biến, góc camera để so sánh và kết luận có câu hỏi kiểm hiểu. HTML mẫu khoảng0,9MB/bài, có inline module, WebGLRenderer/antialias/shadow, resize camera và pixel ratio giới hạn1,75. Có `window.__lab` hỗ trợ goto/set/camera; đây là bề mặt kỹ thuật quan sát được, không phải API xuất video ổn định. requestAnimationFrame, trạng thái tương tác/localStorage và phần ngẫu nhiên trong file đòi kiểm riêng trước render deterministic; không hứa quay màn hình sẽ tự có1080p/30fps ổn định.
+
+| Nhánh | Tích hợp hiện tại và việc còn lại |
+|---|---|
+| Tham khảo và tự dựng | Đã thêm4brief tiếng Việt nguyên bản về nước, chuyển động Brown, ngày đêm và bờ sông trong thư viện ý tưởng của editor. Kèm URL để creator kiểm kiến thức; không tải/copy HTML, cover hoặc catalog vào sản phẩm, không tự chuyển bài THPT thành nội dung mầm non. |
+| Dùng lại bài gốc phi thương mại | Chưa triển khai. Cần opt-in, attribution/license/changes, người lớn kiểm nội dung, sandbox HTML không quyền filesystem/network, camera/timeline/seed/frame clock cố định và caption tiếng Việt ngoài canvas; kiểm riêng hai aspect. Không chạy JS nguồn ngoài bằng quyền backend. |
+| Video cho kênh kiếm tiền | Giữ đồ họa/script nguyên bản và nguồn kiến thức được kiểm; nếu muốn chép/chuyển thể bài/cover gốc cần quyền thương mại riêng. Không auto đổi license hoặc tuyên bố mọi adaptation tự tạo là thoát điều kiện NC. |
+
+Trong tool, chọn ý tưởng chỉ thay brief theo thao tác rõ ràng; brief đã có nội dung cần xác nhận thay, narration/storyboard/assets giữ nguyên. Publish JSON mang nguồn từ đúng export snapshot để hỗ trợ ghi nguồn khi đăng thủ công. Bản video review hiện tại dùng tranh procedural Blender/Pillow gốc, **không dùng asset Tongjiang**.
 
 ## Cổng chất lượng và bộ thử trước khi bật mặc định
 

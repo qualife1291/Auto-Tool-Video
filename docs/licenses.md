@@ -32,7 +32,14 @@ Xem [nghiên cứu nguồn ngày2026-10-30](source-review.md) và [commit/revisi
 
 FLUX.2 Klein 4B: code và đúng model card 4B Apache-2.0; 9B non-commercial, không tự thay. SDXL 1.0: OpenRAIL++; LoRA có license riêng. Qwen3-8B model card Apache-2.0, digest Ollama thực tế cần ghi riêng. VieNeu GitHub đúng `pnnbao97/VieNeu-TTS`; code, card v3 Turbo và codec MOSS Nano khai Apache-2.0, preset/phonemizer/phụ thuộc vẫn phải pin/kiểm. Wan2.2 code/model Apache-2.0 theo nguồn đã đọc. LTX-2.5 dùng Community License 2.x, có điều kiện trả phí theo doanh thu/cách dùng; LTX-Video code Apache-2.0 không áp chung cho mọi weights. Remotion dùng license riêng, không free vô điều kiện. F5-TTS code MIT nhưng pretrained weights CC-BY-NC, không chọn mặc định thương mại. Piper hiện hành GPL-3.0, voice/data riêng. Skill Remotion chưa tìm thấy LICENSE riêng ở tree đã kiểm nên chỉ tham khảo link/ý tưởng, không vendor.
 
-Không có weights mới trong repo, không có kết quả live ảnh/video/voice được tuyên bố từ bước nghiên cứu. File skill QA local là nội dung nguyên bản của dự án, không chép skill upstream và không gán license tổng thể cho mã dự án.
+Không có weights mới trong repo; nghiên cứu nguồn không chứng minh chất lượng live. Riêng mẫu review sau đó đã chạy TTS local thật qua CLI tách biệt, chi tiết bên dưới. File skill QA local là nội dung nguyên bản của dự án, không chép skill upstream và không gán license tổng thể cho mã dự án.
+
+## Tài nguyên review và Tongjiang Lab
+
+- Mẫu review dùng tranh Pillow/mesh/material Blender nguyên bản (`scripts/create_review_video.py`, `scripts/blender_review_art.py`), font Noto OFL, preset Hải Đăng của VieNeu SDK3.8.3 Apache-2.0, model v3Turbo ONNX và codec MOSS Nano ONNX đúng revision Apache-2.0, sea-g2p0.10.0 Apache-2.0. ASR kiểm file cuối dùng faster-whisper/checkpoint turbo MIT. Revision/hash và giới hạn license/cá nhân ghi ở [QA](qa-review.md); đây không phải quyền chung cho mọi giọng/model.
+- [Tongjiang Lab](https://github.com/smithjohn78390/tongjiang-lab) commit`4d63ce0a72d987c850ec6d919e570bdb752c87a6`: lessons/covers/catalog **CC BY-NC4.0**, three.js đi kèm MIT. Dùng lại/chỉnh sửa cần credit tác giả/link license/nêu thay đổi và phi thương mại; kênh cá nhân có kiếm tiền không tự được miễn NC. Cần quyền thương mại riêng nếu dùng lại bài gốc cho mục đích đó.
+- Tool chỉ có4brief tiếng Việt tự viết và link nguồn, không đóng gói HTML/cover/catalog hoặc chạy JavaScript repo ngoài. Video review không dùng asset Tongjiang. [Báo cáo nguồn](source-review.md) ghi nhánh tích hợp có thể nghiên cứu tiếp; chưa có engine quay lesson HTML hoặc giấy phép thương mại của tác giả.
+- CLI review khóa dependencies riêng, bỏ Gradio không dùng để tránh Pillow cũ có advisory. Metadata SDK còn khai Gradio required, nên không coi đó là bản SDK Web UI đầy đủ hoặc dependency-check sạch. Không đưa bản cài này vào end-user installer trước xử lý packaging.
 
 ## Audit hiện tại
 

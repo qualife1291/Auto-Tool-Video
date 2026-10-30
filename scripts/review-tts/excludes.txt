@@ -1,0 +1,4 @@
+# This tool uses only the audited CPU ONNX/audio modules, never the SDK web server.
+# Upstream vieneu 3.8.3 declares Gradio as required for its UI; that unused UI pins
+# vulnerable Pillow<13. CLI imports/inference are verified separately.
+gradio

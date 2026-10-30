@@ -1,0 +1,4 @@
+# Isolated CLI inference; compile with --excludes scripts/review-tts/excludes.txt.
+# This is not a complete installation of the upstream SDK web UI.
+vieneu==3.8.3
+faster-whisper==1.2.1

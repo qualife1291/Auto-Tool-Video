@@ -56,6 +56,37 @@ def test_duplicate_scene_ids_rejected(client):
     assert save(client, project).status_code == 400
 
 
+def test_caption_options_survive_save_and_store_restart(client):
+    project = create_story(client)
+    assert project["scenes"][0]["caption_style"] == "card"
+    project["scenes"][0].update(caption_style="accent", caption_emphasis="không khí")
+    response = save(client, project)
+    assert response.status_code == 200
+    restored = Store(client.app.state.store.root).get("projects", project["id"])
+    assert restored["scenes"][0]["caption_style"] == "accent"
+    assert restored["scenes"][0]["caption_emphasis"] == "không khí"
+    # Old client snapshots without the new fields remain valid and use defaults.
+    old = response.json()
+    for scene in old["scenes"]:
+        scene.pop("caption_style")
+        scene.pop("caption_emphasis")
+    assert save(client, old).json()["scenes"][0]["caption_style"] == "card"
+
+
+@pytest.mark.parametrize(
+    "patch",
+    [
+        {"caption_style": "karaoke"},
+        {"caption_emphasis": "x" * 71},
+        {"caption_style": "<script>"},
+    ],
+)
+def test_invalid_caption_options_rejected(client, patch):
+    project = create_story(client)
+    project["scenes"][0].update(patch)
+    assert save(client, project).status_code == 422
+
+
 def test_replace_storyboard_requires_confirmation(client):
     project = create_story(client)
     assert (
@@ -126,7 +157,7 @@ def test_source_origin_host_and_security_headers(client):
     response = client.get("/api/health")
     assert response.headers["x-content-type-options"] == "nosniff"
     assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
-    assert response.json()["ai"]["image"] == "not_implemented"
+    assert response.json()["ai"]["image"] == "local_provider"
 
 
 def test_audio_duration_staleness_and_no_truncation(client, audio_bytes):
@@ -256,6 +287,7 @@ def test_actual_mp4_full_decode_both_aspects(client, image_bytes, aspect, kind, 
     project = create_story(client, "Nước đi đâu?")
     project = attach(client, project, project["scenes"][0], image_bytes)
     project["scenes"][0]["duration"] = 1
+    project["brief"]["sources"] = ["https://lab.tongjiang.app/c/water-cycle-step/"]
     project = save(client, project).json()
     store = client.app.state.store
     job = enqueue(store, project["id"], ExportInput(**options(project, kind=kind, aspect=aspect)))
@@ -268,8 +300,13 @@ def test_actual_mp4_full_decode_both_aspects(client, image_bytes, aspect, kind, 
     assert (video["width"], video["height"]) == resolution
     assert video["r_frame_rate"] == "30/1"
     assert float(info["format"]["duration"]) == pytest.approx(1, abs=0.06)
+    project["brief"]["sources"] = ["https://example.org/new-draft-source"]
+    assert save(client, project).status_code == 200
     pack = client.get(f"/api/projects/{project['id']}/publish-pack?job_id={job['id']}").json()
     assert pack["resolution"] == f"{resolution[0]}x{resolution[1]}"
+    assert pack["knowledge_sources"] == ["https://lab.tongjiang.app/c/water-cycle-step/"]
+    assert pack["knowledge_sources"][0] in pack["description_draft"]
+    assert "new-draft-source" not in pack["description_draft"]
 
 
 def test_mp4_clip_import_and_narration_export(client, image_bytes, audio_bytes, tmp_path):

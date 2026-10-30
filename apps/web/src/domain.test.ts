@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { duration, preflight, sourceNeedsUpscale, type Project, type Scene } from './domain';
+import {
+  captionParts,
+  duration,
+  preflight,
+  sourceNeedsUpscale,
+  type Project,
+  type Scene,
+} from './domain';
 const scene: Scene = {
   id: 's',
   title: 'Áo ướt',
@@ -52,4 +59,25 @@ it('warns based on contain scaling rather than a fixed source dimension', () => 
   expect(sourceNeedsUpscale(800, 1200, 'portrait')).toBe(false);
   expect(sourceNeedsUpscale(640, 360, 'landscape')).toBe(true);
   expect(sourceNeedsUpscale(1920, 1080, 'landscape')).toBe(false);
+});
+
+describe('caption emphasis', () => {
+  it('matches accented Vietnamese and preserves all original text', () => {
+    const text = 'Đây là Bay Hơi, không phải khói.';
+    const parts = captionParts(text, 'bay hơi');
+    expect(parts.map((part) => part.text).join('')).toBe(text);
+    expect(parts.filter((part) => part.emphasis).map((part) => part.text)).toEqual(['Bay Hơi']);
+  });
+  it('treats regex and HTML characters as literal content', () => {
+    expect(captionParts('A .* <img> B', '.* <img>').filter((part) => part.emphasis)[0].text).toBe(
+      '.* <img>',
+    );
+    expect(captionParts('Nước đi đâu?', '.*').some((part) => part.emphasis)).toBe(false);
+  });
+  it('keeps unmatched or empty emphasis as plain text', () => {
+    expect(captionParts('Nước bay hơi.', '')).toEqual([{ text: 'Nước bay hơi.', emphasis: false }]);
+    expect(captionParts('Nước bay hơi.', 'lửa')).toEqual([
+      { text: 'Nước bay hơi.', emphasis: false },
+    ]);
+  });
 });

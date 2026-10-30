@@ -92,6 +92,10 @@ def public_job(job: dict[str, Any]) -> dict[str, Any]:
 
 
 def publish_pack(project: dict[str, Any], audience: str, rights: str) -> dict[str, Any]:
+    sources = [s for s in project.get("brief", {}).get("sources", []) if s.strip()]
+    description = "Video minh họa. Kiểm nguồn kiến thức và quyền tài nguyên trước khi đăng."
+    if sources:
+        description += "\nNguồn tham khảo (creator cần kiểm chứng):\n" + "\n".join(sources)
     return {
         "schema_version": 1,
         "project_id": project["id"],
@@ -105,7 +109,8 @@ def publish_pack(project: dict[str, Any], audience: str, rights: str) -> dict[st
         "resolution": "1920x1080" if project.get("aspect") == "landscape" else "1080x1920",
         "fps": 30,
         "duration_estimate": sum(s["duration"] for s in project["scenes"]),
-        "description_draft": "Video minh họa whiteboard. Bổ sung nguồn kiến thức và bản quyền trước khi đăng.",
+        "description_draft": description,
+        "knowledge_sources": sources,
         "caption_timing": "scene-estimate; chưa căn từng từ",
         "checklist": [
             "Người lớn kiểm nội dung, độ tuổi, sự thật và nguồn tham khảo.",

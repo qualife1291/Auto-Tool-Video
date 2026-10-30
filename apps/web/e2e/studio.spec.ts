@@ -24,6 +24,11 @@ for (const viewport of [
         .setInputFiles(resolve('../../assets/examples/wet-shirt.png'));
       await expect(page.getByText('Đã nhập và lưu tài nguyên.', { exact: true })).toBeVisible();
       await expect(page.locator('.portrait-image img')).toBeVisible();
+      await page.getByLabel('Kiểu phụ đề').selectOption(['card', 'contrast', 'accent'][i]);
+      if (i === 2) {
+        await page.getByLabel('Cụm từ nhấn', { exact: true }).fill('thoáng');
+        await expect(page.locator('.portrait-caption mark')).toHaveText('thoáng');
+      }
     }
     await page.getByLabel('Kiểu minh họa').selectOption('motion');
     await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
@@ -65,6 +70,10 @@ for (const viewport of [
     const projectTitle = `Nước đi đâu · ${viewport.name}`;
     await page.reload();
     await page.getByRole('button', { name: new RegExp(projectTitle) }).click();
+    await page.getByRole('button', { name: /Storyboard/, exact: false }).click();
+    await page.locator('.scene-item').nth(2).click();
+    await expect(page.getByLabel('Kiểu phụ đề')).toHaveValue('accent');
+    await expect(page.getByLabel('Cụm từ nhấn', { exact: true })).toHaveValue('thoáng');
     await page.getByRole('button', { name: /Xuất video/ }).click();
     await expect(page.locator('.result-panel video')).toBeVisible();
   });
@@ -93,3 +102,51 @@ test('accessible labels and contrast on initial and storyboard screens', async (
   const editor = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   expect(editor.violations).toEqual([]);
 });
+
+for (const width of [1366, 390]) {
+  test(`lesson idea preserves script and requires confirmation at width ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Tạo câu chuyện đầu tiên' }).click();
+    const title = `Ý tưởng khoa học ${width}`;
+    await page.getByLabel('Tên dự án').fill(title);
+    await page.getByLabel('Lời thoại', { exact: true }).fill('Nước vẫn ở quanh ta.');
+    await page.getByRole('button', { name: 'Tạo storyboard' }).click();
+    await page.getByRole('button', { name: /Kịch bản/, exact: false }).click();
+    await page.getByText('Thư viện ý tưởng khoa học', { exact: true }).click();
+    await page.getByRole('button', { name: 'Dùng ý tưởng: Một giọt nước đi đâu?' }).click();
+    await expect(page.getByLabel('Chủ đề', { exact: true })).toHaveValue('Một giọt nước đi đâu?');
+    await expect(page.getByRole('textbox', { name: 'Lời thoại', exact: true })).toHaveValue(
+      'Nước vẫn ở quanh ta.',
+    );
+    const river = page.getByRole('button', {
+      name: 'Dùng ý tưởng: Dòng sông làm đổi bờ như thế nào?',
+    });
+    page.once('dialog', (dialog) => dialog.dismiss());
+    await river.click();
+    await expect(page.getByLabel('Chủ đề', { exact: true })).toHaveValue('Một giọt nước đi đâu?');
+    page.once('dialog', (dialog) => dialog.accept());
+    await river.click();
+    await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
+    const accessible = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(accessible.violations).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.reload();
+    await page.getByRole('button', { name: new RegExp(title) }).click();
+    await expect(page.getByLabel('Chủ đề', { exact: true })).toHaveValue(
+      'Dòng sông làm đổi bờ như thế nào?',
+    );
+    await expect(
+      page.getByRole('textbox', { name: 'Nguồn tham khảo · tối đa 10 dòng', exact: true }),
+    ).toHaveValue('https://lab.tongjiang.app/c/river-step/');
+    await page.getByRole('button', { name: /Storyboard/, exact: false }).click();
+    await expect(page.locator('.scene-item')).toHaveCount(1);
+    await expect(
+      page.getByRole('textbox', { name: 'Lời thoại của cảnh', exact: true }),
+    ).toHaveValue('Nước vẫn ở quanh ta.');
+  });
+}

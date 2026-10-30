@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 import shutil
 import subprocess
 import tempfile
@@ -32,28 +33,65 @@ def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
 
 
 def wrap(text: str, face: ImageFont.FreeTypeFont, width: int) -> list[str]:
+    if width <= 0:
+        raise ValueError("Text width must be positive.")
     lines: list[str] = []
     current = ""
     for word in text.split():
-        # Hard-wrap unbroken user input, not just ordinary Vietnamese words.
-        for char in word:
-            if face.getlength(current + char) > width and current:
-                lines.append(current.rstrip())
-                current = ""
-            current += char
-        if face.getlength(current + " ") > width:
+        candidate = f"{current} {word}" if current else word
+        if face.getlength(candidate) <= width:
+            current = candidate
+            continue
+        if current:
             lines.append(current)
             current = ""
-        else:
-            current += " "
-    if current.strip():
-        lines.append(current.strip())
+        # Preserve Vietnamese words; only split a token that cannot fit an empty line.
+        while face.getlength(word) > width and len(word) > 1:
+            cut = 1
+            while cut < len(word) and face.getlength(word[: cut + 1]) <= width:
+                cut += 1
+            lines.append(word[:cut])
+            word = word[cut:]
+        current = word
+    if current:
+        lines.append(current)
     return lines or [""]
 
 
 def caption_pages(text: str, face: ImageFont.FreeTypeFont, width: int) -> list[str]:
     lines = wrap(text, face, width)
-    return ["\n".join(lines[index : index + 2]) for index in range(0, len(lines), 2)]
+    pages = []
+    for index in range(0, len(lines), 2):
+        pair = lines[index : index + 2]
+        if len(pair) == 2:
+            first, second = pair[0].split(), pair[1].split()
+            while len(first) > 1:
+                old_difference = abs(
+                    face.getlength(" ".join(first)) - face.getlength(" ".join(second))
+                )
+                proposed = [first[-1], *second]
+                new_difference = abs(
+                    face.getlength(" ".join(first[:-1])) - face.getlength(" ".join(proposed))
+                )
+                if face.getlength(" ".join(proposed)) > width or new_difference >= old_difference:
+                    break
+                first, second = first[:-1], proposed
+            pair = [" ".join(first), " ".join(second)]
+        pages.append("\n".join(pair))
+    return pages
+
+
+def emphasis_spans(lines: list[str], phrase: str) -> list[tuple[int, int] | None]:
+    phrase = " ".join(phrase.split())
+    match = re.search(re.escape(phrase), " ".join(lines), re.IGNORECASE) if phrase else None
+    spans: list[tuple[int, int] | None] = []
+    offset = 0
+    for line in lines:
+        start = max(0, match.start() - offset) if match else 0
+        end = min(len(line), match.end() - offset) if match else 0
+        spans.append((start, end) if start < end else None)
+        offset += len(line) + 1
+    return spans
 
 
 class ScenePainter:
@@ -75,7 +113,8 @@ class ScenePainter:
         self.image_box = (240, 230, 1440, 580) if self.landscape else (90, 420, 810, 850)
         self.base = Image.new("RGB", (width, height), "#FFF8EB")
         draw = ImageDraw.Draw(self.base)
-        self.subtitle_font = font(max(14, round(48 * self.scale)))
+        self.caption_style = scene.get("caption_style", "card")
+        self.subtitle_font = font(max(14, round(48 * self.scale)), self.caption_style != "card")
         face = font(max(16, round(56 * self.scale)), True)
         heading = wrap(scene["title"], face, round((1560 if self.landscape else 810) * self.scale))
         while len(heading) > 2 and face.size > round(32 * self.scale):
@@ -121,9 +160,10 @@ class ScenePainter:
             for c in contours
             if cv2.arcLength(c, False) > 6 * self.scale
         ]
-        # A deterministic spatial order avoids flicker and makes cached plans reproducible.
+        # Reveal large silhouettes before small annotations, in a reproducible order.
         candidates.sort(
             key=lambda c: (
+                -abs(cv2.contourArea(c)),
                 int(c[:, 1].min()) // max(1, round(100 * self.scale)),
                 int(c[:, 0].min()),
             )
@@ -206,22 +246,73 @@ class ScenePainter:
                 width=max(1, round(5 * s)),
             )
         if self.pages:
-            index = min(len(self.pages) - 1, int(progress * len(self.pages)))
-            cx, cy, cw, ch = self.caption_box
-            x, y = round(cx * self.scale), round(cy * self.scale)
-            draw.rounded_rectangle(
-                (x, y, x + round(cw * self.scale), y + round(ch * self.scale)),
-                radius=max(4, round(18 * self.scale)),
-                fill="#FFFFFF",
-            )
-            draw.multiline_text(
-                (x + round(20 * self.scale), y + round(16 * self.scale)),
-                self.pages[index],
-                font=self.subtitle_font,
-                fill="#202922",
-                spacing=max(2, round(12 * self.scale)),
-            )
+            self.draw_caption(frame, progress)
         return frame
+
+    def draw_caption(self, frame: Image.Image, progress: float) -> None:
+        draw = ImageDraw.Draw(frame)
+        index = min(len(self.pages) - 1, int(progress * len(self.pages)))
+        cx, cy, cw, ch = self.caption_box
+        x, y, width, height = [round(v * self.scale) for v in (cx, cy, cw, ch)]
+        contrast = self.caption_style == "contrast"
+        accent = self.caption_style == "accent"
+        if contrast:
+            entrance = min(1.0, max(0.0, progress * self.scene["duration"] / 0.18))
+            y -= round(12 * self.scale * (1 - entrance) ** 2)
+        radius = max(4, round((28 if contrast else 18) * self.scale))
+        if accent:
+            offset = max(1, round(5 * self.scale))
+            draw.rounded_rectangle(
+                (x + offset, y + offset, x + width + offset, y + height + offset),
+                radius=radius,
+                fill="#E8E0D0",
+            )
+        draw.rounded_rectangle(
+            (x, y, x + width, y + height), radius=radius, fill="#173D33" if contrast else "#FFFFFF"
+        )
+        if accent:
+            draw.rounded_rectangle(
+                (
+                    x + round(8 * self.scale),
+                    y + round(16 * self.scale),
+                    x + round(14 * self.scale),
+                    y + height - round(16 * self.scale),
+                ),
+                radius=max(1, round(3 * self.scale)),
+                fill="#F4BE53",
+            )
+        lines = self.pages[index].splitlines()
+        spans = (
+            emphasis_spans(lines, self.scene.get("caption_emphasis", ""))
+            if accent
+            else [None] * len(lines)
+        )
+        line_height = self.subtitle_font.getbbox("A")[3] + max(2, round(12 * self.scale))
+        bounds = [self.subtitle_font.getbbox(line) for line in lines]
+        block_top = min(box[1] for box in bounds)
+        block_bottom = max(i * line_height + box[3] for i, box in enumerate(bounds))
+        text_y = y + round((height - (block_bottom - block_top)) / 2) - block_top
+        for line_index, (line, span) in enumerate(zip(lines, spans, strict=True)):
+            tx = x + (
+                round((width - self.subtitle_font.getlength(line)) / 2)
+                if contrast
+                else round(24 * self.scale)
+            )
+            ty = text_y + line_index * line_height
+            if span:
+                a, b = span
+                left = tx + self.subtitle_font.getlength(line[:a])
+                right = tx + self.subtitle_font.getlength(line[:b])
+                bbox = draw.textbbox((tx, ty), line, font=self.subtitle_font)
+                pad = max(1, round(3 * self.scale))
+                draw.rounded_rectangle(
+                    (round(left) - pad, bbox[1] - pad, round(right) + pad, bbox[3] + pad),
+                    radius=max(2, round(5 * self.scale)),
+                    fill="#F4BE53",
+                )
+            draw.text(
+                (tx, ty), line, font=self.subtitle_font, fill="#FFF8EB" if contrast else "#202922"
+            )
 
     def visual_frame(self, progress: float) -> tuple[Image.Image, tuple[int, int] | None]:
         draw_progress = min(1, progress / 0.65)
@@ -314,7 +405,8 @@ def encode_scene(
         "-ac",
         "1",
         "-af",
-        f"apad,loudnorm=I=-16:TP=-1.0:LRA=11,atrim=duration={duration}",
+        # Leave AAC reconstruction headroom; the final file still targets <= -1 dBTP.
+        f"apad,loudnorm=I=-16:TP=-2.0:LRA=11,atrim=duration={duration}",
         "-t",
         str(duration),
         str(path),

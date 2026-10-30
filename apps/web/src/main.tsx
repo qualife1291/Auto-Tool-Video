@@ -1,3 +1,6 @@
+import { api } from './api';
+import { CreativePanel } from './CreativePanel';
+import { ImageGenerationPanel } from './ImageGenerationPanel';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
@@ -23,22 +26,13 @@ import {
   profiles,
   steps,
   sourceNeedsUpscale,
+  captionParts,
   type Job,
   type Project,
   type Scene,
 } from './domain';
 import './style.css';
 
-async function api<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const headers = new Headers(options.headers);
-  headers.set('X-Studio-Client', 'local');
-  if (options.body && !(options.body instanceof FormData))
-    headers.set('Content-Type', 'application/json');
-  const result = await fetch(`/api${url}`, { ...options, headers });
-  const data = await result.json();
-  if (!result.ok) throw new Error(data.message || 'Không thể thực hiện yêu cầu.');
-  return data;
-}
 const asset = (id: string) => `/api/assets/${encodeURIComponent(id)}`;
 const localTime = (iso: string) =>
   new Date(iso).toLocaleString('vi-VN', {
@@ -170,6 +164,7 @@ function App() {
       aspect: project.aspect,
       revision: project.revision,
       scenes: project.scenes,
+      ...(project.brief ? { brief: project.brief } : {}),
     };
     const saved = await api<Project>(`/projects/${project.id}`, {
       method: 'PUT',
@@ -307,6 +302,12 @@ function App() {
     link.download = 'publish-metadata.json';
     link.click();
     URL.revokeObjectURL(url);
+  }
+  async function appliedAi(saved: Project) {
+    setProject((current) => (current?.id === saved.id ? saved : current));
+    setDirty(false);
+    await refresh();
+    setNotice('Đã áp dụng kết quả được duyệt.');
   }
   function addScene() {
     if (!project || project.scenes.length >= 20) return;
@@ -553,6 +554,19 @@ function App() {
                         </select>
                       </label>
                     </div>
+                    <CreativePanel
+                      key={project.id}
+                      project={project}
+                      disabled={busy}
+                      onChange={(brief) => update({ brief })}
+                      saveProject={save}
+                      onApplied={async (saved) => {
+                        await appliedAi(saved);
+                        setSceneIndex(0);
+                        setStep(1);
+                      }}
+                      onBusyChange={setBusy}
+                    />
                     <label>
                       Lời thoại
                       <textarea
@@ -591,10 +605,10 @@ function App() {
                     <section className="ai-note">
                       <Sparkles size={18} />
                       <div>
-                        <strong>AI sẽ là trợ lý, không là lời hứa.</strong>
+                        <strong>AI local, có bước duyệt.</strong>
                         <p>
-                          Bản M1 nhập lời thoại, ảnh và âm thanh. Tạo kịch bản, ảnh và giọng bằng
-                          model local nằm trong mốc phát triển tiếp theo.
+                          M2 tạo đề xuất kịch bản bằng Ollama và ảnh qua ComfyUI đã cấu hình. Kết
+                          quả chỉ thay dự án khi bạn xem và áp dụng. Giọng AI ở mốc tiếp theo.
                         </p>
                       </div>
                     </section>
@@ -689,7 +703,20 @@ function App() {
                         )}
                       </div>
                       {captions && scene?.narration && (
-                        <div className="portrait-caption">{scene.narration}</div>
+                        <div
+                          className={`portrait-caption caption-${scene.caption_style || 'card'}`}
+                        >
+                          {(scene.caption_style === 'accent'
+                            ? captionParts(scene.narration, scene.caption_emphasis || '')
+                            : [{ text: scene.narration, emphasis: false }]
+                          ).map((part, index) =>
+                            part.emphasis ? (
+                              <mark key={index}>{part.text}</mark>
+                            ) : (
+                              <span key={index}>{part.text}</span>
+                            ),
+                          )}
+                        </div>
                       )}
                       {guides && (
                         <div className="safe-guide">
@@ -753,6 +780,36 @@ function App() {
                           />
                         </label>
                         <label>
+                          Kiểu phụ đề
+                          <select
+                            disabled={busy}
+                            value={scene.caption_style || 'card'}
+                            onChange={(e) =>
+                              updateScene({
+                                caption_style: e.target.value as Scene['caption_style'],
+                              })
+                            }
+                          >
+                            <option value="card">Thẻ sáng · dễ đọc</option>
+                            <option value="contrast">Nền đậm · nổi bật</option>
+                            <option value="accent">Nhấn cụm từ · màu vàng</option>
+                          </select>
+                        </label>
+                        <label>
+                          Cụm từ nhấn
+                          <input
+                            maxLength={70}
+                            disabled={busy || scene.caption_style !== 'accent'}
+                            value={scene.caption_emphasis || ''}
+                            onChange={(e) => updateScene({ caption_emphasis: e.target.value })}
+                            placeholder="Ví dụ: bay hơi"
+                          />
+                        </label>
+                        <p className="muted small">
+                          Nhấn cụm có trong lời thoại khi chọn kiểu màu vàng. Hiệu ứng theo cảnh,
+                          chưa căn từng từ.
+                        </p>
+                        <label>
                           Kiểu minh họa
                           <select
                             disabled={busy}
@@ -777,6 +834,16 @@ function App() {
                             onChange={(e) => updateScene({ duration: Number(e.target.value) })}
                           />
                         </label>
+                        <ImageGenerationPanel
+                          key={`${project.id}-${scene.id}`}
+                          project={project}
+                          scene={scene}
+                          disabled={busy}
+                          saveProject={save}
+                          onPrompt={(image_prompt) => updateScene({ image_prompt })}
+                          onApplied={appliedAi}
+                          onBusyChange={setBusy}
+                        />
                         <label className="upload-control">
                           <ImagePlus size={18} />{' '}
                           {scene.image_id ? 'Thay ảnh minh họa' : 'Nhập ảnh / clip MP4'}
@@ -1065,7 +1132,7 @@ function App() {
                 <span>
                   <ShieldCheck size={14} /> Nội dung có ý nghĩa. Trải nghiệm vừa đủ.
                 </span>
-                <span>M1 · Nhập tài nguyên và dựng local · AI ở mốc tiếp theo</span>
+                <span>M2 · Planner và ảnh AI local cần model · Luôn có bước duyệt</span>
               </footer>
             </>
           )}

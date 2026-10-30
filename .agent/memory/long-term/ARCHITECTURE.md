@@ -9,7 +9,7 @@
 
 ## Thư mục
 
-- backend/auto_tool_video/: API, domain, store, media, jobs, renderer, worker, social hub.
+- backend/auto_tool_video/: API, domain, store, media, jobs, renderer, worker, social hub; planning/providers/generation cho Ollama và Comfy.
 - apps/web/: giao diện và Vitest/Playwright.
 - assets/: font/licence và tranh mẫu gốc; scripts/: launcher/smoke/benchmark/Blender.
 - docs/: kế hoạch, nghiên cứu reference, license và bằng chứng render.
@@ -17,6 +17,10 @@
 ## Dữ liệu chạy thế nào
 
 APP_DATA_DIR ngoài Git, launcher default.data/. Project/asset/job metadata SQLite; media file trong assets/exports/tmp. Worker chỉ một process cho mỗi data dir bằng lock Linux; restart running→interrupted. Export snapshot và idempotency, progress frame, full decode trước success. Renderer final trực tiếp1080p theo aspect, preview nhỏ riêng; mode whiteboard hoặc motion (ảnh/clip).
+
+Plan/image jobs giữ proposal/candidate riêng, explicit review/apply và revision. LocalTransport chỉ loopback HTTP explicit port, trust_envFalse/no redirects có chủ đích cho service local, bounded stream/time; không thực thi code/modeltool. Comfy dùng graph quản trị tin cậy, không cài node từ browser/LLM. Nguồn brief theo export snapshot ra publish JSON. Caption styles defaultcard/contrast/accent, emphasis literal; React preview và Pillow native dùng cùng field.
+
+scripts/review-tts là CLI isolated, lock/hash riêng; model chính thức pin revision và streaming hash. VieNeu3.8.3 direct ONNX engine, preset thực; faster-whisper waveform CPU cho QA. Gradio bị loại khỏi CLI do dependency Pillow cũ có advisory; SDK metadata vẫn required, pipcheck không sạch. Không nhúng CLIvenv vàoinstaller M3. scripts/blender_review_art.py tạo stills procedural gốc, không physics simulation hoặc editor3D.
 
 ## Lệnh
 
@@ -27,4 +31,4 @@ APP_DATA_DIR ngoài Git, launcher default.data/. Project/asset/job metadata SQLi
 - Kiểm web: npm --prefix apps/web run check / format:check / test:e2e.
 - Smoke: uv run --project backend python scripts/smoke_export.py --portrait1080.
 
-M1 không có AI runtime, OAuth/direct publish. Social hub chỉ link upload web. Linux đã kiểm; native Windows/macOS chưa kiểm. Không tạo worktree cho task cloud đã cách ly.
+M1 không cần AI runtime, M2 adapter cần local model/service tùy chọn; chưa live confirmed. OAuth/direct publish chưa triển khai. Social hub chỉ link upload web. Linux đã kiểm; native Windows/macOS chưa kiểm. Không tạo worktree cho task cloud đã cách ly.

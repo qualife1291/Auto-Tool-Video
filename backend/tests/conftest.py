@@ -71,4 +71,6 @@ def save(client, project):
         key: project[key]
         for key in ("title", "profile", "platform", "narration", "aspect", "revision", "scenes")
     }
+    if "brief" in project:
+        payload["brief"] = project["brief"]
     return client.put(f"/api/projects/{project['id']}", json=payload)

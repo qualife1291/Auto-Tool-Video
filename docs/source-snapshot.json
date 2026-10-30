@@ -5,8 +5,8 @@
   "purpose": "Bằng chứng nghiên cứu nguồn, không phải lockfile hoặc cấu hình auto-download/runtime.",
   "method": "Đọc GitHub API, README/license tại commit và Hugging Face API/model card tại revision; không cài/chạy mã hoặc tải weights từ các nguồn nghiên cứu.",
   "counts": {
-    "repositories_attempted": 29,
-    "repositories_accessible": 28,
+    "repositories_attempted": 30,
+    "repositories_accessible": 29,
     "model_cards_attempted": 9,
     "model_cards_accessible": 8,
     "skill_files_read": 12
@@ -672,6 +672,57 @@
           "url": "https://github.com/huggingface/diffusers/blob/d8c1b13c756df0059bcdb6e477a1eafcd502098d/LICENSE"
         }
       ]
+    },
+    {
+      "requested_repo": "smithjohn78390/tongjiang-lab",
+      "repo": "smithjohn78390/tongjiang-lab",
+      "url": "https://github.com/smithjohn78390/tongjiang-lab",
+      "archived": false,
+      "license_api": "NOASSERTION",
+      "license_reviewed": "CC-BY-NC-4.0 for lessons/covers/catalog; bundled three.js MIT",
+      "default_branch": "main",
+      "pushed_at": "2026-10-28T11:35:35Z",
+      "description": "Free interactive 3D science lessons for high school · 铜匠实验室 · https://lab.tongjiang.app",
+      "commit": "4d63ce0a72d987c850ec6d919e570bdb752c87a6",
+      "reviewed_on": "2026-10-30",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sha256": "b7039a7ca908106f1753106bf1a97be99033acb25d9ac9b4772fb7890868681a",
+          "url": "https://github.com/smithjohn78390/tongjiang-lab/blob/4d63ce0a72d987c850ec6d919e570bdb752c87a6/LICENSE"
+        },
+        {
+          "path": "README.md",
+          "sha256": "e6c10ccefa713a082240ae8d86a59cc7a28bc76cdd620bd154598bd6eca6f7c4",
+          "url": "https://github.com/smithjohn78390/tongjiang-lab/blob/4d63ce0a72d987c850ec6d919e570bdb752c87a6/README.md"
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.md",
+          "sha256": "b4b314b7f820f5f03676dd3b7687f3c69e537a20d73ab6b2750d58408d558728",
+          "url": "https://github.com/smithjohn78390/tongjiang-lab/blob/4d63ce0a72d987c850ec6d919e570bdb752c87a6/THIRD_PARTY_NOTICES.md"
+        },
+        {
+          "path": "catalog.json",
+          "sha256": "98149b1ab470624b1dca0f20008cfa1040f7446eadb215d61c6d084b734db32c",
+          "url": "https://github.com/smithjohn78390/tongjiang-lab/blob/4d63ce0a72d987c850ec6d919e570bdb752c87a6/catalog.json"
+        },
+        {
+          "path": "courses/README.md",
+          "sha256": "66b8b9a2b588e12f24a9bc08ffa20e05e239f9aec84e3fecc1f69866facde5be",
+          "url": "https://github.com/smithjohn78390/tongjiang-lab/blob/4d63ce0a72d987c850ec6d919e570bdb752c87a6/courses/README.md"
+        },
+        {
+          "path": "courses/water-cycle-step.html",
+          "sha256": "8dec29b7830dc46582a21c61e2ef949991efb42abd631b0ea9093497d133051e",
+          "url": "https://github.com/smithjohn78390/tongjiang-lab/blob/4d63ce0a72d987c850ec6d919e570bdb752c87a6/courses/water-cycle-step.html"
+        },
+        {
+          "path": "courses/brownian-step.html",
+          "sha256": "bd1638f908448db2405043e09bd2ac6f62667db28fd81a04673dd3bd559b6840",
+          "url": "https://github.com/smithjohn78390/tongjiang-lab/blob/4d63ce0a72d987c850ec6d919e570bdb752c87a6/courses/brownian-step.html"
+        }
+      ],
+      "execution": "Source-only review; no external HTML/JS executed or vendored"
     }
   ],
   "models": [
@@ -943,5 +994,6 @@
       "immutable_url": "https://huggingface.co/rhasspy/piper-voices/blob/5041a7a49ae5b3a0f30e6837769eb03fdbb231bd/vi/vi_VN/vais1000/medium/MODEL_CARD"
     }
   ],
-  "execution_evidence": "Bước này là nghiên cứu; số liệu VRAM/tốc độ trong tài liệu upstream không phải phép đo local và không xác nhận chất lượng video đã đạt."
+  "execution_evidence": "Bước này là nghiên cứu; số liệu VRAM/tốc độ trong tài liệu upstream không phải phép đo local và không xác nhận chất lượng video đã đạt.",
+  "updated_at_utc": "2026-10-30T04:12:59.199298+00:00"
 }

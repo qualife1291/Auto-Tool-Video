@@ -578,6 +578,24 @@ textarea {
   border: 1px dashed #798c5c88;
   pointer-events: none;
 }
+.portrait-caption.caption-contrast {
+  background: #173d33;
+  color: #fff8eb;
+  text-align: center;
+  font-weight: 700;
+  border-radius: 10px;
+}
+.portrait-caption.caption-accent {
+  border-left: 4px solid #f4be53;
+  box-shadow: 2px 2px 0 #e8e0d0;
+  font-weight: 700;
+}
+.portrait-caption mark {
+  background: #f4be53;
+  color: #202922;
+  border-radius: 3px;
+  padding: 0 2px;
+}
 .safe-guide span {
   position: absolute;
   bottom: 3px;
@@ -585,6 +603,29 @@ textarea {
   font-size: 6px;
   letter-spacing: 1px;
   color: #526347;
+}
+.lesson-ideas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.lesson-ideas article {
+  padding: 16px;
+  border: 1px solid #d8ddcf;
+  border-radius: 12px;
+  background: #fff8eb;
+}
+.lesson-ideas h4 {
+  margin: 0 0 8px;
+}
+.lesson-ideas a {
+  display: block;
+  margin: 12px 0;
+  color: #254d3d;
+}
+.lesson-ideas button {
+  width: 100%;
 }
 .preview-panel .checkbox {
   margin-top: 15px;
@@ -1164,4 +1205,89 @@ hr {
 .portrait.landscape .image-placeholder svg {
   width: 24px;
   height: 24px;
+}
+.creative-panel {
+  border: 1px solid #d7e0cd;
+  border-radius: 10px;
+  background: #f7f9f1;
+  padding: 18px;
+  margin: 22px 0;
+}
+.creative-panel fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.provider-status,
+.generation-status {
+  font-size: 12px;
+  color: #3c5733;
+  background: #e9efdf;
+  border-radius: 6px;
+  padding: 10px;
+  margin: 12px 0;
+}
+.brief-details summary,
+.proposal-scene summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  min-height: 38px;
+  padding: 8px 0;
+}
+.brief-details[open] summary {
+  margin-bottom: 10px;
+}
+.proposal-review {
+  border-top: 1px solid #d7e0cd;
+  margin-top: 20px;
+  padding-top: 18px;
+}
+.proposal-scene {
+  background: white;
+  border: 1px solid #dde4d7;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.proposal-scene h4 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+.proposal-scene p {
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.proposal-scene ol,
+.fact-flags {
+  font-size: 11px;
+  padding-left: 18px;
+  overflow-wrap: anywhere;
+}
+.fact-flags {
+  color: #79501f;
+  background: #fff5e8;
+  padding: 10px 10px 10px 26px;
+  border-radius: 5px;
+}
+.image-generation {
+  border-top: 1px solid #e0e7d7;
+  padding-top: 18px;
+  margin-top: 18px;
+}
+.candidate-review {
+  margin: 14px 0;
+}
+.candidate-review img {
+  display: block;
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border: 1px solid #dde4d7;
+  border-radius: 7px;
+}
+.image-generation .button {
+  max-width: 100%;
 }

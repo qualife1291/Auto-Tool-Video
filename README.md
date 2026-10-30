@@ -4,7 +4,7 @@
 
 Công cụ web local làm video whiteboard tiếng Việt cho từng nhóm tuổi. Bản M1 đã có lưu dự án, chia đoạn thành cảnh, nhập ảnh/clip MP4 và giọng WAV/MP3, sửa thứ tự, chọn whiteboard hoặc minh họa chuyển động, xuất MP4 dọc 9:16 hoặc ngang 16:9 ở 1080p. Có preview, phụ đề phân đoạn ước lượng và gói metadata/checklist. Không phí API bắt buộc, không watermark.
 
-AI viết kịch bản/tạo ảnh/giọng, template 3D tích hợp UI và OAuth upload trực tiếp còn trong [kế hoạch phát triển](docs/development-plan.md). Hub đăng hiện chỉ mở trang đăng chính thức sau khi bạn tải tệp; không giả kết nối hoặc đăng thành công. Nhãn made-for-kids không bảo đảm vào YouTube Kids. [Đặc tả](specs/whiteboard-video-tool.md) là hợp đồng triển khai, còn `approved` cho tới khi mọi mốc hoàn tất.
+Đã có adapter/form AI viết storyboard qua Ollama và tạo ảnh candidate qua ComfyUI, luôn duyệt trước áp dụng; cần dịch vụ/model local được cấu hình theo [hướng dẫn AI](docs/local-ai.md). Có ba kiểu phụ đề từng cảnh và nhấn cụm từ; thư viện ý tưởng khoa học với brief tiếng Việt nguyên bản kèm nguồn Tongjiang Lab, điều kiện dùng lại nguồn ở [báo cáo](docs/source-review.md). Script review tạo tranh Blender/Pillow và giọng local để nhập vào renderer; UI tạo giọng, template3D editor và OAuth upload trực tiếp còn trong [kế hoạch phát triển](docs/development-plan.md). Hub đăng hiện mở trang đăng chính thức sau khi tải tệp; không giả kết nối/đăng thành công. Nhãn made-for-kids không bảo đảm vào YouTube Kids. [Đặc tả](specs/whiteboard-video-tool.md) còn `approved` tới khi đủ mọi mốc.
 
 ## Cách chạy
 
@@ -45,3 +45,5 @@ uv run --project backend pip-audit --local --progress-spinner off
 ```
 
 E2E dùng Chromium ở `/usr/bin/chromium`; đặt `CHROMIUM_BIN` nếu khác. Test server dùng data directory riêng dưới `/tmp`, không đổi dự án đang dùng. Trong sandbox chặn IPC/socket, chạy API/E2E bằng cơ chế cấp quyền của môi trường; không tắt assertion để làm pass. File smoke có track sine fixture, không phải giọng TTS. Xem [bằng chứng render](docs/render-benchmark.md), [giấy phép](docs/licenses.md), [nghiên cứu video](docs/reference-video.md) và [handover](.agent/handover/LATEST.md).
+
+Video mẫu có giọng Việt thật, cách tái tạo và kết quả kiểm tổng quát nằm trong [QA review](docs/qa-review.md). Báo cáo tách test contract AI khỏi model live và phần còn thiếu; không có test nào bảo đảm video được đề xuất hoặc vào Kids.

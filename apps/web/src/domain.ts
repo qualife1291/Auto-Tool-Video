@@ -1,3 +1,62 @@
+export type CreativeBrief = {
+  topic: string;
+  objective: string;
+  takeaways: string[];
+  target_duration: 30 | 45 | 60;
+  tone: string;
+  required_facts: string;
+  sources: string[];
+  avoid: string;
+  style_bible: string;
+  character_bible: string;
+};
+export const emptyBrief: CreativeBrief = {
+  topic: '',
+  objective: '',
+  takeaways: [],
+  target_duration: 45,
+  tone: 'Ấm áp, tò mò, rõ ràng; không giật gân',
+  required_facts: '',
+  sources: [],
+  avoid: '',
+  style_bible: 'Nét đen sạch, ít màu, nền kem, không chữ trong ảnh',
+  character_bible: '',
+};
+export type Capability = {
+  state: string;
+  message: string;
+  model?: string;
+  digest?: string;
+  checkpoint?: string;
+};
+export type Capabilities = { script: Capability; image: Capability };
+export type GenerationJob = {
+  id: string;
+  project_id: string;
+  revision: number;
+  state: string;
+  progress: number;
+  error: string | null;
+  error_code?: string;
+  applied_revision?: number;
+  options: {
+    kind: 'plan' | 'image';
+    mode?: 'brief' | 'preserve';
+    scene_id?: string;
+    seed?: number;
+  };
+  result?: {
+    proposal?: {
+      title: string;
+      mode: 'brief' | 'preserve';
+      source_preserved: boolean;
+      review_required: boolean;
+      scenes: Scene[];
+    };
+    candidate_id?: string;
+    provenance?: Record<string, string | number>;
+  };
+};
 export type Scene = {
   id: string;
   title: string;
@@ -8,7 +67,30 @@ export type Scene = {
   audio_stale: boolean;
   duration: number;
   style: 'whiteboard' | 'motion';
+  caption_style?: 'card' | 'contrast' | 'accent';
+  caption_emphasis?: string;
+  visual_description?: string;
+  role?: string;
+  reveal_order?: string[];
+  fact_flags?: string[];
+  source_refs?: number[];
 };
+export function captionParts(text: string, phrase: string) {
+  const pattern = phrase
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .join('\\s+');
+  const match = pattern ? new RegExp(pattern, 'iu').exec(text) : null;
+  if (!match) return [{ text, emphasis: false }];
+  return [
+    { text: text.slice(0, match.index), emphasis: false },
+    { text: match[0], emphasis: true },
+    { text: text.slice(match.index + match[0].length), emphasis: false },
+  ];
+}
+
 export type Project = {
   id: string;
   title: string;
@@ -18,6 +100,7 @@ export type Project = {
   aspect: 'portrait' | 'landscape';
   revision: number;
   scenes: Scene[];
+  brief?: CreativeBrief;
   created_at: string;
   updated_at: string;
 };

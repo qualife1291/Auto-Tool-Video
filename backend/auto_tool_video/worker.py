@@ -2,6 +2,7 @@ import fcntl
 import subprocess
 import time
 
+from .generation import run_generation
 from .render import render_job
 from .store import DomainError, Store
 
@@ -18,7 +19,10 @@ def main() -> None:
             job = store.claim()
             if job:
                 try:
-                    render_job(store, job)
+                    if job["options"]["kind"] in {"plan", "image"}:
+                        run_generation(store, job)
+                    else:
+                        render_job(store, job)
                 except (RuntimeError, OSError, ValueError, subprocess.SubprocessError, DomainError):
                     print(f"Job {job['id']}: RENDER_FAILED", flush=True)
             else:

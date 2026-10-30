@@ -13,6 +13,10 @@
 
 ## M2 — Tạo nội dung và nguồn ảnh/video
 
+Đã có form brief, hai mode planner (viết mới/giữ lời), adapter Ollama và ComfyUI loopback, proposal/candidate jobs có revision/idempotency/provenance, review/apply rõ ràng và test hợp đồng. Graph mẫu SDXL dùng node chuẩn; chưa xác nhận Qwen live hoặc sinh ảnh live vì thiếu dịch vụ/model/GPU. [Hướng dẫn AI local](local-ai.md) ghi khả năng hiện có và cách chạy smoke. Các mục dưới đây gồm cả phần đã code và gate còn thiếu; chưa đánh M2 hoàn tất.
+
+Đã thêm thư viện4ý tưởng khoa học nguyên bản có nguồn Tongjiang Lab. Lesson/covers/catalog gốc CC BY-NC4.0, không vendor/chạy mã ngoài; giữ nguồn qua export snapshot. [Báo cáo nguồn](source-review.md) phân biệt dùng lại phi thương mại và đồ họa tự dựng.
+
 - Kết quả [rà nguồn GitHub/skill](source-review.md) và [snapshot nguồn](source-snapshot.json) phân biệt code/weights/license, chi phí và số đo upstream/local. Có [skill QA nguyên bản](../.agents/skills/video-quality-review/SKILL.md) cho các phiên kiểm render/provider; chưa thêm các engine nghiên cứu vào runtime.
 - Form brief đầy đủ; Ollama/Qwen schema và source spans; duyệt thay đổi trước áp dụng.
 - Adapter ComfyUI local cho FLUX.2 Klein4B; benchmark SDXL dự phòng và license từng model/LoRA.
@@ -21,6 +25,8 @@
 - Đánh giá Wan2.2 TI2V5B trước khi có GPU phù hợp; LTX tùy checkpoint/Community License và benchmark thật. Không gọi LTX luôn free hoặc suy Apache từ code đời cũ. LightX2V chỉ thử tối ưu sau baseline đạt chất lượng; chưa tải/chạy model video, chưa có điểm chất lượng.
 
 ## M3 — Giọng và chất lượng
+
+Đã sửa word-wrap/cân2dòng, contour silhouette-first và AAC headroom; thêm3kiểu caption card/contrast/accent với literal emphasis, lưu/preview/render hai aspect. Mẫu review thật dùng tranh procedural Blender/Pillow có chi tiết và VieNeu FP32 local qua CLI riêng, ASR/loudness/full decode có báo cáo ở [QA](qa-review.md). Đây chưa là TTS trong UI, forced alignment hoặc quality gate có người nghe duyệt; SDK CLI còn giới hạn packaging được ghi trong QA.
 
 - VieNeu CPU FP32, voice list/digest/license thật; nghe20 câu. Không fake audio hoặc auto đổi sang dịch vụ tính phí.
 - Caption alignment theo phrase/cue thật, SRT; renderer cải thiện naturalness từ10 ảnh và review người dùng.

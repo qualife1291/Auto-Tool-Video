@@ -3,7 +3,7 @@ name = "auto-tool-video"
 version = "0.1.0"
 description = "Local Vietnamese whiteboard short video studio"
 requires-python = ">=3.12"
-dependencies = ["fastapi>=0.135,<1", "uvicorn>=0.41,<1", "python-multipart>=0.0.22", "pillow>=12.1", "numpy>=2.4", "opencv-python-headless>=4.13"]
+dependencies = ["fastapi>=0.135,<1", "uvicorn>=0.41,<1", "python-multipart>=0.0.22", "pillow>=12.1", "numpy>=2.4", "opencv-python-headless>=4.13", "httpx>=0.28,<1"]
 
 [build-system]
 requires = ["hatchling"]

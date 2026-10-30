@@ -11,9 +11,21 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
-from .domain import PROFILES, ExportInput, ProjectInput, ProjectUpdate, SplitInput, split_script
+from .domain import (
+    PROFILES,
+    ApplyInput,
+    ExportInput,
+    ImageInput,
+    PlanInput,
+    ProjectInput,
+    ProjectUpdate,
+    SplitInput,
+    split_script,
+)
+from .generation import apply_generation, enqueue_generation
 from .jobs import enqueue, public_job, publish_pack
 from .media import MAX_UPLOAD, import_asset
+from .providers import capabilities
 from .render import FONT_DIR
 from .social import upload_hub
 from .store import DomainError, Store
@@ -102,16 +114,36 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
             "font": (FONT_DIR / "NotoSans-Regular.ttf").is_file(),
             "database": store.db.is_file(),
             "ai": {
-                "script": "not_implemented",
-                "image": "not_implemented",
+                "script": "local_provider",
+                "image": "local_provider",
                 "speech": "not_implemented",
             },
-            "milestone": "M1",
+            "milestone": "M2",
         }
 
     @app.get("/api/profiles")
     def profiles():
         return PROFILES
+
+    @app.get("/api/capabilities")
+    def ai_capabilities():
+        return capabilities()
+
+    @app.post("/api/projects/{identifier}/plan", status_code=202)
+    def plan(identifier: str, data: PlanInput):
+        return public_job(enqueue_generation(store, identifier, data))
+
+    @app.post("/api/projects/{identifier}/plans/{job_id}/apply")
+    def apply_plan(identifier: str, job_id: str, data: ApplyInput):
+        return apply_generation(store, identifier, job_id, data, "plan")
+
+    @app.post("/api/projects/{identifier}/scenes/{scene_id}/images", status_code=202)
+    def generate_image(identifier: str, scene_id: str, data: ImageInput):
+        return public_job(enqueue_generation(store, identifier, data, scene_id))
+
+    @app.post("/api/projects/{identifier}/images/{job_id}/apply")
+    def apply_image(identifier: str, job_id: str, data: ApplyInput):
+        return apply_generation(store, identifier, job_id, data, "image")
 
     @app.get("/api/social")
     def social():
@@ -136,7 +168,10 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
 
     @app.put("/api/projects/{identifier}")
     def save(identifier: str, data: ProjectUpdate):
-        return store.save(identifier, data.model_dump())
+        payload = data.model_dump()
+        if "brief" not in data.model_fields_set:
+            payload.pop("brief")
+        return store.save(identifier, payload)
 
     @app.post("/api/projects/{identifier}/split")
     def split(identifier: str, data: SplitInput):

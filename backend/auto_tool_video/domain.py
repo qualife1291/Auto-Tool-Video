@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -35,6 +35,25 @@ class StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
 
+class CreativeBrief(StrictModel):
+    topic: str = Field(default="", max_length=300)
+    objective: str = Field(default="", max_length=1000)
+    takeaways: list[Annotated[str, Field(max_length=300)]] = Field(
+        default_factory=list, max_length=3
+    )
+    target_duration: Literal[30, 45, 60] = 45
+    tone: str = Field(default="Ấm áp, tò mò, rõ ràng; không giật gân", max_length=300)
+    required_facts: str = Field(default="", max_length=3000)
+    sources: list[Annotated[str, Field(max_length=500)]] = Field(
+        default_factory=list, max_length=10
+    )
+    avoid: str = Field(default="", max_length=1000)
+    style_bible: str = Field(
+        default="Nét đen sạch, ít màu, nền kem, không chữ trong ảnh", max_length=1500
+    )
+    character_bible: str = Field(default="", max_length=1000)
+
+
 class Scene(StrictModel):
     id: str = Field(default_factory=lambda: str(uuid4()), min_length=1, max_length=64)
     title: str = Field(default="Cảnh mới", min_length=1, max_length=70)
@@ -45,6 +64,13 @@ class Scene(StrictModel):
     audio_stale: bool = False
     duration: float = Field(default=5, ge=1, le=20, allow_inf_nan=False)
     style: Literal["whiteboard", "motion"] = "whiteboard"
+    caption_style: Literal["card", "contrast", "accent"] = "card"
+    caption_emphasis: str = Field(default="", max_length=70)
+    visual_description: str = Field(default="", max_length=1000)
+    role: Literal["hook", "context", "explain", "example", "payoff"] = "explain"
+    reveal_order: list[str] = Field(default_factory=list, max_length=10)
+    fact_flags: list[str] = Field(default_factory=list, max_length=10)
+    source_refs: list[int] = Field(default_factory=list, max_length=10)
 
 
 class ProjectInput(StrictModel):
@@ -53,6 +79,7 @@ class ProjectInput(StrictModel):
     platform: Platform = "shorts"
     narration: str = Field(default="", max_length=12000)
     aspect: Literal["portrait", "landscape"] = "portrait"
+    brief: CreativeBrief = Field(default_factory=CreativeBrief)
 
 
 class ProjectUpdate(ProjectInput):
@@ -77,6 +104,23 @@ class ExportInput(StrictModel):
 class PublishInput(StrictModel):
     audience: Literal["pending", "made_for_kids", "general_audience"] = "pending"
     rights: Literal["pending", "owned", "licensed"] = "pending"
+
+
+class PlanInput(StrictModel):
+    revision: int = Field(ge=0)
+    mode: Literal["brief", "preserve"] = "brief"
+    idempotency_key: str = Field(min_length=8, max_length=100)
+
+
+class ImageInput(StrictModel):
+    revision: int = Field(ge=0)
+    seed: int = Field(default=42, ge=0, le=2**32 - 1)
+    idempotency_key: str = Field(min_length=8, max_length=100)
+
+
+class ApplyInput(StrictModel):
+    revision: int = Field(ge=0)
+    confirm: bool = False
 
 
 def split_script(text: str) -> list[Scene]:
