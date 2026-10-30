@@ -6,14 +6,6 @@ on:
   schedule:
     # UTC, every 15 minutes. Offset from top-of-hour to reduce GitHub queue delays.
     - cron: '7,22,37,52 * * * *'
-  workflow_run:
-    workflows:
-      - Whiteboard Studio CI
-      - QA Dual FullHD MP4 Integrity
-      - QA Exact-SHA Multi-PR Integration
-      - A04 full regression
-      - A02 Real Blender Art QA
-    types: [completed]
   workflow_dispatch:
 
 permissions:
