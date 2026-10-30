@@ -108,10 +108,30 @@ test('input stays text and keyboard focus is visible', async ({ page }) => {
   await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
   await expect(page.locator('h1')).toHaveText('<img src=x onerror=alert(1)>');
   expect(await page.locator('h1 img').count()).toBe(0);
-  await page.getByLabel('Tên dự án').focus();
-  expect(
-    await page.getByLabel('Tên dự án').evaluate((e) => getComputedStyle(e).outlineStyle),
-  ).not.toBe('none');
+  const titleInput = page.getByLabel('Tên dự án');
+  for (const width of [390, 1366]) {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    // Exercise actual keyboard navigation; programmatic locator.focus() does not
+    // guarantee the browser's :focus-visible keyboard-modality heuristic.
+    for (let repeat = 0; repeat < 3; repeat++) {
+      await titleInput.click();
+      await page.keyboard.press('Shift+Tab');
+      await expect(titleInput).not.toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(titleInput).toBeFocused();
+      const focus = await titleInput.evaluate((element) => ({
+        focusVisible: element.matches(':focus-visible'),
+        outlineStyle: getComputedStyle(element).outlineStyle,
+        outlineWidth: getComputedStyle(element).outlineWidth,
+        outlineColor: getComputedStyle(element).outlineColor,
+      }));
+      expect(focus.focusVisible).toBe(true);
+      expect(focus.outlineStyle).not.toBe('none');
+      expect(parseFloat(focus.outlineWidth)).toBeGreaterThanOrEqual(3);
+      console.log(`FOCUS_KEYBOARD ${JSON.stringify({ width, repeat, focus })}`);
+    }
+    await page.screenshot({ path: test.info().outputPath(`focus-visible-${width}.png`) });
+  }
 });
 
 test('accessible labels and contrast on initial and storyboard screens', async ({ page }) => {
