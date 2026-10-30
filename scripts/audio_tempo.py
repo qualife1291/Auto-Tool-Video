@@ -52,7 +52,9 @@ def stretch_narration(source: Path, output: Path, expected_sha256: str) -> dict:
     if source == output:
         raise ValueError("Do not overwrite the source narration.")
     if _sha256(source) != expected_sha256:
-        raise ValueError("Narration source SHA256 changed; refusing to retime stale audio.")
+        raise ValueError(
+            "Narration source SHA256 changed; refusing to retime stale audio."
+        )
     rate, samples, duration = _wave_info(source)
     if not math.isfinite(duration) or duration > 20:
         raise ValueError("Input narration is outside the 20-second scene limit.")
