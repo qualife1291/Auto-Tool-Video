@@ -64,6 +64,10 @@ Do not report VBench/AIGCBench, ASR quality, hardware benchmarks or live-provide
 
 These are proposals, **not claims of ownership**. A01–A10 remain canonical and are not superseded. The integrator must register new IDs in the workboard before agent implementation, verify active PRs and avoid concurrent writes to the same files.
 
+## Future multi-format research
+
+See [future video formats research](future-video-formats-research.md) for 15 format families, Scene IR and renderer contracts, benchmark protocol and proposed A20–A33 backlog. Every future agent must independently refresh official documentation and reproduce quality measurements before proposing implementation. Backlog entries are not approvals.
+
 ## Immediate sequencing
 
 - **Now:** Finish A02/A03/A04 and A05 real export acceptance. A06/A07 may research independently. Add this research gate to agent onboarding.
