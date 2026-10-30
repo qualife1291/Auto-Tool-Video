@@ -17,7 +17,9 @@ import pytest
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[2]
-spec = importlib.util.spec_from_file_location("science_story_a02", ROOT / "scripts/science_story.py")
+spec = importlib.util.spec_from_file_location(
+    "science_story_a02", ROOT / "scripts/science_story.py"
+)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
@@ -63,9 +65,7 @@ def opaque_red_pixels(pixels):
 
 @pytest.mark.parametrize("size", [(270, 480), (480, 270)])
 @pytest.mark.parametrize("template", ["warm", "wind", "dry"])
-def test_wet_dry_blending_is_monotonic_and_preserves_same_silhouette(
-    shirts, size, template
-):
+def test_wet_dry_blending_is_monotonic_and_preserves_same_silhouette(shirts, size, template):
     art = Art(*size, shirts, template, supersample=1)
     states = [rendered_shirt(art, time) for time in (0, 2, 4)]
     coverages = [int(np.count_nonzero(state[:, :, 3] > 128)) for state in states]
@@ -118,9 +118,7 @@ def test_spread_comparison_grows_the_same_open_cutout_smoothly(shirts, size):
     "template",
     ["shirt", "dry", "warm", "wind", "spread", "molecules", "invisible", "humidity"],
 )
-def test_first_middle_last_rendered_frames_change_without_dimension_jumps(
-    shirts, size, template
-):
+def test_first_middle_last_rendered_frames_change_without_dimension_jumps(shirts, size, template):
     art = Art(*size, shirts, template, supersample=1)
     first, middle, final = [np.asarray(art.frame(time, 4)) for time in (0, 2, 4)]
     assert first.shape == middle.shape == final.shape == (size[1], size[0], 3)
