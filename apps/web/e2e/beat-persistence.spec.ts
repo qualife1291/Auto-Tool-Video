@@ -12,17 +12,17 @@ async function saveAndRead(
 ) {
   const projectPath = `/api/projects/${projectId}`;
   const [response] = await Promise.all([
-    page.waitForResponse(
-      (candidate) =>
-        candidate.request().method() === 'PUT' &&
-        new URL(candidate.url()).pathname === projectPath,
-    ),
+    page.waitForResponse((candidate) => {
+      const { pathname } = new URL(candidate.url());
+      return candidate.request().method() === 'PUT' && pathname === projectPath;
+    }),
     page.getByRole('button', { name: 'Lưu thay đổi' }).click(),
   ]);
   expect(response.ok()).toBeTruthy();
   const result = await response.json();
   expect(result.revision).toBeGreaterThan(previousRevision);
   expect(result.scenes[0].beat_plan_status).toBe(expectedStatus);
+  await expect(page.getByRole('button', { name: 'Đã lưu', exact: true })).toBeDisabled();
   await expect(page.getByText('Đã lưu trên máy.', { exact: true })).toBeVisible();
 
   const persisted = await page.request.get(projectPath, {
