@@ -151,7 +151,12 @@ def test_spread_follows_one_garment_from_folded_position_to_open_position(shirts
     assert all(right > left for left, right in itertools.pairwise(centers))
     assert all(right >= left for left, right in itertools.pairwise(widths))
     assert widths[-1] > 1.8 * widths[0]
-    assert max(right - left for left, right in itertools.pairwise(centers)) < 40
+    # Smoothstep derivative peaks at 1.5: maximum 0.5-second travel is
+    # 1.5 * total displacement / 8, plus raster centroid rounding.
+    max_step = abs(end - start) * art.unit * 1.5 / (len(centers) - 1)
+    assert max(right - left for left, right in itertools.pairwise(centers)) <= (
+        max_step + 3
+    )
 
     # A separate blue, shrinking rectangular pile is not the same shirt.
     # The original implementation rendered one such pile next to the cutout.
