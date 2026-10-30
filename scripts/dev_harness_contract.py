@@ -137,19 +137,27 @@ def validate_contract(value: Any, index: int) -> list[str]:
         if not valid_path(spec["ref"]) or spec["ref"].endswith("/"):
             errors.append(f"{prefix}.approved_spec.ref: unsafe/empty reference path")
         if spec["status"] not in ("approved", "skipped-by-user"):
-            errors.append(f"{prefix}.approved_spec.status: must be approved/skipped-by-user")
+            errors.append(
+                f"{prefix}.approved_spec.status: must be approved/skipped-by-user"
+            )
     base_branch = value.get("base_branch")
     branch = value.get("branch")
     for key, item in (("base_branch", base_branch), ("branch", branch)):
         if not valid_path(item) or (isinstance(item, str) and item.endswith("/")):
             errors.append(f"{prefix}.{key}: invalid branch ref")
-    if isinstance(base_branch, str) and isinstance(branch, str) and base_branch == branch:
+    if (
+        isinstance(base_branch, str)
+        and isinstance(branch, str)
+        and base_branch == branch
+    ):
         errors.append(f"{prefix}.branch: must differ from base_branch")
     if isinstance(branch, str) and not branch.startswith("agent/"):
         errors.append(f"{prefix}.branch: must use isolated agent/ branch")
     sha = value.get("base_sha")
     if not isinstance(sha, str) or not SHA.fullmatch(sha):
-        errors.append(f"{prefix}.base_sha: expected 40 lowercase hexadecimal characters")
+        errors.append(
+            f"{prefix}.base_sha: expected 40 lowercase hexadecimal characters"
+        )
 
     for key in ("write_paths", "forbidden_paths"):
         paths = value.get(key)
@@ -166,11 +174,15 @@ def validate_contract(value: Any, index: int) -> list[str]:
             errors.append(f"{prefix}.{key}: internally overlapping paths")
 
     writes, forbidden = value.get("write_paths"), value.get("forbidden_paths")
-    if isinstance(writes, list) and isinstance(forbidden, list) and any(
-        collides(a, b)
-        for a in writes
-        for b in forbidden
-        if valid_path(a) and valid_path(b)
+    if (
+        isinstance(writes, list)
+        and isinstance(forbidden, list)
+        and any(
+            collides(a, b)
+            for a in writes
+            for b in forbidden
+            if valid_path(a) and valid_path(b)
+        )
     ):
         errors.append(f"{prefix}: write_paths conflict with forbidden_paths")
     for key in ("acceptance_criteria", "tests", "dependencies"):
@@ -195,7 +207,9 @@ def lint_markdown(markdown: str, *, multi: bool = False) -> dict[str, Any]:
             "contracts": 0,
             "task_ids": [],
             "errors": [],
-            "warnings": ["No opt-in agent-task-contract block; legacy Markdown is NOT certified."],
+            "warnings": [
+                "No opt-in agent-task-contract block; legacy Markdown is NOT certified."
+            ],
         }
     if len(blocks) > 1 and not multi:
         errors.append("multiple contract blocks require explicit --multi")
@@ -228,11 +242,17 @@ def lint_markdown(markdown: str, *, multi: bool = False) -> dict[str, Any]:
             if not isinstance(a, dict) or not isinstance(a.get("write_paths"), list):
                 continue
             for j, b in enumerate(contracts[i + 1 :], i + 1):
-                if not isinstance(b, dict) or not isinstance(b.get("write_paths"), list):
+                if not isinstance(b, dict) or not isinstance(
+                    b.get("write_paths"), list
+                ):
                     continue
                 for left in a["write_paths"]:
                     for right in b["write_paths"]:
-                        if valid_path(left) and valid_path(right) and collides(left, right):
+                        if (
+                            valid_path(left)
+                            and valid_path(right)
+                            and collides(left, right)
+                        ):
                             errors.append(
                                 f"contract[{i}] and contract[{j}]: overlapping write scope "
                                 f"{left} / {right}"
@@ -277,17 +297,24 @@ def read_source(filename: str | None) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--file", help="Explicit Markdown file (default: stdin)")
-    parser.add_argument("--json", action="store_true", help="Write deterministic JSON report")
     parser.add_argument(
-        "--multi", action="store_true", help="Validate several opt-in contracts and scopes"
+        "--json", action="store_true", help="Write deterministic JSON report"
+    )
+    parser.add_argument(
+        "--multi",
+        action="store_true",
+        help="Validate several opt-in contracts and scopes",
     )
     args = parser.parse_args(argv)
     try:
         report = lint_markdown(read_source(args.file), multi=args.multi)
     except (ValueError, UnicodeError, OSError) as exc:
         report = {
-            "status": "FAIL", "contracts": 0, "task_ids": [],
-            "errors": [f"input: {exc}"], "warnings": [],
+            "status": "FAIL",
+            "contracts": 0,
+            "task_ids": [],
+            "errors": [f"input: {exc}"],
+            "warnings": [],
         }
     if args.json:
         print(json.dumps(report, ensure_ascii=False, sort_keys=True))
