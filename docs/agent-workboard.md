@@ -4,21 +4,30 @@ Updated: 2026-10-30 · **Development-in-progress**, not release-ready.
 
 **Canonical branch:** `feat/short-video-studio`. All new agent tasks branch from it and submit PRs back to it. This document is the single source of truth for open task ownership, status and acceptance criteria. `.agent/memory/short-term/TASKS.md` is a brief index; `.agent/handover/LATEST.md` gives the latest evidence; `docs/development-plan.md` is the long-term roadmap.
 
+## Latest verified CI (A01)
+
+[GitHub Actions run 41052656718](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41052656718), PR head `cb9b68bf`, merged in [PR #2](https://github.com/qualife1291/Auto-Tool-Video/pull/2) as `3354ca8e`:
+
+- Ruff check and format pass; mypy pass (15 modules).
+- Backend pytest **212 passed, 1 skipped**; TypeScript/Vitest **10 passed**; build/Prettier pass; Playwright Chromium **13 passed**.
+- **235 tests passed, 1 skipped**, with one Starlette/httpx deprecation warning. CI verifies API/contracts and existing renderer/browser regressions, not a new generated MP4 or creator perceptual review.
+- A01 is complete. A02/A03 remain **WIP pending dedicated visual and persistence acceptance**; A04/A05 remain pending audio and new full video QA.
+
 ## Project baseline and evidence
 
 - **M1:** local 2D video editor and FFmpeg renderer for 9:16 and 16:9 at 1080p, SQLite project store, captions, audio, render QC, manual publish hub. Historical handover reports **182 pytest + 10 Vitest + 13 Playwright = 205 pass** and a **12-scene 38.7-second** video in both ratios. These results are *historical*, not rerun after the latest code changes.
-- **M2:** Ollama planner + ComfyUI image adapter/candidate approval implemented; live-model end-to-end quality is **not verified**. New second-by-second storyboard structures are **WIP-UNTESTED** and do not yet drive the generic renderer automatically.
+- **M2:** Ollama planner + ComfyUI image adapter/candidate approval implemented; live-model end-to-end quality is **not verified**. Second-by-second storyboard validation, retiming and legacy save protection are **A01 DONE-VERIFIED**. Beat descriptions still do not drive the generic renderer automatically.
 - **M3:** experimental VieNeu local TTS CLI and video QC; no finished TTS UI, forced alignment or SRT. Caption entrance motion and shirt wet/dry/sway/unfold code are **WIP-UNTESTED**. **0.92× pitch-preserving audio and new 41.9-second MP4 have not been produced or verified in Git.**
 - **M4:** direct social OAuth/upload **not implemented**; manual upload only.
 - Previous unpushed local agent work is unavailable through GitHub and has **not** been restored; the current edits are a new reconstruction from the user's description. Earlier preview/test evidence must not be attributed to the latest commit.
 
-Status language: **DONE-BASELINE** = evidenced on earlier commit, **WIP-UNTESTED** = committed but not verified, **TODO** = not implemented, **BLOCKED** = prerequisite/asset/human review missing. **Merging source into a branch changes none of these evidence statuses.**
+Status language: **DONE-VERIFIED** = current code passed recorded CI, **DONE-BASELINE** = evidenced on earlier commit, **WIP-UNTESTED** = committed but not verified, **TODO** = not implemented, **BLOCKED** = prerequisite/asset/human review missing. **Merging source into a branch changes none of these evidence statuses.**
 
 ## Workstreams — claim tasks through a PR
 
 | ID | Priority | Area / primary files | Status | Immediate deliverable |
 |---|---|---|---|---|
-| A01 | P0 | Backend `domain.py`, `planning.py`, `api.py`, AI tests | WIP-UNTESTED | Validate second-by-second schema, all seconds coverage, status on retiming, preserve-mode and compatibility |
+| A01 | P0 | Backend `domain.py`, `planning.py`, `api.py`, `store.py`, AI tests | DONE-VERIFIED | [PR #2](https://github.com/qualife1291/Auto-Tool-Video/pull/2) merged; strict 0-based beats, safe re-timing, legacy save, Unicode and conflict tests |
 | A02 | P0 | `scripts/science_story.py`, Blender art, motion tests | WIP-UNTESTED | Review wet/dry mask blend, wind sway around fixed peg, fold→spread across both layouts |
 | A03 | P0 | `render.py`, typography tests, `apps/web/src/{main.tsx,domain.ts}` | WIP-UNTESTED | Validate brief caption bounce, beat editing, persistence, safe zones, 390px/1080p/1920p |
 | A04 | P0 | `scripts/create_story_video.py`, audio utilities + tests | TODO | Tempo 0.92× with pitch preserved, WAV hashes/provenance, recalculate duration from actual audio |
@@ -29,7 +38,7 @@ Status language: **DONE-BASELINE** = evidenced on earlier commit, **WIP-UNTESTED
 | A09 | P2 | TTS UI/jobs/cache/alignment | TODO | Proper bundled/authorized TTS integration, review 20 voice samples, real phrase/SRT alignment |
 | A10 | P3 | Social OAuth/upload | TODO | Private/draft first; explicit user consent and authorized providers, no automatic publication |
 
-Suggested ownership is *not* a claim. Check open PRs before touching a file. Different agents may work A01, A02, A04, A06, A07 concurrently. A03 shares renderer/schema integration and must coordinate with A01/A05.
+Suggested ownership is *not* a claim. Check open PRs before touching a file. Different agents may work A02, A04, A06, A07 concurrently. A03 shares renderer/schema integration and must coordinate with A01/A05.
 
 ## Acceptance criteria
 
@@ -53,7 +62,7 @@ Suggested ownership is *not* a claim. Check open PRs before touching a file. Dif
 4. Integrator reruns regression after merging each task. Do not claim DONE, update release readiness, or mark `specs/whiteboard-video-tool.md` implemented until acceptance evidence exists.
 5. No secret/model weights/media under Git. Do not post to social, open cloud endpoints, auto-install external code, clone a voice without consent, or switch to a paid API without explicit authorization.
 
-## Local verification commands (not yet run on current revision)
+## CI verification commands (run on PR #2; rerun after any code change)
 
 ```bash
 npm --prefix apps/web ci
