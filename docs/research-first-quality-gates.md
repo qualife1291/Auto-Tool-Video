@@ -72,6 +72,10 @@ See [high-FPS/sharpness/performance/QC research](high-fps-performance-qc-researc
 
 See [future video formats research](future-video-formats-research.md) for 15 format families, Scene IR and renderer contracts, benchmark protocol and proposed A20–A33 backlog. Every future agent must independently refresh official documentation and reproduce quality measurements before proposing implementation. Backlog entries are not approvals.
 
+## Performance, cost and plan verification
+
+Read [performance/cost optimization dossier](performance-cost-optimization-research.md), [plan readiness audit](research-plan-audit-2026-10-30.md) and the dedicated [performance-cost-review skill](../.agents/skills/performance-cost-review/SKILL.md). Cross-stage observability, cache correctness, web preview, provider costs, tiered CI, energy/RAM and accepted-minute costs are mandatory research considerations for future feature specs. A43–A48 and cinematic millisecond-schema A49 are proposed only and require workboard ownership and approved specs. No quality gate can be traded for a speed improvement.
+
 ## Immediate sequencing
 
 - **Now:** Finish A02/A03/A04 and A05 real export acceptance. A06/A07 may research independently. Add this research gate to agent onboarding.
