@@ -53,8 +53,9 @@ def _render_affine(art, seconds: float, monkeypatch) -> tuple[tuple[float, ...],
     original = Image.Image.transform
 
     def record_transform(image, *args, **kwargs):
-        if len(args) > 2 and args[1] == Image.Transform.AFFINE and not matrices:
-            # Pillow may delegate to transform() internally; capture once.
+        if len(args) > 2 and args[1] == Image.Transform.AFFINE and image.mode == "RGBA":
+            # Pillow re-enters transform() on premultiplied RGBa internally.
+            # Observe the original cloth transform, not its RGBa delegation.
             matrices.append(tuple(args[2]))
         return original(image, *args, **kwargs)
 
