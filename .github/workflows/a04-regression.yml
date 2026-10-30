@@ -55,9 +55,9 @@ jobs:
         run: npm --prefix apps/web run format:check
       - name: Install Chromium for browser integration
         run: |
-          cd apps/web
-          npx playwright install --with-deps chromium
-          echo "CHROMIUM_BIN=$(node -p "require('playwright').chromium.executablePath()")" >> "$GITHUB_ENV"
+          npx --prefix apps/web playwright install --with-deps chromium
+          # Match the repository's canonical playwright.config.ts default /usr/bin/chromium.
+          test -x /usr/bin/chromium
       - name: Browser E2E with local server and independent test data
         run: npm --prefix apps/web run test:e2e
       - name: Real 1080p portrait export smoke
