@@ -1,5 +1,16 @@
 # Kế hoạch phát triển
 
+## Ưu tiên hiện tại: Hoàn thiện video 2D
+
+**Một môi trường tài liệu và một branch chung:** `feat/short-video-studio`. Trạng thái từng task A01–A10, phạm vi file, điều kiện nghiệm thu và phối hợp AI agent nằm tại [AI Agent Workboard](agent-workboard.md). [TASKS](../.agent/memory/short-term/TASKS.md) chỉ tóm tắt task đang mở; [LATEST](../.agent/handover/LATEST.md) là tình trạng kiểm chứng.
+
+- **P0 (A01–A03, WIP-UNTESTED):** chuẩn kịch bản mô tả từng giây, hình chiếc áo chuyển trạng thái, chữ nảy nhẹ, giao diện sửa từng beat. Cần test schema, UI, crop, tương thích cảnh cũ và tính nhất quán chuyển động.
+- **P0 (A04–A05, TODO/BLOCKED):** giọng chậm 0,92× không đổi cao độ, tính lại thời lượng theo âm thanh thật, render hai tỷ lệ và chạy đầy đủ QC. Chưa có bản MP4 41,9 giây được xác minh.
+- **P1 (A06–A08, TODO):** đánh giá Hugging Face/Gradio, NVIDIA NIM và provider online dạng opt-in; kiểm hạn mức, giấy phép, điều kiện sử dụng. Ollama/ComfyUI local vẫn là nền tảng, không mặc nhiên trả phí.
+- **P2–P3 (A09–A10, TODO):** TTS UI/phrase alignment/SRT và OAuth upload sau khi hoàn thiện 2D.
+
+**Quy tắc tiến độ:** 205 bài test và video 12 cảnh 38,7 giây là kết quả lịch sử trên commit `a7d000f6`, **không chứng minh mã mới đã qua QA**. Merge là thống nhất code/tài liệu, chưa phải release hay nghiệm thu. `second_by_second` hiện là mô tả kịch bản để sửa/duyệt, không tự động trở thành keyframe của generic renderer.
+
 ## Đã triển khai M1
 
 - Studio tiếng Việt local, năm hồ sơ người xem, bốn bước, editor responsive desktop/mobile.

@@ -356,9 +356,22 @@ class ScenePainter:
         x, y, width, height = [round(v * self.scale) for v in (cx, cy, cw, ch)]
         contrast = self.caption_style == "contrast"
         accent = self.caption_style == "accent"
-        if contrast:
-            entrance = min(1.0, max(0.0, progress * self.scene["duration"] / 0.18))
-            y -= round(12 * self.scale * (1 - entrance) ** 2)
+        # Only a brief damped entry for EACH caption page. Afterwards both the
+        # background card and glyphs are stationary for comfortable reading.
+        page_seconds = self.scene["duration"] / len(self.pages)
+        local_seconds = max(0.0, progress * self.scene["duration"] - index * page_seconds)
+        if local_seconds < 0.12:
+            phase = local_seconds / 0.12
+            bounce = 10 * (1 - phase) ** 2 - 3 * math.sin(
+                math.pi * phase
+            )
+        elif local_seconds < 0.26:
+            bounce = -2.5 * math.sin(
+                math.pi * (local_seconds - 0.12) / 0.14
+            )
+        else:
+            bounce = 0
+        y += round(bounce * self.scale)
         radius = max(4, round((28 if contrast else 18) * self.scale))
         if accent:
             offset = max(1, round(5 * self.scale))

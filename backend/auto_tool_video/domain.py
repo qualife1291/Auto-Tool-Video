@@ -54,6 +54,18 @@ class CreativeBrief(StrictModel):
     character_bible: str = Field(default="", max_length=1000)
 
 
+class SecondBeat(StrictModel):
+    """An editable, scene-relative second with visual and spoken intent."""
+
+    second: int = Field(ge=0, lt=20)
+    visual_state: str = Field(min_length=1, max_length=300)
+    action: str = Field(min_length=1, max_length=300)
+    camera: str = Field(min_length=1, max_length=200)
+    on_screen_text: str = Field(default="", max_length=160)
+    narration_cue: str = Field(min_length=1, max_length=300)
+    continuity: str = Field(min_length=1, max_length=300)
+
+
 class Scene(StrictModel):
     id: str = Field(default_factory=lambda: str(uuid4()), min_length=1, max_length=64)
     title: str = Field(default="Cảnh mới", min_length=1, max_length=70)
@@ -74,10 +86,22 @@ class Scene(StrictModel):
     transition: Literal["cut", "dissolve"] = "dissolve"
     draw_fraction: float = Field(default=0.78, ge=0.3, le=0.9, allow_inf_nan=False)
     visual_description: str = Field(default="", max_length=1000)
+    second_by_second: list[SecondBeat] = Field(default_factory=list, max_length=20)
+    beat_plan_status: Literal["authored", "needs_review"] = "needs_review"
     role: Literal["hook", "context", "explain", "example", "payoff"] = "explain"
     reveal_order: list[str] = Field(default_factory=list, max_length=10)
     fact_flags: list[str] = Field(default_factory=list, max_length=10)
     source_refs: list[int] = Field(default_factory=list, max_length=10)
+
+    @model_validator(mode="after")
+    def check_second_order(self):
+        if self.second_by_second and [b.second for b in self.second_by_second] != list(
+            range(len(self.second_by_second))
+        ):
+            raise ValueError("Beat indexes must begin at zero and be consecutive.")
+        # Duration can change after authoring. Keep the old beats for manual retiming,
+        # rather than silently dropping or rewriting a creator's visual plan.
+        return self
 
 
 class ProjectInput(StrictModel):

@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 from typing import Any, Literal
 from uuid import uuid4
 
 from pydantic import Field, StrictInt, ValidationError
 
-from .domain import PROFILES, CreativeBrief, Scene, StrictModel
+from .domain import PROFILES, CreativeBrief, Scene, SecondBeat, StrictModel
 from .store import DomainError
 
 
@@ -24,6 +25,7 @@ class ProposedScene(StrictModel):
     fact_flags: list[str] = Field(max_length=10)
     source_refs: list[StrictInt] = Field(max_length=10)
     duration: float = Field(ge=1, le=20, allow_inf_nan=False)
+    second_by_second: list[SecondBeat] = Field(default_factory=list, max_length=20)
 
 
 class Proposal(StrictModel):
@@ -67,6 +69,16 @@ and how the scene demonstrates the narrated mechanism. Avoid a sequence of gener
 Reveal_order must name visible parts in an intelligible drawing sequence. Include causal detail
 appropriate to the age profile, rather than repeating one vague takeaway in multiple scenes.
 Each scene duration is 1..20 seconds; sum must not exceed target_duration (maximum 60 seconds).
+Every scene MUST contain second_by_second with exactly ceil(duration) ordered beats, second indexes
+0..ceil(duration)-1, including the final fractional second. EACH beat must explicitly describe
+visual_state (physical appearance, positions and wet/dry/shape changes), action (what changes
+during this second and why), camera (composition, movement and scale), on_screen_text (exact
+short visible text or empty string), narration_cue (spoken words or purposeful pause), continuity
+(what must stay consistent with neighboring seconds and scenes). Do not copy the same generic
+description across beats. Use visible causal changes, not arbitrary motion or visual noise.
+Animate type briefly on entry and hold it readable; never make key scientific text flicker.
+Treat second-by-second times as scene-relative; renderer audio determines final precise timings.
+If recorded speech changes duration, preserve authored beats and flag for human retiming.
 In preserve mode: group every source chunk ID exactly once in ascending order. Do NOT write new
 narration; narration must be empty and source_ids must cover ALL chunks. Combined chunks per scene
 must fit 500 characters. In brief mode: source_ids is empty; write natural Vietnamese narration.
@@ -129,9 +141,45 @@ def validate_proposal(raw: str, project: dict[str, Any], mode: str) -> dict[str,
             ]
         elif draft.source_ids or not draft.narration.strip():
             raise DomainError("MODEL_OUTPUT_INVALID", "Model chưa tạo lời thoại đúng chế độ brief.")
+        beats = draft.second_by_second
+        expected = math.ceil(draft.duration)
+        if beats and [beat.second for beat in beats] != list(range(expected)):
+            raise DomainError(
+                "MODEL_OUTPUT_INVALID", "Storyboard phải phủ từng giây theo đúng thứ tự."
+            )
+        if not beats:
+            # Compatibility with old provider responses and saved fixture contracts:
+            # never claim this repeated outline is a fully authored beat plan.
+            beats = [
+                SecondBeat(
+                    second=second,
+                    visual_state=draft.visual_description,
+                    action=(
+                        "Thiết lập trạng thái và hành động đầu cảnh."
+                        if second == 0 else
+                        "Tiếp diễn chuyển đổi vật thể và quan hệ nhân quả của cảnh."
+                        if second < expected - 1 else
+                        "Hoàn tất hành động để nối sang cảnh kế tiếp."
+                    ),
+                    camera="Giữ chủ thể trong vùng an toàn; rà soát chuyển động camera.",
+                    on_screen_text="",
+                    narration_cue="Đồng bộ với lời đọc thực, chưa căn theo từ.",
+                    continuity="Giữ hình dáng, màu sắc và vị trí chủ thể; cần creator rà soát.",
+                )
+                for second in range(expected)
+            ]
+        values["second_by_second"] = [beat.model_dump() for beat in beats]
+        values["beat_plan_status"] = "authored" if draft.second_by_second else "needs_review"
         values["fact_flags"] = list(
             dict.fromkeys(
-                ["Cần người lớn kiểm nội dung và nguồn trước khi sản xuất.", *draft.fact_flags]
+                [
+                    "Cần người lớn kiểm nội dung và nguồn trước khi sản xuất.",
+                    *(
+                        ["Kế hoạch từng giây mới là phác thảo tự động; cần viết chi tiết."]
+                        if not draft.second_by_second else []
+                    ),
+                    *draft.fact_flags,
+                ]
             )
         )[:10]
         try:

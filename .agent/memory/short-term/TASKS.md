@@ -1,17 +1,25 @@
 # Việc đang code
 
-## Điều phối nhiều AI agent — 2026-10-30
+**Branch chung:** `feat/short-video-studio`. **Bảng điều phối duy nhất:** [docs/agent-workboard.md](../../../docs/agent-workboard.md). Nhận một task A01–A10 qua issue/PR, tạo nhánh `agent/Axx-...` từ branch chung và gửi PR trở lại branch chung. Không gán agent nếu chưa thực sự nhận việc.
 
-- **Draft PR điều phối:** https://github.com/qualife1291/Auto-Tool-Video/pull/1
-- **Workboard A01–A10:** https://github.com/qualife1291/Auto-Tool-Video/blob/feat/second-by-second-motion-voice/docs/agent-workboard.md
-- **Branch WIP:** `feat/second-by-second-motion-voice`. Agent mới nhận một task A01–A10, tạo branch task từ WIP, PR ngược về WIP. Không tự merge vào branch mặc định trước test/QA.
-- **Baseline mặc định vẫn an toàn:** trước đợt này có báo cáo 205 test qua và video 12 cảnh 38,7s; **code mới không được kiểm thử, audio 0,92×/video 41,9s chưa được tạo/kiểm chứng trong nhánh WIP**.
-- Những chỉnh sửa local chưa push ở môi trường AI khác không được lưu trong GitHub; branch WIP mới là bản tái dựng, không được nhận là đã lấy lại nguyên bản.
+## Ưu tiên và trạng thái (2026-10-30)
 
-## Backlog M1–M4 trước đợt phối hợp
+- **P0 / A01 (WIP-UNTESTED):** storyboard đầy đủ từng giây; bổ sung kiểm validation, duration-change status, backward compatibility, preserve-mode.
+- **P0 / A02 (WIP-UNTESTED):** áo ướt→khô/lay/gấp→trải; cần test continuity/crop/mask ở cả 9:16 và 16:9.
+- **P0 / A03 (WIP-UNTESTED):** caption bounce và beat editor; cần typecheck/E2E/readability/save-reload.
+- **P0 / A04 (TODO):** giọng 0,92× giữ cao độ và tính lại timeline bằng WAV thật; chưa có MP4 41,9s được xác minh.
+- **P0 / A05 (BLOCKED A01–A04):** kiểm thử tổng hợp, xuất 2 MP4 mới, đo QC và thu đánh giá người xem. Chỉ báo cáo baseline 205 tests/38,7s của phiên trước, **không áp dụng kết quả đó cho code đã merge**.
+- **P1 / A06–A07 (TODO):** xác minh Hugging Face/Gradio Spaces và NVIDIA NIM, quyền truy cập, phí, license, tiếng Việt, độ trễ và hạn mức thực.
+- **P1 / A08 (TODO, phụ thuộc A06–A07):** online AI opt-in có fallback local độc lập.
+- **P2 / A09 (TODO):** TTS UI, phrase alignment/SRT. **P3 / A10 (TODO):** OAuth/social upload.
 
+## Điều kiện đánh dấu hoàn thành
 
-- Creator review `.data/story-upgrade`:12cảnh/38,7s, QC technicalpass;6warning motion nhẹ/so sánh mỗi aspect và ASR9/12khớp, câu3/5/6cần nghe đối chiếu. Chưa có điểm manual/playback/listening, không coi205test là nghiệm thu cảm nhận. Giữ baseline khi sửa tiếp; ưu tiên diễn biến semantic ở các cảnh so sánh nếu feedback yêu cầu.
-- M2: kiểm Qwen/Comfy model live trên phần cứng đủ tài nguyên, benchmark Klein4B/SDXL, reference/character control và batch có duyệt; template3D editor. Tongjiang HTML capture chỉ nghiên cứu opt-in phi thương mại/quyền riêng, không execute nguồn ngoài bằng backend.
-- M3: learned benchmark VBench/AIGCBench chỉ bật sau pin/checkpoint-license/hardware; hiệu chuẩn proxies bằng mẫu có người chấm.  TTS UI/voice/jobs/cache bằng packaging inference đúng, nghe20câu/người duyệt, phrase alignment/SRT và polish whiteboard10ảnh; creator review clip đã giao, không dùng ASR thay nghe.
-- M4: OAuth/token an toàn và YouTube/TikTok/Facebook upload private/draft bằng app có quyền; cover/180s/packaging và test thiết bị thật.
+Có commit/PR, test thực tế, bằng chứng chất lượng/artifact và ghi rõ nội dung chưa được xem/nghe hoặc kiểm model live. Không tự xem trạng thái merge là QA pass. Không thêm dependency online trả phí, upload mạng xã hội hoặc ghi secret/weights vào Git.
+
+## Tài liệu liên quan
+
+- [Handover](../../handover/LATEST.md) — bản bàn giao kỹ thuật gần nhất.
+- [Lộ trình](../../../docs/development-plan.md) — M1–M4.
+- [Quy chuẩn video](../../../docs/video-quality-standard.md) — test/QC và manual review.
+- [Đặc tả](../../../specs/whiteboard-video-tool.md) — nguồn xác định phạm vi đã duyệt.

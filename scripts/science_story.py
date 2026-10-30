@@ -112,6 +112,121 @@ INK, BLUE, GOLD, CORAL = "#173D33", "#55ADBE", "#F3BE57", "#DF886E"
 FONT = Path(__file__).resolve().parents[1] / "assets/fonts/NotoSans-Bold.ttf"
 
 
+BEAT_ACTIONS = {
+    "shirt": [
+        "Áo xanh còn ướt xuất hiện; giọt đọng rõ trên mép vải.",
+        "Camera tiến gần bề mặt áo; vải vẫn nặng và đậm màu.",
+        "Một vùng ẩm bắt đầu nhỏ dần, giữ đúng dáng và màu áo.",
+        "Dẫn mắt từ giọt cuối về hướng phóng đại sợi vải.",
+    ],
+    "weave": [
+        "Giữ nguyên chiếc áo làm mốc trước khi phóng đại.",
+        "Sợi dọc hiện ra, sau đó sợi ngang đan xuyên lần lượt.",
+        "Giọt nước nằm trong khe, không tự biến thành hạt khí.",
+        "Rút tầm nhìn ra khung tổng quan để chuyển sang phân tử.",
+    ],
+    "molecules": [
+        "Mặt nước và vùng phóng đại được dựng trước.",
+        "Các chấm phân tử rung nhẹ trong giới hạn bề mặt.",
+        "Giữ bề mặt ổn định, tăng chuyển động phân tử vừa đủ.",
+        "Chuẩn bị chỉ ra những chấm có thể rời mặt nước.",
+    ],
+    "escape": [
+        "Định vị bề mặt nước và các chấm bên dưới.",
+        "Một số chấm đi lên theo đường cong, không chạy đồng loạt.",
+        "Chấm rời bề mặt rồi mờ dần; nước còn lại giữ nguyên.",
+        "Chuyển hướng sang sơ đồ nước lỏng sang khí.",
+    ],
+    "evaporation": [
+        "Đặt vùng nước và vùng không khí rõ ràng.",
+        "Mũi tên chỉ một chiều từ nước lên không khí.",
+        "Một số chấm rời mặt nước, không biến thành mây trắng.",
+        "Giữ biểu diễn là sơ đồ, chuẩn bị giải thích hơi vô hình.",
+    ],
+    "invisible": [
+        "Các chấm xanh còn hiện rõ để minh họa.",
+        "Các chấm giảm độ mờ có kiểm soát.",
+        "Chấm gần như mất hẳn, chiếc áo vẫn đứng yên trong bối cảnh.",
+        "Chỉ còn không khí trong, không vẽ khói như hơi nước.",
+    ],
+    "room": [
+        "Bối cảnh trong phòng cùng chiếc áo ẩm hiện ra.",
+        "Ly nước thường đứng yên, không có bong bóng sôi.",
+        "Chiếc áo khẽ lay trong phòng thoáng, vẫn có bay hơi.",
+        "Hướng ánh sáng sang cảnh ảnh hưởng nhiệt độ.",
+    ],
+    "warm": [
+        "Ánh nắng ấm xuất hiện ở góc, không che chủ thể.",
+        "Vệt ướt trên áo nhạt nhẹ, vạt áo dịch chuyển rất ít.",
+        "Áo chuyển khô thêm theo cùng silhouette và điểm treo.",
+        "Giữ một phần ẩm để gió ở cảnh sau tiếp tục tác động.",
+    ],
+    "wind": [
+        "Vài luồng khí cong xuất hiện từ một phía áo.",
+        "Vạt áo lay dưới điểm kẹp; vai và kẹp giữ chặt vị trí.",
+        "Không khí ẩm ra khỏi áo, vùng ẩm giảm dần.",
+        "Áo ổn định lại, mũi tên thoát khỏi khung trước chuyển cảnh.",
+    ],
+    "humidity": [
+        "Hai vùng có cùng kích thước xuất hiện song song.",
+        "Vùng ít ẩm có ít chấm, vùng nhiều ẩm tăng chấm rõ.",
+        "Các chấm chỉ chuyển rất nhẹ để giữ so sánh đọc được.",
+        "Dừng ở so sánh mật độ, không giả làm phép đo vật lý.",
+    ],
+    "spread": [
+        "Áo gấp hiện tại vị trí trái; bên phải là áo đang thu hẹp.",
+        "Các nếp gấp mở dần, tay áo mở ra với chuyển động liên tục.",
+        "Hình áo trải mở rộng đến kích thước ổn định.",
+        "Chỉ vùng tiếp xúc không khí lớn hơn rồi nối sang kết luận.",
+    ],
+    "dry": [
+        "Trở lại đúng chiếc áo xanh ban đầu, còn vệt ẩm rất nhẹ.",
+        "Áo sáng dần và khô đều; vạt áo lay nhịp nhỏ.",
+        "Các giọt nước cuối cùng mờ dần trên sơ đồ.",
+        "Giữ chiếc áo khô, kết đúng lúc lời đọc kết thúc.",
+    ],
+}
+
+
+def beat_timeline(scene: dict, duration: float) -> list[dict]:
+    """Detailed, editable outline at one beat per second, not forced speech alignment."""
+    if not 1 <= duration <= 20:
+        raise ValueError("Scene duration must be between 1 and 20 seconds.")
+    actions = BEAT_ACTIONS[scene["template"]]
+    words = scene["narration"].split()
+    count = math.ceil(duration)
+    beats = []
+    for second in range(count):
+        start = min(len(words), int(len(words) * second / duration))
+        end = min(len(words), int(len(words) * min(second + 1, duration) / duration))
+        stage = min(len(actions) - 1, int((second + 0.5) / duration * len(actions)))
+        beat = {
+            "second": second,
+            "visual_state": (
+                f"Giây {second} của cảnh {scene['title']}: {scene['visual_description']}"
+            )[:300],
+            "action": actions[stage],
+            "camera": (
+                "Toàn khung, camera tiến gần liên tục tối đa khoảng 1,2%; "
+                "không nhảy vị trí hoặc cắt chủ thể."
+            ),
+            "on_screen_text": scene["caption_emphasis"] if second > 0 else "",
+            "narration_cue": (
+                "Cue dự kiến (chưa forced-align): " + " ".join(words[start:end])
+                if start < end else "Nghỉ có chủ đích, đồng bộ lại theo audio."
+            ),
+            "continuity": (
+                "Cùng một chiếc áo xanh và điểm treo/kẹp; "
+                "giữ hình dáng, hướng gió và trạng thái ẩm nối cảnh."
+                if scene["template"] in {"shirt", "room", "warm", "wind", "spread", "dry"}
+                else "Giữ màu, kích thước sơ đồ và các vật thể xuyên cảnh; "
+                "không dùng animation để giả kết quả khoa học."
+            ),
+        }
+        beats.append(beat)
+    return beats
+
+
 def prepare(root: Path):
     root.mkdir(parents=True, exist_ok=True)
     scenes = []
@@ -230,16 +345,44 @@ class Art:
         ]
         draw.polygon([self.box(*p) for p in pts], fill=color)
 
-    def shirt(self, frame, t, dry=False, mini=False):
-        source = self.shirts[1 if dry else 0]
+    def shirt(self, frame, t, duration, dry=False, mini=False):
+        p = min(1.0, max(0.0, t / max(duration, 0.01)))
+        if mini:
+            dryness = 1.0
+        elif self.template == "dry":
+            dryness = 0.65 + 0.35 * p
+        elif self.template == "wind":
+            dryness = 0.45 + 0.35 * p
+        elif self.template == "warm":
+            dryness = 0.15 + 0.30 * p
+        elif self.template == "invisible":
+            dryness = 0.55
+        else:
+            dryness = 1.0 if dry else 0.0
+        # Wet/dry Blender cutouts have matching dimensions and transparent alpha.
+        # Interpolate the SAME shirt rather than popping between two unrelated assets.
+        source = Image.blend(self.shirts[0], self.shirts[1], dryness)
         x, y = (-80, -25) if self.landscape else (-260, 170)
         if mini:
+            # Unfold gradually into a clearly larger, open shirt at the right.
+            fraction = 0.49 * (0.52 + 0.48 * (p * p * (3 - 2 * p)))
             source = source.resize(
-                (round(source.width * 0.49), round(source.height * 0.49)),
+                (round(source.width * fraction), round(source.height * fraction)),
                 Image.Resampling.LANCZOS,
             )
             x, y = (1040, 150) if self.landscape else (400, 610)
-        # Half-pixel positioning through supersampling; no integer resize zoom on each frame.
+        elif self.template in {"shirt", "warm", "wind", "dry", "room"}:
+            # A shear about the TOP of the garment holds the peg/shoulders steady.
+            # Lower cloth sways by a few source pixels, with no framewise zoom steps.
+            amplitude = 0.008 if self.template == "wind" else 0.0035
+            shear = amplitude * math.sin(t * (2.4 if self.template == "wind" else 1.7))
+            source = source.transform(
+                source.size,
+                Image.Transform.AFFINE,
+                (1.0, -shear, 0.0, 0.0, 1.0, 0.0),
+                resample=Image.Resampling.BICUBIC,
+                fillcolor=(0, 0, 0, 0),
+            )
         frame.alpha_composite(source, self.box(x, y))
 
     def circle_area(self):
@@ -338,10 +481,10 @@ class Art:
         d = ImageDraw.Draw(frame)
         kind = self.template
         if kind in {"shirt", "dry", "warm", "wind", "room", "invisible"}:
-            self.shirt(frame, t, dry=kind in {"dry", "invisible"})
+            self.shirt(frame, t, duration, dry=kind in {"dry", "invisible"})
         if kind in {"weave", "molecules", "escape", "evaporation"}:
             if self.landscape:
-                self.shirt(frame, t)
+                self.shirt(frame, t, duration)
             if kind == "weave":
                 self.weave(d, p, t)
             else:
@@ -442,15 +585,17 @@ class Art:
                 anchor="mt",
             )
         if kind == "spread":
-            self.shirt(frame, t, dry=True, mini=True)
+            self.shirt(frame, t, duration, dry=True, mini=True)
             x, y = (500, 540) if self.landscape else (260, 910)
             for j in range(4):
+                # Folded stack shrinks as the open shirt expands.
+                fold = max(0.12, 1 - p * 0.88)
                 d.rounded_rectangle(
                     self.box(
-                        x - 175 + j * 6,
-                        y - 80 + j * 20,
-                        x + 175 - j * 6,
-                        y + 80 + j * 20,
+                        x - 175 * fold + j * 6,
+                        y - 80 * fold + j * 20,
+                        x + 175 * fold - j * 6,
+                        y + 80 * fold + j * 20,
                     ),
                     radius=round(18 * self.unit),
                     fill="#65B3C3",

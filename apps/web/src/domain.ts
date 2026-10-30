@@ -57,7 +57,18 @@ export type GenerationJob = {
     provenance?: Record<string, string | number>;
   };
 };
+export type SecondBeat = {
+  second: number;
+  visual_state: string;
+  action: string;
+  camera: string;
+  on_screen_text: string;
+  narration_cue: string;
+  continuity: string;
+};
 export type Scene = {
+  second_by_second?: SecondBeat[];
+  beat_plan_status?: 'authored' | 'needs_review';
   id: string;
   title: string;
   narration: string;
