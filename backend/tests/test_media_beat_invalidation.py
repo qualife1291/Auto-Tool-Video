@@ -11,7 +11,6 @@ import subprocess
 import wave
 
 import pytest
-
 from conftest import create_story, save
 
 
