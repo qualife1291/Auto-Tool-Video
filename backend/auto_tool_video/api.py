@@ -189,6 +189,15 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
                 for key, default in legacy_defaults.items():
                     if key not in original.model_fields_set:
                         scene[key] = before[scene["id"]].get(key, default)
+                # Old clients know nothing about per-second beats: don't overwrite
+                # an authored plan with Pydantic's empty-list/default-status values.
+                # An explicit [] still clears the beats, allowing intentional edits.
+                for key, default in (
+                    ("second_by_second", []),
+                    ("beat_plan_status", "needs_review"),
+                ):
+                    if key not in original.model_fields_set:
+                        scene[key] = before[scene["id"]].get(key, default)
         return store.save(identifier, payload)
 
     @app.post("/api/projects/{identifier}/fit-audio")
