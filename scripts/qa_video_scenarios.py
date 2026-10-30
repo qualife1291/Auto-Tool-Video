@@ -300,7 +300,26 @@ def render_one(
         idempotency_key=str(uuid4()),
     )
     job = enqueue(store, project["id"], options)
-    render_job(store, store.claim())
+    try:
+        render_job(store, store.claim())
+    except RuntimeError as exc:
+        failed = store.get("jobs", job["id"])
+        report = failed.get("quality_report") or {}
+        checks = report.get("technical", {}).get("checks", [])
+        defects = [
+            {"id": check["id"], "actual": check.get("actual")}
+            for check in checks
+            if check.get("status") == "failed"
+        ]
+        diagnostic = root / f"scenario-qc-failed-{aspect}.json"
+        diagnostic.write_text(
+            json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        raise RuntimeError(
+            f"{scenario.key} {aspect}: final MP4 QC rejected: {defects}; "
+            f"diagnostic={diagnostic.name}"
+        ) from exc
     completed = store.get("jobs", job["id"])
     if completed["state"] != "succeeded":
         raise AssertionError(f"Render did not succeed: {completed['state']}")
