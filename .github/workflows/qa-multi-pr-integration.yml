@@ -1,0 +1,131 @@
+name: QA Exact-SHA Multi-PR Integration
+
+on:
+  pull_request:
+    branches:
+      - feat/short-video-studio
+    paths:
+      - .github/workflows/qa-multi-pr-integration.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  combined:
+    name: Exact SHA integration, full regression and video QA
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      APP_DATA_DIR: /tmp/qa-multi-pr-isolated-data
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Assert baseline and merge exact heads in ephemeral worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=58a939503f0ef5eb80ebec261bfe798928d3ee7b
+          git fetch --no-tags origin refs/heads/feat/short-video-studio:refs/remotes/origin/feat/short-video-studio
+          if [ "$(git rev-parse refs/remotes/origin/feat/short-video-studio)" != "$base" ]; then
+            echo "::error::Canonical base moved; refresh integration snapshot"
+            exit 1
+          fi
+          git merge-base --is-ancestor "$base" HEAD
+          git config user.name "Studio QA Integration (ephemeral)"
+          git config user.email "studio-qa-integration@users.noreply.github.com"
+          mkdir -p .data/integration-evidence
+          printf '%s\n' "$base" > .data/integration-evidence/base-sha.txt
+          while IFS='|' read -r name expected; do
+            test -n "$name" || continue
+            git fetch --no-tags origin "refs/heads/$name:refs/remotes/origin/$name"
+            actual="$(git rev-parse "refs/remotes/origin/$name")"
+            if [ "$actual" != "$expected" ]; then
+              echo "::error::Stale PR $name expected $expected got $actual"
+              exit 1
+            fi
+            printf '%s|%s\n' "$name" "$actual" >> .data/integration-evidence/sources.txt
+            git merge --no-ff --no-edit "refs/remotes/origin/$name" || {
+              git status --short
+              echo "::error::Cross-PR merge conflict at $name"
+              exit 1
+            }
+          done <<'EXACT_HEADS'
+          agent/A04-pitch-preserving-tempo|a5776f235cd1fb7b62c8fd38a7257e5e8cceccef
+          agent/A02-real-art-motion-qa|dcf4e017f2fceaeb7362f71e3b0ec655a028ef47
+          agent/QA-caption-beat-regressions|b5678295bcdfef115c86e727bca146b9a428ea34
+          agent/QA-dual1080-export-gate|f2b4b7eb4e0bc7cc8aaa60ecbffe22bd1296a17d
+          agent/A05-evidence-gates|ad719972d7a879a9ef0076d306a1f0fa81d2dc35
+          agent/A06-hf-gradio-evaluation|cec3af1b91fe6bcbb5671cc20f69685858bc212d
+          agent/A07-nim-provider-evaluation|67ab4337c00869d0e661c41a664a42d5f7cd9de5
+          EXACT_HEADS
+          git rev-parse HEAD | tee .data/integration-evidence/combined-sha.txt
+          git log -8 --oneline > .data/integration-evidence/merge-history.txt
+          git status --porcelain | tee .data/integration-evidence/git-status.txt
+          test -z "$(git status --porcelain)" || { echo "::error::Unclean combined tree"; exit 1; }
+          for file in backend/tests/test_voice_wav_acceptance.py backend/tests/test_science_story_motion.py backend/tests/test_caption_entry_regression.py backend/tests/test_dual_1080_smoke.py apps/web/e2e/beat-persistence.spec.ts scripts/voice_wav_acceptance.py scripts/verify_dual_1080_smoke.py; do
+            test -f "$file" || { echo "::error::Missing integration file $file"; exit 1; }
+          done
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install frozen dependencies and required media tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg blender espeak
+          ffmpeg -version | head -1
+          ffprobe -version | head -1
+          blender --version | head -1
+          espeak --version | head -1
+          uv sync --project backend --frozen --group dev
+          npm --prefix apps/web ci
+      - name: Full-tree lint, format, mypy
+        run: |
+          uv run --project backend ruff check backend scripts
+          uv run --project backend ruff format --check backend scripts
+          uv run --project backend mypy backend/auto_tool_video
+      - name: Full backend pytest, WAV, media, negative QC tests
+        run: uv run --project backend pytest backend/tests -q -rs
+      - name: Web typecheck, Vitest, production build, Prettier
+        run: |
+          npm --prefix apps/web run check
+          npm --prefix apps/web run build
+          npm --prefix apps/web run format:check
+      - name: Real Chromium Playwright E2E
+        run: |
+          npx --prefix apps/web playwright install --with-deps chromium
+          npm --prefix apps/web run test:e2e
+      - name: Real dual native 1080p MP4 export and independent full decode
+        run: |
+          uv run --project backend python scripts/smoke_export.py --portrait1080 \
+            --output-dir .data/integration-fullhd
+          uv run --project backend python scripts/verify_dual_1080_smoke.py \
+            --root .data/integration-fullhd \
+            --report .data/integration-evidence/fullhd-report.json
+      - name: Real 12-scene Vietnamese eSpeak WAV, tempo and full video QA
+        run: |
+          uv run --project backend python scripts/voice_wav_acceptance.py \
+            --output-dir .data/integration-voice-acceptance --render
+      - name: Preserve immutable evidence, failure reports, synthetic media
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: multi-pr-integration-technical-evidence
+          if-no-files-found: warn
+          retention-days: 7
+          path: |
+            .data/integration-evidence/
+            .data/integration-voice-acceptance/voice-report-*.json
+            .data/integration-voice-acceptance/voice-qc-failure-*.json
+            .data/integration-voice-acceptance/voice-review-*.mp4
+            .data/integration-fullhd/portrait/exports/*.mp4
+            .data/integration-fullhd/landscape/exports/*.mp4
