@@ -1,13 +1,21 @@
 # PR audit, integration handover and next-feature context — 2026-10-30
 
-**Status:** CURRENT-EVIDENCE SNAPSHOT / TEN PRs OPEN / RELEASE-NOT-APPROVED  
-**Canonical:** `feat/short-video-studio` @ `58a939503f0ef5eb80ebec261bfe798928d3ee7b`  
+**Status:** UPDATED SNAPSHOT — 10 PRs OPEN INCLUDING #23 / #20 MERGED / RELEASE-NOT-APPROVED  
+**Canonical as of latest review:** `feat/short-video-studio` @ `4db4dac1dea57426c2ac53bca11f9ac5220052fa` (merged PR #20).  
 **Claim:** [Issue #22](https://github.com/qualife1291/Auto-Tool-Video/issues/22). Documentation-only, no code, media or CI changes.  
 **Do not confuse:** a PR head's green CI, a clean merge simulation, an actual canonical merge, and creator acceptance are four different states.
 
-## 1. GitHub snapshot: 10 PRs still unmerged
+## Latest state change after initial review — 2026-10-30
 
-All listed PRs are OPEN and GitHub currently reports `mergeable=true` **against canonical individually**. Check exact SHAs again immediately before merging; one successful PR-to-base comparison does not guarantee a future sequence without conflicts.
+- **PR #20 MERGED** at 2026-10-30T15:04:43Z, merge commit `4db4dac1dea57426c2ac53bca11f9ac5220052fa`. Frame-integrity QC and tests now exist on canonical. The #20 line below records its **pre-merge** test evidence; its open status is superseded by this update.
+- **10 PRs currently OPEN**, counting this handover PR **#23**: [#4](https://github.com/qualife1291/Auto-Tool-Video/pull/4), [#7](https://github.com/qualife1291/Auto-Tool-Video/pull/7), [#8](https://github.com/qualife1291/Auto-Tool-Video/pull/8), [#10](https://github.com/qualife1291/Auto-Tool-Video/pull/10), [#12](https://github.com/qualife1291/Auto-Tool-Video/pull/12), [#14](https://github.com/qualife1291/Auto-Tool-Video/pull/14), [#16](https://github.com/qualife1291/Auto-Tool-Video/pull/16), [#18](https://github.com/qualife1291/Auto-Tool-Video/pull/18), [#21](https://github.com/qualife1291/Auto-Tool-Video/pull/21), [#23](https://github.com/qualife1291/Auto-Tool-Video/pull/23). No other PR is known to have merged during this review.
+- [Canonical CI `41077362702`](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41077362702) is **SUCCESS** on `4db4dac1`. PR #18 head updated to `05052e51a597a6581f189f0af9c295a37c37eb87` to refresh integration pins; [integration run `41077727800`](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41077727800) and [standard CI `41077727879`](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41077727879) were **IN PROGRESS** at this snapshot. Do not claim new integration PASS yet.
+- **PR #23** itself is docs-only and previously passed [canonical CI `41076808671`](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41076808671) before this latest handover correction; re-check this exact new head. Another agent is handling PR reviews, so this snapshot is not a merge request or review approval.
+- The original audit below is retained as a **historical pre-merge snapshot**, not a live claim that all its entries remain open.
+
+## 1. Original GitHub snapshot (before #20 merge): 10 PRs then unmerged
+
+At the time of the original snapshot, all ten PRs were OPEN and GitHub reported `mergeable=true` against the then-canonical base individually. Check exact SHAs again immediately before merging; one successful PR-to-base comparison does not guarantee a future sequence without conflicts.
 
 | PR | Scope / files | Exact head SHA (prefix) | Observed verification / disposition |
 | --- | --- | --- | --- |
@@ -26,8 +34,8 @@ All listed PRs are OPEN and GitHub currently reports `mergeable=true` **against 
 
 ## 2. What truly exists on canonical versus on PR heads
 
-- **Canonical, already merged:** A01 SecondBeat data schema/planner/legacy preservation, M1 FastAPI/React/SQLite editor + 9:16/16:9 FFmpeg/H.264 export, local Ollama/ComfyUI adapters, technical QC and manual review interface. Baseline smoke and development features exist, but current PR-only changes are **not present on canonical**.
-- **Proposed but unmerged in code:** A04 measured `atempo=0.92` WAV path, A05 strict expected-frame/timestamp validation, negative caption-motion/beat E2E, Blender wet/dry tests, independent 1080p and exact-SHA integration workflows.
+- **Canonical, already merged:** A01 SecondBeat data schema/planner/legacy preservation and **A05 QC frame-integrity fix #20**, M1 FastAPI/React/SQLite editor + 9:16/16:9 FFmpeg/H.264 export, local Ollama/ComfyUI adapters, technical QC and manual review interface. Baseline smoke and development features exist, but current PR-only changes are **not present on canonical**.
+- **Proposed but unmerged in code:** A04 measured `atempo=0.92` WAV path, negative caption-motion/beat E2E, Blender wet/dry tests, independent 1080p and exact-SHA integration workflows. **A05 expected-frame/timestamp validation #20 is now merged**.
 - **Documented but unmerged:** A05 QA0–QA11 evidence contract, A06/A07 cloud-provider research, A11 research RG0–RG6 and 15-format future roadmap.
 - **Still NOT COMPLETED by technical tests:** original approved VieNeu 12-scene ~41.9s video, native-speaker listening/ASR correction, real story-specific cloth transition and caption/beat visual acceptance, human fact/child-suitability/rights signoff, renderer compilation of arbitrary authored beats, full TTS UI/forced alignment/SRT, direct social OAuth publishing or live paid AI provider adapters. Synthetic `eSpeak` QA 31.4s is **not** the original voice, creative movie or release approval.
 - **Status language:** `MERGED-VERIFIED`, `PR-CI-VERIFIED`, `PR-DOC-REVIEW`, `PR-CI-INCOMPLETE`, `UNIMPLEMENTED`, `BLOCKED-BY-HUMAN/ASSET`. Do not replace these with blanket `DONE`.
@@ -43,7 +51,7 @@ All listed PRs are OPEN and GitHub currently reports `mergeable=true` **against 
 
 ## 4. Next implementation roadmap (PROPOSED only, no code authorization)
 
-**Immediate P0 (finish integration and real quality):** complete reviews/merge sequence #4–#21; fix canonical handover/workboard status drift; run exact merged-commit CI, A02 cloth continuity and A03 caption/layout human QA; A05 approved original Vietnamese audio/full story + science/age/rights check. Existing deterministic and local-first output remain default.
+**Immediate P0 (finish integration and real quality):** with #20 already merged, complete reviews/merge of remaining #4–#21 (excluding #20), plus context #23; fix canonical handover/workboard status drift; run exact merged-commit CI, A02 cloth continuity and A03 caption/layout human QA; A05 approved original Vietnamese audio/full story + science/age/rights check. Existing deterministic and local-first output remain default.
 
 **Foundation P0/P1:** A12 reproducible benchmark/fixture manifest and hardware measurements (after coordinating A05); A15 Vietnamese transcript/forced-alignment and SRT research after A04. Require corpus + native review; ASR ≠ ground truth. Decide a versioned **Scene IR** (A20) with 30fps duration_frames, stable object IDs, camera, keyframes, text/audio cues, provenance and backward-compatible project migrations before adding generic beat-to-render compiler.
 
