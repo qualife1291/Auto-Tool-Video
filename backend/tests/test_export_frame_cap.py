@@ -73,9 +73,7 @@ def test_raw_under_60_but_1806_rendered_frames_is_rejected(
 
 
 @pytest.mark.parametrize("aspect", ["portrait", "landscape"])
-def test_exact_1800_frame_boundary_accepts_valid_silent_export(
-    client, prepared_project, aspect
-):
+def test_exact_1800_frame_boundary_accepts_valid_silent_export(client, prepared_project, aspect):
     project = timed_project(client, prepared_project, [5.0] * 12)
     assert sum(frames_for(s["duration"]) for s in project["scenes"]) == 1800
     request = export_request(project, aspect=aspect)
@@ -100,17 +98,13 @@ def test_rejects_overrun_at_raw_and_fractional_frame_boundaries(
 ):
     project = timed_project(client, prepared_project, durations)
     assert sum(frames_for(s["duration"]) for s in project["scenes"]) == expected_frames
-    response = client.post(
-        f"/api/projects/{project['id']}/exports", json=export_request(project)
-    )
+    response = client.post(f"/api/projects/{project['id']}/exports", json=export_request(project))
     assert response.status_code == 400
     assert response.json()["code"] == "DURATION_LIMIT"
     assert job_count(client) == 0
 
 
-def test_existing_idempotent_snapshot_survives_later_overlong_revision(
-    client, prepared_project
-):
+def test_existing_idempotent_snapshot_survives_later_overlong_revision(client, prepared_project):
     project = timed_project(client, prepared_project, [5.0] * 12)
     key = "stable-retry-key-0001"
     original = export_request(project, key=key)
@@ -125,14 +119,13 @@ def test_existing_idempotent_snapshot_survives_later_overlong_revision(
     assert overlong.status_code == 400
     assert overlong.json()["code"] == "DURATION_LIMIT"
     assert job_count(client) == 1
-    assert client.app.state.store.get("jobs", old_job["id"])["snapshot"]["revision"] == (
-        original["revision"]
+    assert (
+        client.app.state.store.get("jobs", old_job["id"])["snapshot"]["revision"]
+        == (original["revision"])
     )
 
 
-def test_rejected_request_key_can_be_reused_after_valid_revision(
-    client, prepared_project
-):
+def test_rejected_request_key_can_be_reused_after_valid_revision(client, prepared_project):
     project = timed_project(client, prepared_project, [4.95] * 6 + [5.04] * 6)
     key = "rejected-then-valid-key"
     url = f"/api/projects/{project['id']}/exports"
@@ -157,9 +150,7 @@ def test_stale_revision_precedes_duration_validation(client, prepared_project):
     assert job_count(client) == 0
 
 
-def test_exact_1800_frame_voiced_export_still_requires_audio(
-    client, prepared_project
-):
+def test_exact_1800_frame_voiced_export_still_requires_audio(client, prepared_project):
     project = timed_project(client, prepared_project, [5.0] * 12)
     response = client.post(
         f"/api/projects/{project['id']}/exports",
