@@ -627,6 +627,45 @@ textarea {
 .lesson-ideas button {
   width: 100%;
 }
+.quality-panel {
+  border-top: 1px solid #d8ddcf;
+  padding-top: 20px;
+  margin-top: 20px;
+  min-width: 0;
+}
+.quality-panel details {
+  margin: 16px 0;
+}
+.quality-panel code {
+  overflow-wrap: anywhere;
+}
+.quality-panel fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+  margin-top: 24px;
+}
+.quality-panel legend {
+  font-weight: 700;
+}
+.quality-panel h4 {
+  margin: 0 0 12px;
+}
+.qc-rating,
+.qc-finding,
+.qc-expected {
+  padding: 16px;
+  border: 1px solid #d8ddcf;
+  border-radius: 12px;
+  margin: 16px 0;
+}
+.qc-gate {
+  color: #254d3d;
+  font-weight: 700;
+  padding: 12px;
+  background: #f0f3e8;
+  border-radius: 8px;
+}
 .preview-panel .checkbox {
   margin-top: 15px;
   margin-bottom: 5px;

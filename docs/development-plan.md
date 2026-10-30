@@ -26,6 +26,8 @@
 
 ## M3 — Giọng và chất lượng
 
+Đã triển khai QC sau render: metadata/PTS/CFR/decode/LUFS/truepeak/silence, lightweight flash/freeze proxies theo scene và motion intent; hard gate kỹ thuật, phiếu creator1–5/hash/review revision, critical override, timestamp/seek và JSON/CSV. Nguồn VBench/AIGCBench/CVPRW2026/EU được đối chiếu trong [quy trình QA](video-quality-standard.md); chưa chạy benchmark learned metrics hoặc C2PA. Sửa normalize audio ngắn và silent branch; human listening/physics/semantic quality vẫn cần creator.
+
 Đã sửa word-wrap/cân2dòng, contour silhouette-first và AAC headroom; thêm3kiểu caption card/contrast/accent với literal emphasis, lưu/preview/render hai aspect. Mẫu review thật dùng tranh procedural Blender/Pillow có chi tiết và VieNeu FP32 local qua CLI riêng, ASR/loudness/full decode có báo cáo ở [QA](qa-review.md). Đây chưa là TTS trong UI, forced alignment hoặc quality gate có người nghe duyệt; SDK CLI còn giới hạn packaging được ghi trong QA.
 
 - VieNeu CPU FP32, voice list/digest/license thật; nghe20 câu. Không fake audio hoặc auto đổi sang dịch vụ tính phí.

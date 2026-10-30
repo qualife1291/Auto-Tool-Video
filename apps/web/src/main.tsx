@@ -1,6 +1,7 @@
 import { api } from './api';
 import { CreativePanel } from './CreativePanel';
 import { ImageGenerationPanel } from './ImageGenerationPanel';
+import { QualityPanel } from './QualityPanel';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
@@ -44,6 +45,7 @@ const localTime = (iso: string) =>
   });
 
 function App() {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [project, setProject] = useState<Project | null>(null);
   const [step, setStep] = useState(0);
@@ -805,6 +807,23 @@ function App() {
                             placeholder="Ví dụ: bay hơi"
                           />
                         </label>
+                        <label>
+                          Kỳ vọng chuyển động
+                          <select
+                            disabled={busy}
+                            value={scene.motion_expectation || 'allow_static'}
+                            onChange={(e) =>
+                              updateScene({
+                                motion_expectation: e.target.value as Scene['motion_expectation'],
+                              })
+                            }
+                          >
+                            <option value="allow_static">
+                              Cho phép cảnh tĩnh / giữ hình để đọc
+                            </option>
+                            <option value="motion_required">Cần chuyển động trong cảnh</option>
+                          </select>
+                        </label>
                         <p className="muted small">
                           Nhấn cụm có trong lời thoại khi chọn kiểu màu vàng. Hiệu ứng theo cảnh,
                           chưa căn từng từ.
@@ -1049,6 +1068,7 @@ function App() {
                     {job?.state === 'succeeded' && job.result_id ? (
                       <>
                         <video
+                          ref={videoRef}
                           className={job.options.aspect === 'landscape' ? 'landscape-result' : ''}
                           controls
                           playsInline
@@ -1124,6 +1144,20 @@ function App() {
                           </button>
                         )}
                       </div>
+                    )}
+                    {job && ['succeeded', 'failed'].includes(job.state) && (
+                      <QualityPanel
+                        key={job.id}
+                        projectId={project.id}
+                        jobId={job.id}
+                        onSeek={(time) => {
+                          if (videoRef.current) {
+                            videoRef.current.pause();
+                            videoRef.current.currentTime = time;
+                            videoRef.current.scrollIntoView({ block: 'center' });
+                          }
+                        }}
+                      />
                     )}
                   </section>
                 </div>

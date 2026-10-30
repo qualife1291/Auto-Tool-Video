@@ -43,6 +43,8 @@ Không có weights mới trong repo; nghiên cứu nguồn không chứng minh c
 
 ## Audit hiện tại
 
+Nguồn đánh giá bổ sung: code VBench tại`fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490` và AIGCBench tại`cc230c8474fdd1af8a7a0749981aa1d09198eaf3` đều Apache2.0 theo LICENSE đã đọc. Tool chỉ viết QC/rubric nguyên bản và dẫn nguồn; chưa vendor/cài benchmark, tải checkpoint/dataset hoặc mua API. License code không cấp chung quyền weights/dataset hoặc xác nhận tuân thủ EU. PDF CVPRW/website/case study chỉ được đọc/tóm tắt, không đóng gói bản đầy đủ vào repo; URL/hash trong source-snapshot.json.
+
 - npm audit --omit=dev: không vulnerability runtime báo về trong lần kiểm.
 - pip-audit --local: không advisory đã biết cho dependency đã audit; package nội bộ auto-tool-video không có trênPyPI nên không được database bên ngoài audit.
 - Audit là ảnh chụp thời điểm, không chứng minh không có lỗi bảo mật hoặc license model đã đạt. Kiểm lại khi thaylock/dependency và trướcpháthành.

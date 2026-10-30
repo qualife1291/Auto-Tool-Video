@@ -2,11 +2,32 @@
 
 ## Kết quả và phạm vi
 
-Kiểm ngày **2026-10-30**, trên Linux: 5 CPU logic nhìn thấy, quota CPU cgroup4core, giới hạn RAM cgroup32GiB, không có GPU NVIDIA. Kết quả cuối: **114 pytest + 8 Vitest + 9 Playwright = 131 test qua**, không skip. Có một cảnh báo deprecation upstream Starlette/httpx; không tắt cảnh báo/assertion. Ruff, format, mypy trên 12 module, TypeScript, Vite build và Prettier đã kiểm. Các ca AI dùng mock được ghi là contract, không phải model tạo ảnh/video đã chạy thật.
+Kiểm ngày **2026-10-30**, Linux:5CPU logic/quota4core/RAM32GiB, không GPU NVIDIA. Sau nâng QC: **156pytest+9Vitest+11Playwright=176test qua**, khôngskip (baseline trước code114+8+9=131). Một deprecation upstream Starlette/httpx, không tắt assertion/warning. Ruff/format/mypy13module/TypeScript/build/Prettier qua. Ba E2E AI là mock contract; hai E2E QC mới dùng MP4/FFmpeg và API thật, không fake model quality.
 
 Bản mẫu chủ đề **“Chiếc áo khô: nước đi đâu?”**, profile family 6+, 8 cảnh/32 giây, tranh gốc (bản nâng dùng Blender/Pillow), giọng preset Hải Đăng, phụ đề tiếng Việt, kết hợp whiteboard và pan ảnh nhẹ. Xuất H.264/yuv420p/30fps + AAC 48 kHz, cả 1080×1920 và 1920×1080; video thực dài khoảng 32,021s do audio/container padding. Không watermark nhìn thấy, nhạc nền tắt, không giọng clone, không stock hoặc tài nguyên từ video tham chiếu.
 
 Đây là mẫu từ **renderer ứng dụng thật với audio nhập vào**, có still3D procedural được dựng sẵn, không phải video3D/Wan/LTX tự sinh. Script TTS chạy riêng; UI chưa có TTS M3. Cần creator nghe/xem và nhận xét cảm nhận, nhịp và mức phù hợp tuổi. Không nhận đã có người nghe duyệt, không bảo đảm viral, kiếm tiền hoặc được vào YouTube Kids.
+
+## QC sau gen theo nguồn người dùng
+
+Đọc/pin VBench, CVPRW2026 survey, AIGCBench, EU code và Apiframe/Turing; xem [rubric/phiếu manual](video-quality-standard.md), source-review và video_evaluation_sources trong source-snapshot.json. Không cài benchmark/checkpoint hoặc trả phí API. VBench/AIGCBench learned metrics giữ **not_run**; pixel proxies và score creator không được gắn tên benchmark chính thức.
+
+Đã tích hợp hard QC trước success: full decode, resolution/H264/yuv420p/30fps, PTS mỗi frame/CFR, duration/A–V và AAC48kHz/LUFS/peak. Every-frame ROI scan, cảnh báo flash/near-repeat có timestamp; static hold và scene boundary được xét riêng. Blur/luma/delta chỉ tham khảo, không phán khoa học. Phiếu creator gắn SHA/review_revision, reject critical kể cả mọi điểm5, revise3/pending thiếu bước; source/disclosure theo export job và metadata unsigned. JSON/CSV có chống spreadsheet formula injection. Project cũ chưa QC ghi unavailable.
+
+**Lỗi thật đã sửa:**1s audio fixture đo−9,6LUFS vì pad vô hạn trước loudnorm rồi mới trim. Đã trim/pad hữu hạn trước normalize, assert actual LUFS/truepeak giữ nguyên; silent mode bỏ loudnorm để không sinh NaN cho AAC. E2E phát hiện saved_at của server bị gửi lại trong lần lưu phiếu2 gây422: lọc metadata ra khỏi draft, thêm unit hồi quy và E2E lưu nhiều lần. Selector select đổi sang accessible combobox role; không giảm assertion hoặc bỏ kiểm tra.
+
+Backend156pass/17,62s, Vitest9pass, E2E11pass/35,6s gồm desktop1366/mobile390/axe/seek/critical override/warning ack/reload/CSV. Fault injection kiểm QC fail giữ video tốt, cancellation dọn tiến trình, oversize reject; hash/CAS/cross-project/invalid-score/publish snapshot qua. npm runtime/pip-audit backend0known advisory; internal package chưa được database audit.
+
+Audit hai video cũ với policy mới: technical pass,0warning proxies, gate vẫn pending_review. Dựng lại cùng tranh/giọng32s và kiểm model ASR local đã có: hai aspect **−15,69LUFS / −1,43dBTP**, full decode/PTS/audio qua; ASR bản dọc khớp8/8cue. Chưa có người nghe/xem duyệt; không tự chấm rubric. Đã xem24frame đầu/giữa/cuối mỗi aspect của bản mới; native/stills đầu vào đã kiểm ở đợt trước. Không lấy still thay review chuyển động ở tốc độ thật.
+
+Artifacts ở `.data/quality-upgrade` (ignored): MP4, quality-report-*.json, qa-qc-sheet-*.csv, verification.json, snapshot và project store. Bản cũ `.data/review` giữ nguyên. Mở project mẫu bằng `APP_DATA_DIR=.data/quality-upgrade/studio-portrait bash scripts/dev.sh`; qua bước Xuất video để xem phiếu gắn job. Không cần weights để mở audio đã nhập.
+
+| Mẫu QC mới | Bytes | Dựng + QC + contact sheets | SHA256 |
+|---|---:|---:|---|
+| portrait | 1632478 | 40.558s | `9051fd299c0badf26c629c23e35a0fdb6d280405796f351798b4617b6d07e66d` |
+| landscape | 1325407 | 40.276s | `a177fb64e78dff1accc33bc0068ba01b0bbf7c37dad1b0c1451e9f4b2d30a17e` |
+
+Thời gian một lượt warm CPU, chưa đo peak RSS toàn pipeline hoặc SLA. Không gen lại Blender/voice, không gửi video ra dịch vụ ngoài. Không có C2PA/robust watermark/AI detector/legal compliance verdict. Benchmark/human quality/thiết bị thật còn chưa chạy như phần giới hạn dưới.
 
 ## Phụ đề và nguồn bài học sau nâng cấp
 
@@ -30,10 +51,10 @@ Thư viện4brief khoa học tiếng Việt nguyên bản có link Tongjiang Lab
 
 | Nhóm                    | Lệnh/thực hiện                                                                        | Kết quả                                                                                                                                                                |
 | ----------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Backend                 | `backend/.venv/bin/python -m pytest backend/tests -q`                                 | 114 passed; import/MIME/path/revision/audio-stale/jobs/cancel/restart/render hai aspect và provider contracts.                                                           |
-| Frontend                | `npm --prefix apps/web run check`                                                     | TypeScript và 8 Vitest qua.                                                                                                                                              |
-| Browser                 | `npm --prefix apps/web run test:e2e`                                                  | 9 passed; desktop 1366/mobile 390, import→render→download→reload, keyboard/text injection, axe WCAG 2A/AA; mock planner review/reload/apply và candidate không tự thay ảnh. |
-| Python quality          | Ruff check, Ruff format check, mypy `backend/auto_tool_video`                         | Qua;12source modules.                                                                                                                                                  |
+| Backend                 | `backend/.venv/bin/python -m pytest backend/tests -q`                                 | 156 passed; import/MIME/path/revision/audio-stale/jobs/cancel/restart/render hai aspect và provider contracts.                                                           |
+| Frontend                | `npm --prefix apps/web run check`                                                     | TypeScript và 9 Vitest qua.                                                                                                                                              |
+| Browser                 | `npm --prefix apps/web run test:e2e`                                                  | 11 passed; desktop 1366/mobile 390, import→render→download→reload, keyboard/text injection, axe WCAG 2A/AA; mock planner review/reload/apply và candidate không tự thay ảnh. |
+| Python quality          | Ruff check, Ruff format check, mypy `backend/auto_tool_video`                         | Qua;13source modules.                                                                                                                                                  |
 | Web quality             | `npm --prefix apps/web run build`, `run format:check`                                 | Qua.                                                                                                                                                                   |
 | App dependency audit    | `npm --prefix apps/web audit --omit=dev`; backend `pip-audit --local`                 | Không advisory được báo. Package nội bộ chưa có trênPyPI không được database audit, không gọi là đã audit mã nội bộ.                                                   |
 | Review dependency audit | `pip-audit --path <review-venv>/lib/python3.12/site-packages`                         | Không advisory được báo sau loạiUI; chưa là chứng nhận không có mọi lỗi.                                                                                               |

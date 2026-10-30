@@ -136,6 +136,20 @@ Trong tool, chọn ý tưởng chỉ thay brief theo thao tác rõ ràng; brief 
 
 ## Cổng chất lượng và bộ thử trước khi bật mặc định
 
+### Nguồn đánh giá người dùng bổ sung
+
+Ngày2026-10-30 đọc trực tiếp4nguồn chính và2case study, cùng README/LICENSE tại commit VBench`fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490`/AIGCBench`cc230c8474fdd1af8a7a0749981aa1d09198eaf3`. URL/final URL/status/SHA256 nằm trong trường video_evaluation_sources của source-snapshot.json; PDF373554byte được đọc bằng pdftotext. Không chạy JS repo ngoài hoặc cài benchmark.
+
+| Nguồn | Nội dung đã xác minh | Quyết định tích hợp |
+|---|---|---|
+| [VBench project](https://vchitect.github.io/VBench-project/) và repo pin |16dimension T2V; README có2.0 mở rộng18dimension; custom_input mặc định chỉ hỗ trợ một tập chiều, cần đúng prompt/mode. Code Apache2.0, setup có torch/CUDA/model dependencies. | Tách các chiều trong report/manual rubric; benchmark status not_run, không biến MAE/Laplacian thành VBench score. Chưa tải CLIP/DINO/flow/checkpoints. |
+| [CVPRW2026 survey](https://openaccess.thecvf.com/content/CVPR2026W/VGBE/papers/Safavigerdini_Generative_AI_Video_Evaluation_Survey_of_Metrics_Benchmarks_and_Trustworthiness_CVPRW_2026_paper.pdf) | Tách metric/human/model-centered; giới hạn frame-level/FVD và static bias; physics/semantic/human preference/trust cần tín hiệu riêng (mục3–8). | Gate kỹ thuật độc lập với chấm cảm nhận; không chấm vật lý bằng độ mượt hoặc lấy một average che lỗi. Không đưa FVD cho một clip đơn. |
+| [AIGCBench](https://www.benchcouncil.org/AIGCBench/) | I2V,11metric/4nhóm control-video alignment/motion effects/temporal consistency/video quality, có reference và reference-free. Code Apache2.0, README yêu cầu CLIP weights cho eval.py. | Giữ script/image reference của snapshot để creator đối chiếu; learned benchmark chưa chạy. Không dùng pixel MSE giữa whiteboard reveal và ảnh nguồn làm semantic score. |
+| [EU code](https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content) | Trang hiện tại mô tả code tự nguyện đã được Commission/AI Board đánh giá phù hợp, Article50 áp dụng từ2026-08-02; marking/detection khác deployer labelling. | Hash/source/provenance và export ID/origin metadata, creator disclosure trong publish pack. Không gọi unsigned metadata là C2PA/robust watermark/AI detector hoặc bảo đảm legal compliance. Phạm vi luật phải xét riêng. |
+| [Apiframe](https://apiframe.ai/blog/how-to-test-quality-of-ai-generated-video), [Turing](https://www.linkedin.com/posts/turingcom_in-our-latest-case-study-we-evaluated-1600-activity-7444432744677478400-9AMe) | Bài công nghiệp khuyên fixed test set,1–5, notes/timestamp và review độc lập; post Turing nêu kết quả case study1600+clip của họ. | Rubric tiếng Việt nguyên bản, năm hạng theo bảng user; kết quả marketing không phải benchmark local hoặc chứng nhận chung. |
+
+QC đã code bằng FFmpeg/OpenCV/NumPy đang có: hard metadata/PTS/decode/audio gates, pixel proxies mọi frame trong ROI và manual review gắn hash/CAS; không thêm dependency/paid API. Chi tiết pass/fail/threshold, giới hạn và sheet dùng không cần code ở [video-quality-standard.md](video-quality-standard.md). Cảnh giữ hình có ý đồ không bị tự đánh kém; mẫu và nhân sự chấm phải ghi thật.
+
 Các số dưới đây là mục tiêu nội bộ đề xuất để đo, chưa phải kết quả đã đạt. Chuẩn nội dung/người xem là quyết định của creator; công cụ không bảo đảm mọi tuổi đều hợp, được vào YouTube Kids hay được thuật toán đề xuất.
 
 | Gate / ID                | Cách kiểm và bằng chứng phải lưu                                                                                                 | Điều kiện chặn                                                                                                    |

@@ -7,7 +7,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
@@ -19,6 +19,7 @@ from .domain import (
     PlanInput,
     ProjectInput,
     ProjectUpdate,
+    QualityReviewInput,
     SplitInput,
     split_script,
 )
@@ -26,6 +27,7 @@ from .generation import apply_generation, enqueue_generation
 from .jobs import enqueue, public_job, publish_pack
 from .media import MAX_UPLOAD, import_asset
 from .providers import capabilities
+from .quality import csv_sheet, quality_job, quality_payload, save_review
 from .render import FONT_DIR
 from .social import upload_hub
 from .store import DomainError, Store
@@ -230,6 +232,22 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
             raise DomainError("REVISION_CONFLICT", "Tác vụ đã kết thúc.", 409)
         return public_job(store.update_job(identifier, state="cancelled"))
 
+    @app.get("/api/projects/{identifier}/exports/{job_id}/quality")
+    def export_quality(identifier: str, job_id: str):
+        return quality_payload(quality_job(store, identifier, job_id))
+
+    @app.get("/api/projects/{identifier}/exports/{job_id}/quality.csv")
+    def export_quality_sheet(identifier: str, job_id: str):
+        return Response(
+            csv_sheet(quality_payload(quality_job(store, identifier, job_id))),
+            media_type="text/csv; charset=utf-8",
+            headers={"Content-Disposition": 'attachment; filename="quality-review.csv"'},
+        )
+
+    @app.put("/api/projects/{identifier}/exports/{job_id}/quality-review")
+    def review_export(identifier: str, job_id: str, values: QualityReviewInput):
+        return save_review(store, identifier, job_id, values)
+
     @app.get("/api/projects/{identifier}/publish-pack")
     def pack(
         identifier: str,
@@ -248,7 +266,11 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
         project = store.get("projects", identifier)
         if job_id:
             job_data = store.get("jobs", job_id)
-            if job_data["project_id"] != identifier or job_data["state"] != "succeeded":
+            if (
+                job_data["project_id"] != identifier
+                or job_data["state"] != "succeeded"
+                or job_data["options"]["kind"] not in {"preview", "export"}
+            ):
                 raise DomainError("VALIDATION_ERROR", "Chọn đúng bản xuất thành công của dự án.")
             project = {
                 **job_data["snapshot"],
@@ -258,6 +280,29 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
         result.update(export_job_id=job_id, source="export_snapshot" if job_id else "project_draft")
         if job_id:
             result["resolution"] = "1920x1080" if project["aspect"] == "landscape" else "1080x1920"
+            quality = quality_payload(job_data)
+            result["quality"] = {
+                key: quality.get(key)
+                for key in (
+                    "policy_version",
+                    "artifact",
+                    "gate",
+                    "review_revision",
+                    "manual_review",
+                )
+            }
+            review = quality.get("manual_review") or {}
+            result["generation_disclosure"] = {
+                "origin": review.get("content_origin", "unknown"),
+                "creator_note": review.get("disclosure_note", ""),
+                "unsigned_provenance": quality.get("provenance"),
+                "legal_compliance_certified": False,
+            }
+            if review.get("content_origin") == "ai_assisted":
+                result["description_draft"] += "\nThông tin AI do creator xác nhận: " + (
+                    review.get("disclosure_note")
+                    or "Nội dung có AI hỗ trợ; kiểm nhãn phù hợp trước đăng."
+                )
             if job_data["options"]["kind"] == "preview":
                 result["resolution"] = "640x360" if project["aspect"] == "landscape" else "360x640"
         return result

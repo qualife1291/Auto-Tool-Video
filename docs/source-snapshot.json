@@ -995,5 +995,107 @@
     }
   ],
   "execution_evidence": "Bước này là nghiên cứu; số liệu VRAM/tốc độ trong tài liệu upstream không phải phép đo local và không xác nhận chất lượng video đã đạt.",
-  "updated_at_utc": "2026-10-30T04:12:59.199298+00:00"
+  "updated_at_utc": "2026-10-30T04:12:59.199298+00:00",
+  "video_evaluation_sources": {
+    "reviewed_on": "2026-10-30",
+    "method": "Read public pages, CVF PDF via pdftotext, GitHub pinned README/LICENSE; no benchmark execution or weights installation",
+    "web_sources": [
+      {
+        "name": "vbench.html",
+        "url": "https://vchitect.github.io/VBench-project/",
+        "final_url": "https://vchitect.github.io/VBench-project/",
+        "status": 200,
+        "bytes": 46567,
+        "sha256": "9a0e4cfa2ec9c7c2384116bcfef5dcd31525f2ba21f0284708dc08690368ab30"
+      },
+      {
+        "name": "survey.pdf",
+        "url": "https://openaccess.thecvf.com/content/CVPR2026W/VGBE/papers/Safavigerdini_Generative_AI_Video_Evaluation_Survey_of_Metrics_Benchmarks_and_Trustworthiness_CVPRW_2026_paper.pdf",
+        "final_url": "https://openaccess.thecvf.com/content/CVPR2026W/VGBE/papers/Safavigerdini_Generative_AI_Video_Evaluation_Survey_of_Metrics_Benchmarks_and_Trustworthiness_CVPRW_2026_paper.pdf",
+        "status": 200,
+        "bytes": 373554,
+        "sha256": "7214fd061bd708b1a88848911398530ab1831423ed6724de18f5e17fda857073"
+      },
+      {
+        "name": "aigcbench.html",
+        "url": "https://www.benchcouncil.org/AIGCBench/",
+        "final_url": "https://www.benchcouncil.org/AIGCBench/",
+        "status": 200,
+        "bytes": 34026,
+        "sha256": "4be54e9223a99989f0715cc7828c420e955cb407c584d7259145e46d92f314b7"
+      },
+      {
+        "name": "eu-code.html",
+        "url": "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content",
+        "final_url": "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content",
+        "status": 200,
+        "bytes": 66591,
+        "sha256": "c18fa62154c854d411cde887f5eab07123bb18de880002b13fd390ac61ba8f6f"
+      },
+      {
+        "name": "apiframe.html",
+        "url": "https://apiframe.ai/blog/how-to-test-quality-of-ai-generated-video",
+        "final_url": "https://apiframe.ai/blog/how-to-test-quality-of-ai-generated-video",
+        "status": 200,
+        "bytes": 86842,
+        "sha256": "8aea23b18a0dce677034c18bdc6c3d4147e793877b1e15cab0fc9f3f023b8188"
+      },
+      {
+        "name": "turing.html",
+        "url": "https://www.linkedin.com/posts/turingcom_in-our-latest-case-study-we-evaluated-1600-activity-7444432744677478400-9AMe",
+        "final_url": "https://www.linkedin.com/posts/turingcom_in-our-latest-case-study-we-evaluated-1600-activity-7444432744677478400-9AMe",
+        "status": 200,
+        "bytes": 171085,
+        "sha256": "9f78b96576cb3e0c145c6fc25fde83df76c0c5fafb878f75eb2e5e26f093e3de"
+      }
+    ],
+    "repositories": [
+      {
+        "repo": "Vchitect/VBench",
+        "commit": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490",
+        "license_api": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "files": [
+          {
+            "path": "README.md",
+            "url": "https://raw.githubusercontent.com/Vchitect/VBench/fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490/README.md",
+            "sha256": "9f5db5e459cc216e49e0e151a8b242aec8cc98b5f826716825e8369a3669d5c3"
+          },
+          {
+            "path": "LICENSE",
+            "url": "https://raw.githubusercontent.com/Vchitect/VBench/fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490/LICENSE",
+            "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1"
+          }
+        ]
+      },
+      {
+        "repo": "BenchCouncil/AIGCBench",
+        "commit": "cc230c8474fdd1af8a7a0749981aa1d09198eaf3",
+        "license_api": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "files": [
+          {
+            "path": "README.md",
+            "url": "https://raw.githubusercontent.com/BenchCouncil/AIGCBench/cc230c8474fdd1af8a7a0749981aa1d09198eaf3/README.md",
+            "sha256": "fbf70d9c8fff618623474c64209278600888466b5ede292ee94900155939ecf2"
+          },
+          {
+            "path": "LICENSE",
+            "url": "https://raw.githubusercontent.com/BenchCouncil/AIGCBench/cc230c8474fdd1af8a7a0749981aa1d09198eaf3/LICENSE",
+            "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+          }
+        ]
+      }
+    ]
+  }
 }

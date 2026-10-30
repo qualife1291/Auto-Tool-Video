@@ -23,6 +23,7 @@ Dùng sau khi thay renderer/template/model/provider, khi review clip thành ph�
 8. Xuất cùng trường hợp kiểm ở 16:9 và 9:16 với layout/camera riêng. Kiểm đủ nội dung, không méo, không crop mất chủ thể, chữ đọc được và guides không bị ghi vào video. Kiểm từng profile đang bật; người lớn duyệt phù hợp tuổi/kiến thức.
 9. So tối ưu với baseline cùng brief/ref/resolution/budget: cold/warm runtime, peak RAM/VRAM, disk, retry/failure và chi phí API nếu có. Không áp tốc độ upstream lên máy local. Quantization/upscale/giảm bước chỉ chấp nhận khi sample đạt; giữ cấu hình quay lại. VMAF/SSIM chỉ cho reference cùng nội dung, không chấm tính đúng/hấp dẫn.
 10. Test cancel/restart/duplicate/late result/revision conflict và mất provider: không mất bản tốt cũ, không nhân job hay tự chuyển paid API. Không bật preset nếu gate bắt buộc chưa đạt; tiếp tục những phần độc lập còn làm được.
+11. Sau gen lấy quality_report của đúng export job, hoặc dùng scripts/check_video_quality.py với snapshot thật. Đọc docs/video-quality-standard.md cho rubric1–5: critical/1–2 loại,3sửa, thiếu review chờ, toàn4–5 chỉ duyệt khi kỹ thuật và các bước con người đủ. Không tự chấm điểm thay creator. Motion intent/scene cuts/whiteboard hold phải được xét trước khi gọi near-repeat là freeze; MAE/luma/Laplacian là proxies chưa hiệu chuẩn, không là VBench/physics scores. VBench/AIGCBench chưa chạy thì giữ not_run. Ghi rõ hash/review revision/nguồn và disclosure; unsigned metadata không phải C2PA, watermark bền vững hoặc legal certification.
 
 ## Báo cáo cần có
 

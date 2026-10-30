@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
 from collections.abc import Callable
 from itertools import pairwise
 from pathlib import Path
@@ -16,6 +17,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from .media import probe
+from .quality import inspect_video, provenance_for
 from .store import Store
 
 FONT_DIR = Path(__file__).resolve().parents[2] / "assets" / "fonts"
@@ -406,7 +408,11 @@ def encode_scene(
         "1",
         "-af",
         # Leave AAC reconstruction headroom; the final file still targets <= -1 dBTP.
-        f"apad,loudnorm=I=-16:TP=-2.0:LRA=11,atrim=duration={duration}",
+        (
+            f"atrim=duration={duration}"
+            if silent
+            else f"apad,atrim=duration={duration},loudnorm=I=-16:TP=-2.0:LRA=11"
+        ),
         "-t",
         str(duration),
         str(path),
@@ -446,6 +452,7 @@ def render_job(store: Store, job: dict[str, Any]) -> None:
     )
     total_frames = sum(math.ceil(s["duration"] * FPS) for s in job["snapshot"]["scenes"])
     completed = 0
+    last_qc_check = 0.0
 
     def report(frame: int) -> None:
         if store.get("jobs", job["id"])["state"] == "cancelled":
@@ -453,6 +460,12 @@ def render_job(store: Store, job: dict[str, Any]) -> None:
         if shutil.disk_usage(store.root).free < 256 * 1024**2:
             raise RuntimeError("Đĩa không còn đủ trống.")
         store.update_job(job["id"], progress=min(0.95, (completed + frame) / total_frames * 0.95))
+
+    def qc_check() -> None:
+        nonlocal last_qc_check
+        if time.monotonic() - last_qc_check >= 0.25:
+            report(0)
+            last_qc_check = time.monotonic()
 
     try:
         segments = []
@@ -476,6 +489,7 @@ def render_job(store: Store, job: dict[str, Any]) -> None:
             "\n".join("file '" + str(p).replace("'", "'\\''") + "'" for p in segments)
         )
         pending = root / "final.mp4"
+        provenance = provenance_for(store, job, qc_check)
         subprocess.run(
             [
                 "ffmpeg",
@@ -493,22 +507,19 @@ def render_job(store: Store, job: dict[str, Any]) -> None:
                 "copy",
                 "-movflags",
                 "+faststart",
+                "-metadata",
+                f"comment=Auto-Tool-Video;export_id={job['id']};origin={provenance['origin']};signature=none;provenance=local-sidecar",
                 str(pending),
             ],
             capture_output=True,
             check=True,
             timeout=120,
         )
+        quality = inspect_video(pending, job["snapshot"], job["options"], provenance, qc_check)
+        store.update_job(job["id"], quality_report=quality)
+        if quality["technical"]["status"] != "passed":
+            raise RuntimeError("Video chưa đạt cổng QC kỹ thuật. Xem báo cáo trước khi xuất lại.")
         info = probe(pending)
-        video = next(stream for stream in info["streams"] if stream["codec_type"] == "video")
-        if (video["width"], video["height"], video["codec_name"]) != (width, height, "h264"):
-            raise RuntimeError("File xuất không đúng định dạng đã chọn.")
-        subprocess.run(
-            ["ffmpeg", "-v", "error", "-xerror", "-i", str(pending), "-f", "null", "-"],
-            capture_output=True,
-            check=True,
-            timeout=300,
-        )
         report(0)
         pending.replace(output)
         asset = {
@@ -522,6 +533,7 @@ def render_job(store: Store, job: dict[str, Any]) -> None:
             "height": height,
             "duration": float(info["format"]["duration"]),
             "size": output.stat().st_size,
+            "sha256": quality["artifact"]["sha256"],
         }
         with store.connect() as conn:
             conn.execute("INSERT INTO assets VALUES(?,?)", (asset["id"], json.dumps(asset)))

@@ -22,6 +22,8 @@ Plan/image jobs giữ proposal/candidate riêng, explicit review/apply và revis
 
 scripts/review-tts là CLI isolated, lock/hash riêng; model chính thức pin revision và streaming hash. VieNeu3.8.3 direct ONNX engine, preset thực; faster-whisper waveform CPU cho QA. Gradio bị loại khỏi CLI do dependency Pillow cũ có advisory; SDK metadata vẫn required, pipcheck không sạch. Không nhúng CLIvenv vàoinstaller M3. scripts/blender_review_art.py tạo stills procedural gốc, không physics simulation hoặc editor3D.
 
+quality.py chạy sau render trước success; hard metadata/decode/CFR/audio gates, ROI pixel proxies theo scene/motion intent. Review trong jobs JSON với review_revision CAS và artifact SHA; API project/export/quality(.csv)/quality-review, QualityPanel xem/seek/chấm. Publish pack theo export snapshot kèm gate/disclosure. Không SQL migration/dependency mới; signed provenance/learned benchmark chưa có. CLI check_video_quality.py audit media cũ không sửa tệp. Silent bỏ loudnorm, narration trim/pad hữu hạn trước normalize để cảnh ngắn không quá lớn.
+
 ## Lệnh
 
 - Cài: npm --prefix apps/web ci; uv sync --project backend --frozen --group dev.

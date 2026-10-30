@@ -39,3 +39,11 @@
 - Lý do: người dùng muốn phụ đề đa dạng, đồ họa chi tiết và bổ sung Tongjiang Lab.
 - Hệ quả: card/contrast/accent, literal emphasis không fakekaraoke; art Blender/Pillow nguyên bản và cả2aspect. Thư viện4brief tự viết, link Tongjiang, không vendor/execute HTML ngoài. Tongjiang lesson/cover/catalog CC BY-NC4.0 khác MIT củathree.js; dùng lại thương mại cần quyền riêng. Nguồn gắn export snapshot. Engine quay lesson còn nghiên cứu.
 - Đặc tả: specs/whiteboard-video-tool.md
+
+## D-006 — QC tách kỹ thuật, tín hiệu tham khảo và creator
+
+- Ngày:2026-10-30
+- Trạng thái:accepted
+- Lý do:người dùng yêu cầu áp dụng VBench/CVPRW2026/AIGCBench/EU và QA/QC1–5 sau gen.
+- Hệ quả:hard metadata/PTS/decode/audio gate; pixel proxies có intent/boundaries, không là benchmark score. Creator1–5/hash/CAS/no-average-critical, JSON/CSV và disclosure theo export. Learned benchmark not_run, không tự tải/cài/paid API; metadata unsigned không là C2PA hoặc chứng nhận EU. Rubric tại docs/video-quality-standard.md.
+- Đặc tả:specs/whiteboard-video-tool.md

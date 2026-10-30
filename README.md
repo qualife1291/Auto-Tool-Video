@@ -8,6 +8,8 @@ Công cụ web local làm video whiteboard tiếng Việt cho từng nhóm tuổ
 
 ## Cách chạy
 
+Sau mỗi lần xuất, tool kiểm kỹ thuật/audio và đưa cảnh báo kèm timestamp; creator điền phiếu1–5 theo đúng hash video. Có JSON/CSV và [rubric kiểm thủ công](docs/video-quality-standard.md). Đây là QC local và người duyệt, chưa chạy learned scores VBench/AIGCBench hoặc chứng nhận pháp lý. MP4 vẫn tải được để review khi chưa duyệt.
+
 Cần Linux, Node24+, Python3.12+, uv và FFmpeg/FFprobe có libx264/AAC. Font Noto có dấu đã đi kèm giấy phép; không tải font qua mạng lúc render.
 
 ```bash

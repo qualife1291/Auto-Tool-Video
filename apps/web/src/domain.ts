@@ -69,6 +69,7 @@ export type Scene = {
   style: 'whiteboard' | 'motion';
   caption_style?: 'card' | 'contrast' | 'accent';
   caption_emphasis?: string;
+  motion_expectation?: 'allow_static' | 'motion_required';
   visual_description?: string;
   role?: string;
   reveal_order?: string[];

@@ -355,6 +355,10 @@ def test_mp4_clip_import_and_narration_export(client, image_bytes, audio_bytes, 
         check=True,
     ).stdout
     assert np.abs(np.frombuffer(samples, dtype=np.float32)).max() > 0.01
+    # A short tone previously became -9.6 LUFS despite the loudnorm filter being present.
+    checks = {item["id"]: item for item in result["quality_report"]["technical"]["checks"]}
+    assert -17 <= checks["narration_loudness"]["actual"] <= -15
+    assert checks["true_peak"]["actual"] <= -1
 
 
 def test_render_failure_not_success(client, image_bytes, monkeypatch):

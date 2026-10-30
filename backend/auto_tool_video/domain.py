@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Annotated, Literal
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, model_validator
 
 PROFILES = {
     "preschool": {
@@ -66,6 +66,7 @@ class Scene(StrictModel):
     style: Literal["whiteboard", "motion"] = "whiteboard"
     caption_style: Literal["card", "contrast", "accent"] = "card"
     caption_emphasis: str = Field(default="", max_length=70)
+    motion_expectation: Literal["allow_static", "motion_required"] = "allow_static"
     visual_description: str = Field(default="", max_length=1000)
     role: Literal["hook", "context", "explain", "example", "payoff"] = "explain"
     reveal_order: list[str] = Field(default_factory=list, max_length=10)
@@ -104,6 +105,45 @@ class ExportInput(StrictModel):
 class PublishInput(StrictModel):
     audience: Literal["pending", "made_for_kids", "general_audience"] = "pending"
     rights: Literal["pending", "owned", "licensed"] = "pending"
+
+
+Criterion = Literal[
+    "prompt_alignment",
+    "motion_smoothness",
+    "temporal_consistency",
+    "physical_plausibility",
+    "technical_quality",
+]
+
+
+class CriterionReview(StrictModel):
+    score: Annotated[StrictInt, Field(ge=1, le=5)] | None = None
+    critical: bool = False
+    note: str = Field(default="", max_length=500)
+    at_seconds: float | None = Field(default=None, ge=0, allow_inf_nan=False)
+
+    @model_validator(mode="after")
+    def describe_critical(self):
+        if self.critical and not self.note:
+            raise ValueError("Describe the critical failure.")
+        return self
+
+
+class QualityReviewInput(StrictModel):
+    video_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    review_revision: int = Field(ge=0)
+    reviewer: str = Field(min_length=1, max_length=100)
+    criteria: dict[Criterion, CriterionReview] = Field(default_factory=dict)
+    watched_full: bool = False
+    listened_audio: bool = False
+    checked_captions: bool = False
+    checked_facts_age: bool = False
+    disclosure_reviewed: bool = False
+    content_origin: Literal["unknown", "ai_assisted", "no_ai"] = "unknown"
+    disclosure_note: str = Field(default="", max_length=500)
+    acknowledged_findings: list[Annotated[str, Field(max_length=100)]] = Field(
+        default_factory=list, max_length=400
+    )
 
 
 class PlanInput(StrictModel):
