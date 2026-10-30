@@ -17,7 +17,7 @@ from auto_tool_video.render import render_job
 from auto_tool_video.store import Store
 from create_review_video import contact_sheet
 from PIL import Image
-from science_story import Art
+from science_story import Art, beat_timeline
 
 
 def source_clip(path: Path, art: Art, duration: float):
@@ -68,6 +68,45 @@ def source_clip(path: Path, art: Art, duration: float):
         raise ValueError(
             "Source clip exceeds importer limit; do not silently reduce resolution."
         )
+
+
+def _proposed_science_beats(scenes: list[dict], sources: list[dict]) -> list[dict]:
+    """Derive review-only beat plans from imported scenes' FINAL measured durations.
+
+    Validate every scene before returning any modifications. This preserves
+    existing asset references/IDs and never overwrites a previous manual plan.
+    The cues remain estimates, not forced-aligned word timings.
+    """
+    if not scenes or len(scenes) != len(sources):
+        raise ValueError("Science scene/source count mismatch; refusing to replace beats.")
+
+    planned = []
+    for index, (scene, source) in enumerate(zip(scenes, sources, strict=True)):
+        required = ("title", "narration", "template", "visual_description", "caption_emphasis")
+        if not isinstance(source, dict) or any(
+            not isinstance(source.get(field), str) for field in required
+        ):
+            raise ValueError(f"Science scene {index} is missing required source text.")
+        if scene.get("title") != source["title"] or scene.get("narration") != source["narration"]:
+            raise ValueError(f"Science scene {index} no longer matches its source.")
+        if scene.get("second_by_second") or scene.get("beat_plan_status") == "authored":
+            raise ValueError(f"Science scene {index} already has a beat plan; refusing overwrite.")
+
+        try:
+            beats = beat_timeline(source, scene["duration"])
+            validated = Scene.model_validate(
+                {**scene, "second_by_second": beats, "beat_plan_status": "needs_review"}
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError(f"Invalid science beat plan for scene {index}: {exc}") from exc
+        planned.append(
+            {
+                **scene,
+                "second_by_second": [beat.model_dump() for beat in validated.second_by_second],
+                "beat_plan_status": "needs_review",
+            }
+        )
+    return planned
 
 
 def build(
@@ -158,6 +197,7 @@ def build(
             )
     for scene, source in zip(project["scenes"], story["scenes"], strict=True):
         scene["duration"] = source["duration"]
+    project["scenes"] = _proposed_science_beats(project["scenes"], story["scenes"])
     project = store.save(project["id"], project)
     job = enqueue(
         store,
