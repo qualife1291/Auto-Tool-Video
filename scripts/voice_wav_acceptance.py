@@ -194,7 +194,21 @@ def render_aspect(root: Path, aspect: str) -> dict:
         idempotency_key=str(uuid4()),
     )
     job = enqueue(store, project["id"], request)
-    render_job(store, store.claim())
+    try:
+        render_job(store, store.claim())
+    except RuntimeError:
+        failed = store.get("jobs", job["id"])
+        qc = failed.get("quality_report") or {}
+        (root / f"voice-qc-failure-{aspect}.json").write_text(
+            json.dumps(qc, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        details = [
+            check
+            for check in qc.get("technical", {}).get("checks", [])
+            if check.get("status") == "failed"
+        ]
+        raise RuntimeError(f"Voiced 12-scene technical QC failed: {details}") from None
     done = store.get("jobs", job["id"])
     if done["state"] != "succeeded":
         raise AssertionError(f"Real narration MP4 export failed: {done}")
