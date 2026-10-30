@@ -92,6 +92,61 @@ def contact_sheet(root: Path, output_dir: Path, width: int, height: int) -> dict
     return {"sheet": target.name, "mean_pixel_delta": result}
 
 
+
+def fullhd_spread_evidence(root: Path, output_dir: Path) -> dict:
+    """Render Blender-backed actual Full HD frames around a 30 FPS transition.
+
+    Static contact sheets at 270x480 cannot establish full-resolution cropping
+    or the absence of single-frame teleporting. Save the full frames for T01,
+    but never treat these five samples as creator perceptual sign-off.
+    """
+    result = {}
+    times = [
+        ("start", 0.0),
+        ("before", 2 - 1 / 30),
+        ("middle", 2.0),
+        ("after", 2 + 1 / 30),
+        ("finish", 4.0),
+    ]
+    for width, height in ((1080, 1920), (1920, 1080)):
+        art = Art(width, height, root, "spread", supersample=1)
+        label = "portrait" if height > width else "landscape"
+        previous = None
+        records = []
+        for name, seconds in times:
+            image = art.frame(seconds, 4)
+            if image.size != (width, height):
+                raise AssertionError("A02 Full HD native frame dimensions changed")
+            target = output_dir / f"a02-{label}-spread-{name}-fullhd.png"
+            image.save(target)
+            pixels = np.asarray(image, dtype=np.int16)
+            if previous is not None:
+                delta = float(np.mean(np.abs(pixels - previous)))
+                if not 0.0001 < delta < 12:
+                    raise AssertionError(
+                        f"A02 Full HD spread frame discontinuity: {label} {name} {delta}"
+                    )
+            else:
+                delta = None
+            records.append(
+                {
+                    "name": name,
+                    "seconds": seconds,
+                    "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+                    "file": target.name,
+                    "mean_pixel_delta_from_previous": delta,
+                }
+            )
+            previous = pixels
+        result[label] = {
+            "resolution": [width, height],
+            "frames": records,
+            "source": "Blender cutout / actual native Full HD Art renderer",
+            "creator_review": "PENDING",
+        }
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--art-dir", type=Path, required=True)
@@ -106,6 +161,9 @@ def main() -> None:
         report[f"{width}x{height}"] = contact_sheet(
             args.art_dir, args.output_dir, width, height
         )
+    report["native_fullhd_spread"] = fullhd_spread_evidence(
+        args.art_dir, args.output_dir
+    )
     (args.output_dir / "a02-real-art-report.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     )
