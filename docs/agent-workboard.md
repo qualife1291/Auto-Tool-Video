@@ -1,8 +1,31 @@
 # Whiteboard Studio — AI Agent Workboard
 
-Updated: 2026-10-30 · **Development-in-progress**, not release-ready.
+Updated: 2026-10-31 · **Development-in-progress**, technical code merges ≠ creator-ready.
 
 **Canonical branch:** `feat/short-video-studio`. All new agent tasks branch from it and submit PRs back to it. This document is the single source of truth for open task ownership, status and acceptance criteria. `.agent/memory/short-term/TASKS.md` is a brief index; `.agent/handover/LATEST.md` gives the latest evidence; `docs/development-plan.md` is the long-term roadmap.
+
+## VERIFIED CURRENT ASSIGNMENTS — 2026-10-31 (supersedes historical A01 snapshot below)
+
+**[Full role descriptions, responsibilities, decision rights, file ownership and QA/release gates](agent-role-task-contracts.md)** are mandatory before assigning or testing. Agent IDs: **BA01 coordinator/Product/PM/Technology Scout; C03 coder; C04 coder; T01 independent tester; human creator final perceptual reviewer**. C01/C02 are historical placeholders, not active coder lanes. This workboard is a status index; for latest timing and exact SHA consult GitHub task issues/PRs.
+
+| Priority | Workstream / official issue | Role owner | VERIFIED STATUS at this snapshot |
+| --- | --- | --- | --- |
+| P0 | A02 [#24](https://github.com/qualife1291/Auto-Tool-Video/issues/24) / [PR #34](https://github.com/qualife1291/Auto-Tool-Video/pull/34) | **C03** | CODE MERGED, CI/Blender technical PASS; creator physical motion review PENDING |
+| P0 | A03 [#25](https://github.com/qualife1291/Auto-Tool-Video/issues/25) / [PR #35](https://github.com/qualife1291/Auto-Tool-Video/pull/35) | **C04** | CODE MERGED, caption/beat tests PASS; creator safe-zone/font review PENDING |
+| P0 | A04 [#6](https://github.com/qualife1291/Auto-Tool-Video/issues/6) / [PR #8](https://github.com/qualife1291/Auto-Tool-Video/pull/8) | historical A04 lane, BA01 | CODE MERGED; 12-scene synthetic voiced dual FullHD PASS; approved narrator NOT RUN |
+| P0 | A05 [#17](https://github.com/qualife1291/Auto-Tool-Video/issues/17), [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36) | **T01** | Independent QA ACTIVE, **creator final watch/listen and release BLOCKED** |
+| P1 | P1-A [#29](https://github.com/qualife1291/Auto-Tool-Video/issues/29) / [PR #40](https://github.com/qualife1291/Auto-Tool-Video/pull/40) | **C04** | BUGFIX CODE MERGED (real RED→GREEN); manual UI test outstanding |
+| P1 | P1-B [#44](https://github.com/qualife1291/Auto-Tool-Video/issues/44) | **C04** | BA ASSIGNED / CLAIM PENDING; `api.py::fit_audio` only + NEW test; old behavior not yet reproduced |
+| P1 | P1-C [#41](https://github.com/qualife1291/Auto-Tool-Video/issues/41) / [PR #42](https://github.com/qualife1291/Auto-Tool-Video/pull/42) | **C03** | CLAIMED; RED→GREEN PR-head successful, synced exact-head integration CI pending at audit; NOT MERGED |
+| P1 | Four videos 12/30/45/60s [PR #37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) | **T01** | TEST HARNESS OPEN / strict audio QC BLOCKED; no verified eight MP4 outputs |
+| Research | FREE-first Harness [#38](https://github.com/qualife1291/Auto-Tool-Video/issues/38), iNew-style workflow [#39](https://github.com/qualife1291/Auto-Tool-Video/issues/39) | **BA01** | RESEARCH PROPOSAL only, no implementation assignment |
+| Research/backlog | A06–A10 | BA01 for allocation | Provider licensing/free quotas research and future TTS/OAuth; not a deployed feature |
+
+**Workflow:** BA01 issues AC/path reservation → Coder CLAIM+RED→GREEN+exclusive PR → T01 independent exact-HEAD & current-base CI gate → T01 may MERGE when fully PASS (user authorized) → postmerge CI → creator manual watch/listen exact file SHA → BA01 records feature/release approval. Missing mandatory evidence = `NOT RUN`/`BLOCKED`, never PASS. C03 only `jobs.py` enqueue + NEW export cap test on #41; C04 only `api.py::fit_audio` + NEW fit-audio cap test on #44; T01 owns scenario QA paths; no overlapping edits without BA01. For full evidence, see [quality gate matrix](qa-evidence-gates.md).
+
+**Operational QA:** T01 hourly ChatGPT summary **always includes 3–6 manual test steps and verified media link or explicit NO BUILD**, plus rotating research or focused regression. GitHub T01 watcher is **15-minute cron/manual only** after spam hotfix [PR #43](https://github.com/qualife1291/Auto-Tool-Video/pull/43); do **not** re-add `workflow_run.completed` broad trigger.
+
+### Historical workboard below (2026-10-30 baseline; NOT current assignments)
 
 ## Latest verified CI (A01)
 
