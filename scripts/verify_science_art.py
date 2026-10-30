@@ -120,7 +120,9 @@ def fullhd_spread_evidence(root: Path, output_dir: Path) -> dict:
             visible = np.asarray(isolated.getchannel("A")) > 180
             ys, xs = np.where(visible)
             if xs.size < 100:
-                raise AssertionError(f"A02 lost unfolded Blender garment: {label} {name}")
+                raise AssertionError(
+                    f"A02 lost unfolded Blender garment: {label} {name}"
+                )
             margin_x = round(width * 0.05)
             margin_y = round(height * 0.05)
             if (
