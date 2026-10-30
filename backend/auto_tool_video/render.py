@@ -362,12 +362,12 @@ class ScenePainter:
         local_seconds = max(0.0, progress * self.scene["duration"] - index * page_seconds)
         if local_seconds < 0.12:
             phase = local_seconds / 0.12
-            bounce = 10 * (1 - phase) ** 2 - 3 * __import__("math").sin(
-                __import__("math").pi * phase
+            bounce = 10 * (1 - phase) ** 2 - 3 * math.sin(
+                math.pi * phase
             )
         elif local_seconds < 0.26:
-            bounce = -2.5 * __import__("math").sin(
-                __import__("math").pi * (local_seconds - 0.12) / 0.14
+            bounce = -2.5 * math.sin(
+                math.pi * (local_seconds - 0.12) / 0.14
             )
         else:
             bounce = 0
