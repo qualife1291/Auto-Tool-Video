@@ -113,6 +113,26 @@ def fullhd_spread_evidence(root: Path, output_dir: Path) -> dict:
         previous = None
         records = []
         for name, seconds in times:
+            # Check the *actual* Blender alpha silhouette before compositing;
+            # the final RGB scene can hide missing fabric outside the crop.
+            isolated = Image.new("RGBA", art.size, (0, 0, 0, 0))
+            art.shirt(isolated, seconds, 4, mini=True)
+            visible = np.asarray(isolated.getchannel("A")) > 180
+            ys, xs = np.where(visible)
+            if xs.size < 100:
+                raise AssertionError(f"A02 lost unfolded Blender garment: {label} {name}")
+            margin_x = round(width * 0.05)
+            margin_y = round(height * 0.05)
+            if (
+                xs.min() <= margin_x
+                or xs.max() >= width - margin_x
+                or ys.min() <= margin_y
+                or ys.max() >= height - margin_y
+            ):
+                raise AssertionError(
+                    f"A02 Blender garment crosses Full HD safe zone: {label} {name}"
+                )
+            bbox = [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())]
             image = art.frame(seconds, 4)
             if image.size != (width, height):
                 raise AssertionError("A02 Full HD native frame dimensions changed")
@@ -133,6 +153,7 @@ def fullhd_spread_evidence(root: Path, output_dir: Path) -> dict:
                     "seconds": seconds,
                     "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
                     "file": target.name,
+                    "silhouette_bbox": bbox,
                     "mean_pixel_delta_from_previous": delta,
                 }
             )
