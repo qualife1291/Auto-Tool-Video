@@ -49,7 +49,9 @@ def validate_assets(root: Path) -> dict:
     union = np.count_nonzero(arrays["wet"][1] | arrays["dry"][1])
     iou = overlap / union
     if iou < 0.94:
-        raise ValueError(f"wet/dry silhouette alpha mismatch: intersection/union={iou:.3f}")
+        raise ValueError(
+            f"wet/dry silhouette alpha mismatch: intersection/union={iou:.3f}"
+        )
     a = records["wet"]["centroid"]
     b = records["dry"]["centroid"]
     if abs(a[0] - b[0]) > 3 or abs(a[1] - b[1]) > 3:
@@ -70,11 +72,19 @@ def contact_sheet(root: Path, output_dir: Path, width: int, height: int) -> dict
                 raise AssertionError("Motion frame dimensions changed")
             sheet.paste(frame, (col * width, row * height))
         changes = [
-            float(np.mean(np.abs(np.asarray(a, dtype=np.int16) - np.asarray(b, dtype=np.int16))))
+            float(
+                np.mean(
+                    np.abs(
+                        np.asarray(a, dtype=np.int16) - np.asarray(b, dtype=np.int16)
+                    )
+                )
+            )
             for a, b in itertools.pairwise(frames)
         ]
         if any(change <= 0.02 for change in changes):
-            raise AssertionError(f"{kind} appears frozen at {width}x{height}: {changes}")
+            raise AssertionError(
+                f"{kind} appears frozen at {width}x{height}: {changes}"
+            )
         result[kind] = [round(change, 4) for change in changes]
     label = "portrait" if height > width else "landscape"
     target = output_dir / f"a02-{label}-real-blender-contact-sheet.png"
@@ -88,9 +98,14 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    report = {"source": "REAL Blender Cycles RGBA assets", "assets": validate_assets(args.art_dir)}
+    report = {
+        "source": "REAL Blender Cycles RGBA assets",
+        "assets": validate_assets(args.art_dir),
+    }
     for width, height in [(270, 480), (480, 270)]:
-        report[f"{width}x{height}"] = contact_sheet(args.art_dir, args.output_dir, width, height)
+        report[f"{width}x{height}"] = contact_sheet(
+            args.art_dir, args.output_dir, width, height
+        )
     (args.output_dir / "a02-real-art-report.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     )
