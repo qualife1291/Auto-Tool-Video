@@ -35,11 +35,22 @@ for (const viewport of [
     await expect(page.locator('.caption-preview-status')).toContainText(/^Trang 1\/[2-9]\d*/);
     await expect(preview).not.toContainText(narration);
     const firstPage = await preview.innerText();
-    await page.getByRole('button', { name: 'Trang phụ đề tiếp' }).click();
+    const nextPage = page.getByRole('button', { name: 'Trang phụ đề tiếp' });
+    await nextPage.focus();
+    await page.keyboard.press('Enter');
     await expect(page.locator('.caption-preview-status')).toContainText(/^Trang 2\//);
     expect(await preview.innerText()).not.toBe(firstPage);
     await page.getByRole('button', { name: 'Trang phụ đề trước' }).click();
     await expect(preview).toHaveText(firstPage);
+
+    // When the editor narration changes, reset the estimated preview without editing project schema.
+    await nextPage.click();
+    await page.getByLabel('Lời thoại của cảnh').fill('Nước bay hơi.');
+    await expect(page.locator('.caption-preview-status')).toContainText('Trang 1/1');
+    await expect(preview).toHaveText('Nước bay hơi.');
+    await expect(nextPage).toHaveCount(0);
+    await page.getByLabel('Lời thoại của cảnh').fill(narration);
+    await expect(page.locator('.caption-preview-status')).toContainText(/^Trang 1\/[2-9]\d*/);
 
     // Make a real editor change before using the Save button (otherwise it is disabled).
     await page.getByLabel('Kiểu phụ đề').selectOption('contrast');
