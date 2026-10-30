@@ -191,15 +191,21 @@ function App() {
   function updateScene(changes: Partial<Scene>) {
     if (!project || !scene) return;
     update({
-      scenes: project.scenes.map((s) =>
-        s.id === scene.id
-          ? {
-              ...s,
-              ...changes,
-              ...(changes.narration !== undefined && s.audio_id ? { audio_stale: true } : {}),
-            }
-          : s,
-      ),
+      scenes: project.scenes.map((s) => {
+        if (s.id !== scene.id) return s;
+        // A new timeline or narration can invalidate previously reviewed spoken cues.
+        const beatTimingChanged =
+          (changes.duration !== undefined && changes.duration !== s.duration) ||
+          (changes.narration !== undefined && changes.narration !== s.narration);
+        return {
+          ...s,
+          ...changes,
+          ...(changes.narration !== undefined && s.audio_id ? { audio_stale: true } : {}),
+          ...(beatTimingChanged && s.second_by_second?.length
+            ? { beat_plan_status: 'needs_review' as const }
+            : {}),
+        };
+      }),
     });
   }
   async function createProject() {
@@ -939,7 +945,7 @@ function App() {
                           {scene.beat_plan_status === 'needs_review' &&
                             !!scene.second_by_second?.length && (
                               <p className="small muted">
-                                Đây là phác thảo tự động; cần viết rõ hành động, camera và lời.
+                                Kế hoạch từng giây cần rà soát và xác nhận lại.
                               </p>
                             )}
                           {(scene.second_by_second || []).map((beat, beatIndex) => (
@@ -970,16 +976,35 @@ function App() {
                                         ...beat,
                                         [field]: event.target.value,
                                       };
-                                      updateScene({
-                                        second_by_second: updated,
-                                        beat_plan_status: 'authored',
-                                      });
+                                      // Editing one cue does not approve the whole draft.
+                                      updateScene({ second_by_second: updated });
                                     }}
                                   />
                                 </label>
                               ))}
                             </details>
                           ))}
+                          {scene.beat_plan_status === 'needs_review' &&
+                            scene.second_by_second?.length === Math.ceil(scene.duration) && (
+                              <button
+                                type="button"
+                                className="button"
+                                disabled={
+                                  busy ||
+                                  !scene.second_by_second.every(
+                                    (beat) =>
+                                      beat.visual_state.trim() &&
+                                      beat.action.trim() &&
+                                      beat.camera.trim() &&
+                                      beat.narration_cue.trim() &&
+                                      beat.continuity.trim(),
+                                  )
+                                }
+                                onClick={() => updateScene({ beat_plan_status: 'authored' })}
+                              >
+                                Xác nhận đã rà soát từng giây
+                              </button>
+                            )}
                         </details>
                         <label>
                           Kỳ vọng chuyển động
