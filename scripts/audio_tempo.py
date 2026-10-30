@@ -32,7 +32,9 @@ def _wave_info(path: Path) -> tuple[int, int, float]:
             or stream.getcomptype() != "NONE"
             or stream.getframerate() < 8000
         ):
-            raise ValueError("Narration must be uncompressed mono 16-bit PCM WAV (>=8 kHz).")
+            raise ValueError(
+                "Narration must be uncompressed mono 16-bit PCM WAV (>=8 kHz)."
+            )
         frames = stream.getnframes()
         if frames <= 0:
             raise ValueError("Narration WAV contains no samples.")
@@ -59,9 +61,26 @@ def stretch_narration(source: Path, output: Path, expected_sha256: str) -> dict:
     try:
         subprocess.run(
             [
-                "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", "-y",
-                "-i", str(source), "-map", "0:a:0", "-vn", "-af", f"atempo={TEMPO:.2f}",
-                "-ar", str(rate), "-ac", "1", "-c:a", "pcm_s16le", str(temporary),
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-nostdin",
+                "-y",
+                "-i",
+                str(source),
+                "-map",
+                "0:a:0",
+                "-vn",
+                "-af",
+                f"atempo={TEMPO:.2f}",
+                "-ar",
+                str(rate),
+                "-ac",
+                "1",
+                "-c:a",
+                "pcm_s16le",
+                str(temporary),
             ],
             check=True,
             capture_output=True,
@@ -70,7 +89,9 @@ def stretch_narration(source: Path, output: Path, expected_sha256: str) -> dict:
         output_rate, output_samples, output_duration = _wave_info(temporary)
         expected = duration / TEMPO
         # WSOLA overlap/add is not sample-exact; use measured duration instead.
-        if output_rate != rate or abs(output_duration - expected) > max(0.06, expected * 0.03):
+        if output_rate != rate or abs(output_duration - expected) > max(
+            0.06, expected * 0.03
+        ):
             raise ValueError("Tempo output sample rate/duration failed verification.")
         if output_duration <= duration:
             raise ValueError("Slowed narration must be longer than the original.")
@@ -149,7 +170,9 @@ def prepare_timeline(root: Path) -> dict:
     scenes = story["scenes"]
     source_records = tts["records"]
     if not scenes or len(scenes) != len(source_records) or len(scenes) > 20:
-        raise ValueError("Narration source record count must match 1..20 storyboard scenes.")
+        raise ValueError(
+            "Narration source record count must match 1..20 storyboard scenes."
+        )
     # Fail all mismatched inputs before generating derived WAVs.
     for scene, record in zip(scenes, source_records, strict=True):
         if scene["narration"] != record["narration"]:
@@ -211,5 +234,10 @@ def prepare_timeline(root: Path) -> dict:
     finally:
         timing_tmp.unlink(missing_ok=True)
         story_tmp.unlink(missing_ok=True)
-    print("Timeline", round(duration_total, 3), "seconds; tempo 0.92x, WAV-measured", flush=True)
+    print(
+        "Timeline",
+        round(duration_total, 3),
+        "seconds; tempo 0.92x, WAV-measured",
+        flush=True,
+    )
     return story
