@@ -1,4 +1,5 @@
 """Fast contracts for varied Vietnamese video scenarios; no fake render pass."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -40,8 +41,11 @@ def test_four_narrative_cases_have_valid_distinct_cues(key, count, seconds):
     for title, spoken in case.cues:
         beat_list = module.beats(case.scene_seconds, spoken)
         scene = Scene(
-            title=title, narration=spoken, duration=case.scene_seconds,
-            second_by_second=beat_list, beat_plan_status="authored",
+            title=title,
+            narration=spoken,
+            duration=case.scene_seconds,
+            second_by_second=beat_list,
+            beat_plan_status="authored",
         )
         assert scene.beat_plan_status == "authored"
         assert beat_list[-1]["second"] == case.scene_seconds - 1
@@ -62,7 +66,9 @@ def test_content_covers_diacritics_and_multiple_topics():
 def test_invalid_story_and_scene_boundaries_fail_closed(count, scene_seconds):
     template = module.SCENARIOS["energy-60s"]
     case = module.Scenario(
-        "invalid", "Wrong contract", scene_seconds,
+        "invalid",
+        "Wrong contract",
+        scene_seconds,
         (template.cues * 2)[:count],
     )
     with pytest.raises(ValueError):
@@ -79,7 +85,9 @@ def test_60s_accepted_but_61s_rejected():
     permitted = module.SCENARIOS["energy-60s"]
     module.validate_scenario(permitted)
     over = module.Scenario(
-        "over-limit", "65 seconds", 5,
+        "over-limit",
+        "65 seconds",
+        5,
         permitted.cues + permitted.cues[:1],
     )
     with pytest.raises(ValueError):
