@@ -10,12 +10,12 @@ import json
 import math
 
 import pytest
+from conftest import create_story, save
 from pydantic import ValidationError
 
 from auto_tool_video.domain import CreativeBrief, ProjectInput, Scene
 from auto_tool_video.planning import validate_proposal
 from auto_tool_video.store import DomainError, Store
-from conftest import create_story, save
 
 
 def beats(count: int) -> list[dict]:
@@ -191,8 +191,6 @@ def test_legacy_api_client_does_not_delete_saved_beats(client):
 
 def test_direct_store_save_preserves_beats_and_flags_retiming(tmp_path):
     store = Store(tmp_path)
-    project = model_project(tmp_path / "separate")
-    # Store under the same database used for this test.
     project = store.create(ProjectInput(title="Test").model_dump())
     scene = Scene(
         title="Áo", duration=3, second_by_second=beats(3), beat_plan_status="authored"
