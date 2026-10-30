@@ -1,5 +1,5 @@
 name: QA Exact-SHA Multi-PR Integration
-# Snapshot v3: PR #20 is merged into canonical; recheck the seven remaining exact heads.
+# Snapshot v4: P0 QA PRs #20/#16/#10/#12 and policy #14 are merged; test 3 pending source heads.
 
 on:
   pull_request:
@@ -27,7 +27,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base=4db4dac1dea57426c2ac53bca11f9ac5220052fa
+          base=514ddfd966b42183dd1ba6874553794faf3f55e2
           git fetch --no-tags origin refs/heads/feat/short-video-studio:refs/remotes/origin/feat/short-video-studio
           if [ "$(git rev-parse refs/remotes/origin/feat/short-video-studio)" != "$base" ]; then
             echo "::error::Canonical base moved; refresh integration snapshot"
@@ -35,6 +35,10 @@ jobs:
           fi
           git merge-base --is-ancestor "$base" HEAD || { echo "::error::Checkout does not contain reviewed canonical base"; exit 1; }
           git merge-base --is-ancestor b2257cf8f4f8c3271fe2952c2beae64e903647b7 HEAD || { echo "::error::A05 frame-integrity fix missing in merged baseline"; exit 1; }
+          git merge-base --is-ancestor f2b4b7eb4e0bc7cc8aaa60ecbffe22bd1296a17d HEAD || { echo "::error::Merged Dual1080 FullHD QA missing from baseline"; exit 1; }
+          git merge-base --is-ancestor b5678295bcdfef115c86e727bca146b9a428ea34 HEAD || { echo "::error::Merged A03 caption persistence QA missing from baseline"; exit 1; }
+          git merge-base --is-ancestor dcf4e017f2fceaeb7362f71e3b0ec655a028ef47 HEAD || { echo "::error::Merged A02 Blender QA missing from baseline"; exit 1; }
+          git merge-base --is-ancestor ad719972d7a879a9ef0076d306a1f0fa81d2dc35 HEAD || { echo "::error::Merged A05 release-evidence policy missing from baseline"; exit 1; }
           git config user.name "Studio QA Integration (ephemeral)"
           git config user.email "studio-qa-integration@users.noreply.github.com"
           mkdir -p .data/integration-evidence
@@ -55,10 +59,6 @@ jobs:
             }
           done <<'EXACT_HEADS'
           agent/A04-pitch-preserving-tempo|a5776f235cd1fb7b62c8fd38a7257e5e8cceccef
-          agent/A02-real-art-motion-qa|dcf4e017f2fceaeb7362f71e3b0ec655a028ef47
-          agent/QA-caption-beat-regressions|b5678295bcdfef115c86e727bca146b9a428ea34
-          agent/QA-dual1080-export-gate|f2b4b7eb4e0bc7cc8aaa60ecbffe22bd1296a17d
-          agent/A05-evidence-gates|ad719972d7a879a9ef0076d306a1f0fa81d2dc35
           agent/A06-hf-gradio-evaluation|cec3af1b91fe6bcbb5671cc20f69685858bc212d
           agent/A07-nim-provider-evaluation|67ab4337c00869d0e661c41a664a42d5f7cd9de5
           EXACT_HEADS
@@ -66,7 +66,7 @@ jobs:
           git log -8 --oneline > .data/integration-evidence/merge-history.txt
           git status --porcelain | tee .data/integration-evidence/git-status.txt
           test -z "$(git status --porcelain)" || { echo "::error::Unclean combined tree"; exit 1; }
-          for file in backend/tests/test_voice_wav_acceptance.py backend/tests/test_science_story_motion.py backend/tests/test_caption_entry_regression.py backend/tests/test_dual_1080_smoke.py backend/tests/test_qc_frame_integrity.py apps/web/e2e/beat-persistence.spec.ts scripts/voice_wav_acceptance.py scripts/verify_dual_1080_smoke.py; do
+          for file in backend/tests/test_voice_wav_acceptance.py backend/tests/test_science_story_motion.py backend/tests/test_caption_entry_regression.py backend/tests/test_dual_1080_smoke.py backend/tests/test_qc_frame_integrity.py docs/qa-evidence-gates.md apps/web/e2e/beat-persistence.spec.ts scripts/voice_wav_acceptance.py scripts/verify_dual_1080_smoke.py; do
             test -f "$file" || { echo "::error::Missing integration file $file"; exit 1; }
           done
       - uses: actions/setup-python@v5
