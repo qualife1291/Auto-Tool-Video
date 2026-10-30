@@ -6,6 +6,8 @@
 
 **Danh mục video tương lai:** [Hồ sơ nghiên cứu 15 định dạng, kiến trúc Scene IR, test matrix và backlog A20–A33](future-video-formats-research.md). Đây là đề xuất nghiên cứu, không phải cam kết đã hỗ trợ hoặc quyền tự triển khai. Mỗi agent phải cập nhật nguồn, giấy phép và thử nghiệm theo G0–G6 trước khi code.
 
+**Nâng FPS, độ nét, hiệu năng và QC:** [Hồ sơ nghiên cứu 30→60fps native, interpolation, 1080p/4K, benchmark, encoder, luồng và backlog A34–A42](high-fps-performance-qc-research.md). **Giữ 30fps tương thích ngược**, không nâng FPS bằng nhân đôi frame hoặc mặc định AI upscale. A34–A42 chỉ là đề xuất sau khi A02–A05/A12 có bằng chứng.
+
 **Lộ trình mở rộng sau baseline:** A11 quy trình nghiên cứu/QC → A12 benchmark và CI render thật → A13 Animate POC độc lập, A15 alignment tiếng Việt → A14 renderer adapter → A16 orchestration, A17 learned QC, A18 AI video consistency, A19 UX. Đây là backlog đề xuất, chưa được triển khai; A02–A05 vẫn là P0 chặn phát triển engine mới.
 
 ## Ưu tiên hiện tại: Hoàn thiện video 2D
