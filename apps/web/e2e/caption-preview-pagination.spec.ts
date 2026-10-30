@@ -20,7 +20,7 @@ for (const viewport of [
     await page.getByLabel('Tên dự án').fill(title);
     await page.getByLabel('Lời thoại', { exact: true }).fill(narration);
     if (viewport.width === 1366) {
-      await page.getByLabel('Khung hình', { exact: true }).selectOption('landscape');
+      await page.getByLabel('Khung hình').selectOption('landscape');
     }
     await page.getByRole('button', { name: 'Tạo storyboard' }).click();
     await expect(page.locator('.portrait')).toHaveClass(
