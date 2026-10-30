@@ -34,6 +34,10 @@ CUES = (
     ("Tổng kết", "Bây giờ em đã hiểu vì sao áo khô."),
 )
 SPEECH_RATE = 95
+# Test-fixture mastering only: avoid large per-syllable dynamics that make the
+# production single-pass loudnorm hit the true-peak ceiling first. Not used by
+# the studio for user-provided approved narration.
+FIXTURE_COMPRESSOR = "acompressor=threshold=-25dB:ratio=3:attack=20:release=200"
 
 
 def sha256(path: Path) -> str:
@@ -71,6 +75,23 @@ def create_wav_set(root: Path) -> dict:
             capture_output=True,
             timeout=30,
         )
+        # Reproducible *input-fixture* dynamics. Preserve normal renderer QC.
+        # Never silently modify a user's original voice; this path owns test WAVs.
+        untreated = sources / f".scene-{i:02d}-espeak.wav"
+        output.replace(untreated)
+        try:
+            subprocess.run(
+                [
+                    "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", "-y",
+                    "-i", str(untreated), "-af", FIXTURE_COMPRESSOR,
+                    "-c:a", "pcm_s16le", str(output),
+                ],
+                check=True,
+                capture_output=True,
+                timeout=30,
+            )
+        finally:
+            untreated.unlink(missing_ok=True)
         info = wav_info(output)
         assert info["duration"] < 19.65
         records.append(
@@ -95,6 +116,9 @@ def create_wav_set(root: Path) -> dict:
         "source": "local eSpeak Vietnamese vi voice; not a human or approved VieNeu voice",
         "engine": version,
         "engine_rate": SPEECH_RATE,
+        "fixture_mastering": FIXTURE_COMPRESSOR,
+        "mastering_scope": "test-source-WAV-only; no change to production renderer",
+
         "license_note": "Internal QA fixture; review voice/tool rights before distributing",
         "approval": "NOT APPROVED — no listening, factual, safety or quality sign-off",
         "cue_count": len(CUES),
