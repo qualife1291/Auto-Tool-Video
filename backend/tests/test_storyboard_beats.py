@@ -63,9 +63,7 @@ def model_project(tmp_path):
 
 
 def test_complete_fractional_second_scene_remains_authored():
-    scene = Scene(
-        duration=3.3, second_by_second=beats(4), beat_plan_status="authored"
-    )
+    scene = Scene(duration=3.3, second_by_second=beats(4), beat_plan_status="authored")
     assert len(scene.second_by_second) == math.ceil(scene.duration) == 4
     assert [beat.second for beat in scene.second_by_second] == [0, 1, 2, 3]
     assert scene.beat_plan_status == "authored"
@@ -105,9 +103,7 @@ def test_empty_onscreen_text_is_valid_but_unknown_fields_are_not():
 
 @pytest.mark.parametrize("count", [0, 2, 3, 5])
 def test_incomplete_scene_cannot_claim_authored(count):
-    scene = Scene(
-        duration=3.3, second_by_second=beats(count), beat_plan_status="authored"
-    )
+    scene = Scene(duration=3.3, second_by_second=beats(count), beat_plan_status="authored")
     assert scene.beat_plan_status == "needs_review"
     assert len(scene.second_by_second) == count  # do not destroy authored text
 
@@ -174,9 +170,7 @@ def test_api_duration_change_preserves_all_beats_and_requires_review(client, new
 
 def test_legacy_api_client_does_not_delete_saved_beats(client):
     project = create_story(client)
-    project["scenes"][0].update(
-        duration=3, second_by_second=beats(3), beat_plan_status="authored"
-    )
+    project["scenes"][0].update(duration=3, second_by_second=beats(3), beat_plan_status="authored")
     stored = save(client, project).json()
     legacy = copy.deepcopy(stored)
     for scene in legacy["scenes"]:
@@ -207,9 +201,7 @@ def test_direct_store_save_preserves_beats_and_flags_retiming(tmp_path):
 
 def test_explicit_clear_is_allowed_but_never_authored(client):
     project = create_story(client)
-    project["scenes"][0].update(
-        duration=3, second_by_second=beats(3), beat_plan_status="authored"
-    )
+    project["scenes"][0].update(duration=3, second_by_second=beats(3), beat_plan_status="authored")
     saved = save(client, project).json()
     saved["scenes"][0]["second_by_second"] = []
     response = save(client, saved)
@@ -220,9 +212,7 @@ def test_explicit_clear_is_allowed_but_never_authored(client):
 
 def test_failed_revision_cannot_overwrite_beats(client):
     project = create_story(client)
-    project["scenes"][0].update(
-        duration=3, second_by_second=beats(3), beat_plan_status="authored"
-    )
+    project["scenes"][0].update(duration=3, second_by_second=beats(3), beat_plan_status="authored")
     saved = save(client, project).json()
     outdated = copy.deepcopy(project)
     outdated["scenes"][0]["second_by_second"] = []
