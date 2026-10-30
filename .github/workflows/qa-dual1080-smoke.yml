@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
-      APP_DATA_DIR: ${{ runner.temp }}/qa-dual1080-isolated
+      APP_DATA_DIR: /tmp/qa-dual1080-isolated
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
