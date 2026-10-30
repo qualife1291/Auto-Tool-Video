@@ -1,18 +1,15 @@
 # Kế hoạch phát triển
 
-## Đợt triển khai tiếp theo — 2D nhiều agent (đang thực hiện, chưa release)
+## Ưu tiên hiện tại: Hoàn thiện video 2D
 
-Bảng phối hợp, trạng thái từng hạng mục, file ownership, conditions-of-done và cách nhận việc: [AI Agent Workboard](agent-workboard.md). Nhánh làm việc `feat/second-by-second-motion-voice`; nhánh mặc định `feat/short-video-studio` giữ nguyên baseline.
+**Một môi trường tài liệu và một branch chung:** `feat/short-video-studio`. Trạng thái từng task A01–A10, phạm vi file, điều kiện nghiệm thu và phối hợp AI agent nằm tại [AI Agent Workboard](agent-workboard.md). [TASKS](../.agent/memory/short-term/TASKS.md) chỉ tóm tắt task đang mở; [LATEST](../.agent/handover/LATEST.md) là tình trạng kiểm chứng.
 
-- **P0 / A01–A03 (WIP-UNTESTED):** storyboard với beats từng giây và mô tả visual/action/camera/text/narration/continuity; áo ướt→khô, lay dưới điểm kẹp, gấp→trải; hiệu ứng caption nảy rất ngắn, phần editor beats. Đây mới là code chưa chạy test, chưa chứng minh chất lượng video.
-- **P0 / A04 (TODO):** giọng 0,92× giữ pitch, bảo toàn nội dung audio, tính lại duration theo file thực và làm mới timing/asset provenance; không lấy số 41,9s trước đó làm kết quả render.
-- **P0 / A05 (BLOCKED):** dựng video 12 cảnh hai aspect, chạy lại toàn bộ test, QC technical/audio/motion, xem/nghe thủ công; kiểm theo `docs/video-quality-standard.md`; báo pending khi thiếu reviewer.
-- **P1 / A06–A08 (RESEARCH/TODO):** thẩm định `@gradio/client`, HF Hub SDK, Space FLUX.1-schnell/SD3.5/Wan2.1/LTX và NIM DeepSeek V4.1 Flash/Magpie TTS/Riva Translate/Llama Guard. Phải tách endpoint được quảng cáo với endpoint hiện hoạt, free trial/ZeroGPU quotas với miễn phí bền vững, code license với weights/outputs/Space terms; chỉ thử online bằng quyền hợp lệ. Không đưa vào runtime chưa kiểm chứng, không auto paid fallback.
-- **P2/P3 / A09–A10 (TODO):** TTS UI + alignment/SRT và OAuth upload khi pipeline 2D ổn định.
+- **P0 (A01–A03, WIP-UNTESTED):** chuẩn kịch bản mô tả từng giây, hình chiếc áo chuyển trạng thái, chữ nảy nhẹ, giao diện sửa từng beat. Cần test schema, UI, crop, tương thích cảnh cũ và tính nhất quán chuyển động.
+- **P0 (A04–A05, TODO/BLOCKED):** giọng chậm 0,92× không đổi cao độ, tính lại thời lượng theo âm thanh thật, render hai tỷ lệ và chạy đầy đủ QC. Chưa có bản MP4 41,9 giây được xác minh.
+- **P1 (A06–A08, TODO):** đánh giá Hugging Face/Gradio, NVIDIA NIM và provider online dạng opt-in; kiểm hạn mức, giấy phép, điều kiện sử dụng. Ollama/ComfyUI local vẫn là nền tảng, không mặc nhiên trả phí.
+- **P2–P3 (A09–A10, TODO):** TTS UI/phrase alignment/SRT và OAuth upload sau khi hoàn thiện 2D.
 
-**Khác biệt thiết yếu:** Project cũ có thể không có second-by-second beats. Kế hoạch từng giây cần có trạng thái `needs_review` khi thiếu/không còn khớp duration, giữ bản cũ để người dùng chủ động chỉnh; tránh đánh lừa rằng lời đã forced-align. Đợt này chưa có camera keyframe compiler cho mọi beat; beat metadata chỉ phục vụ kịch bản và editor trước khi renderer nâng cấp.
-
-**Kiểm chứng:** báo cáo 205 test pass và MP4 38,7s chỉ thuộc baseline trước đợt này; feature branch chưa chạy test/không có MP4 mới. Mọi agent phải ghi lệnh/test/artifact thật trước khi đánh DONE.
+**Quy tắc tiến độ:** 205 bài test và video 12 cảnh 38,7 giây là kết quả lịch sử trên commit `a7d000f6`, **không chứng minh mã mới đã qua QA**. Merge là thống nhất code/tài liệu, chưa phải release hay nghiệm thu. `second_by_second` hiện là mô tả kịch bản để sửa/duyệt, không tự động trở thành keyframe của generic renderer.
 
 ## Đã triển khai M1
 
