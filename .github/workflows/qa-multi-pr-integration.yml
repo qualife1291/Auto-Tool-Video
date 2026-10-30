@@ -1,4 +1,5 @@
 name: QA Exact-SHA Multi-PR Integration
+# Snapshot v2: 8 independent PRs, including the verified A05 frame-integrity fix.
 
 on:
   pull_request:
