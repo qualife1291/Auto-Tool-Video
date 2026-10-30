@@ -56,6 +56,7 @@ jobs:
           agent/A02-real-art-motion-qa|dcf4e017f2fceaeb7362f71e3b0ec655a028ef47
           agent/QA-caption-beat-regressions|b5678295bcdfef115c86e727bca146b9a428ea34
           agent/QA-dual1080-export-gate|f2b4b7eb4e0bc7cc8aaa60ecbffe22bd1296a17d
+          agent/A05-qc-frame-integrity|620814be5ef7eeaccb66b81628511898b0d88b0e
           agent/A05-evidence-gates|ad719972d7a879a9ef0076d306a1f0fa81d2dc35
           agent/A06-hf-gradio-evaluation|cec3af1b91fe6bcbb5671cc20f69685858bc212d
           agent/A07-nim-provider-evaluation|67ab4337c00869d0e661c41a664a42d5f7cd9de5
@@ -64,7 +65,7 @@ jobs:
           git log -8 --oneline > .data/integration-evidence/merge-history.txt
           git status --porcelain | tee .data/integration-evidence/git-status.txt
           test -z "$(git status --porcelain)" || { echo "::error::Unclean combined tree"; exit 1; }
-          for file in backend/tests/test_voice_wav_acceptance.py backend/tests/test_science_story_motion.py backend/tests/test_caption_entry_regression.py backend/tests/test_dual_1080_smoke.py apps/web/e2e/beat-persistence.spec.ts scripts/voice_wav_acceptance.py scripts/verify_dual_1080_smoke.py; do
+          for file in backend/tests/test_voice_wav_acceptance.py backend/tests/test_science_story_motion.py backend/tests/test_caption_entry_regression.py backend/tests/test_dual_1080_smoke.py backend/tests/test_qc_frame_integrity.py apps/web/e2e/beat-persistence.spec.ts scripts/voice_wav_acceptance.py scripts/verify_dual_1080_smoke.py; do
             test -f "$file" || { echo "::error::Missing integration file $file"; exit 1; }
           done
       - uses: actions/setup-python@v5
