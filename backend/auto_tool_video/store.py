@@ -107,6 +107,19 @@ class Store:
                         ):
                             raise DomainError("INVALID_ASSET", "Tài nguyên không thuộc cảnh này.")
                 before = old_scenes.get(scene["id"], {})
+                if before:
+                    # Also protect direct Store.save callers which omit the new fields.
+                    # API callers are handled before model_dump fills missing defaults.
+                    for key, default in (
+                        ("second_by_second", []),
+                        ("beat_plan_status", "needs_review"),
+                    ):
+                        if key not in scene:
+                            scene[key] = before.get(key, default)
+                    # The timeline was authored against the exact old duration.
+                    # Never erase/reindex the creator's beats automatically.
+                    if scene["duration"] != before.get("duration"):
+                        scene["beat_plan_status"] = "needs_review"
                 # A client cannot clear stale audio by simply sending false.
                 if scene.get("audio_id"):
                     audio = self.get("assets", scene["audio_id"], conn)
