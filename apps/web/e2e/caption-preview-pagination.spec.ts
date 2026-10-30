@@ -58,8 +58,7 @@ for (const viewport of [
     const [persisted] = await Promise.all([
       page.waitForResponse(
         (response) =>
-          response.request().method() === 'PUT' &&
-          response.url().includes('/api/projects/'),
+          response.request().method() === 'PUT' && response.url().includes('/api/projects/'),
       ),
       page.getByRole('button', { name: 'Lưu thay đổi' }).click(),
     ]);
