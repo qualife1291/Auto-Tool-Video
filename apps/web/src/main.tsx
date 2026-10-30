@@ -79,10 +79,7 @@ function App() {
   const estimatedCaptionPages = scene
     ? estimateCaptionPages(scene.narration, project?.aspect ?? 'portrait')
     : [];
-  const captionPage = Math.min(
-    captionPageIndex,
-    Math.max(0, estimatedCaptionPages.length - 1),
-  );
+  const captionPage = Math.min(captionPageIndex, Math.max(0, estimatedCaptionPages.length - 1));
   const currentCaption = estimatedCaptionPages[captionPage] || '';
   useEffect(() => {
     setCaptionPageIndex(0);
@@ -788,9 +785,7 @@ function App() {
                               type="button"
                               aria-label="Trang phụ đề trước"
                               disabled={captionPage === 0}
-                              onClick={() =>
-                                setCaptionPageIndex((index) => Math.max(0, index - 1))
-                              }
+                              onClick={() => setCaptionPageIndex((index) => Math.max(0, index - 1))}
                             >
                               Trước
                             </button>
