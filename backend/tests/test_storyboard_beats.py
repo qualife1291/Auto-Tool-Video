@@ -155,8 +155,17 @@ def test_api_duration_change_preserves_all_beats_and_requires_review(client, new
     stored = save(client, project)
     assert stored.status_code == 200, stored.text
     project = stored.json()
+    # Changing the original duration invalidates the plan on the first save.
+    assert project["scenes"][0]["beat_plan_status"] == "needs_review"
+
+    # The creator reviews/re-approves those same four beats in a separate save.
+    project["scenes"][0]["beat_plan_status"] = "authored"
+    reviewed = save(client, project)
+    assert reviewed.status_code == 200, reviewed.text
+    project = reviewed.json()
     assert project["scenes"][0]["beat_plan_status"] == "authored"
 
+    # Re-time once more: always invalidate, even when ceil(duration) is unchanged.
     project["scenes"][0]["duration"] = new_duration
     changed = save(client, project)
     assert changed.status_code == 200, changed.text
