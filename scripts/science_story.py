@@ -596,7 +596,8 @@ class Art:
         if kind == "spread":
             self.shirt(frame, t, duration, dry=True, mini=True)
             start_x = 500 if self.landscape else 260
-            self.text(d, (start_x, (540 if self.landscape else 910) + 210), "Gấp lại", 42, anchor="mt")
+            start_y = (540 if self.landscape else 910) + 210
+            self.text(d, (start_x, start_y), "Gấp lại", 42, anchor="mt")
             self.text(
                 d,
                 (1460, 770) if self.landscape else (780, 1220),
