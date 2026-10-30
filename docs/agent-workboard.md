@@ -29,6 +29,8 @@ Before feature code, follow [G0–G6 research and quality gates](research-first-
 
 **Future video-format backlog:** [15-format research dossier and A20–A33](future-video-formats-research.md). All IDs are unclaimed and research-only until prerequisites, spec approval and file ownership are confirmed. No agent should begin implementation from the backlog alone.
 
+**Future FPS/sharpness/performance backlog:** [research dossier A34–A42](high-fps-performance-qc-research.md): rational FPS contract, native 60fps, stage profiling/cache, source sharpness, x264/NVENC A/B, scene-aware RIFE/minterpolate, optional restoration/4K, VMAF-HFR + temporal QC and resource scheduler. **ALL UNCLAIMED**, and none may change `render.py`/`timing.py`/`quality.py` before A02–A05 ownership and an approved spec; no local 60fps benchmarks yet.
+
 **Proposed follow-on IDs (not yet claimed):** A11 research-first governance (docs PR); A12 reproducible benchmark/CI render; A13 Animate sandbox POC; A14 render-engine adapter; A15 Vietnamese alignment; A16 orchestration/approval research; A17 learned QC calibration; A18 AI video consistency/provider research; A19 editor UX research. Detailed dependencies, acceptance and stop conditions are in the linked plan. Existing A01–A10 statuses are unchanged. Agent claims require checking open PRs first.
 
 ## Workstreams — claim tasks through a PR
