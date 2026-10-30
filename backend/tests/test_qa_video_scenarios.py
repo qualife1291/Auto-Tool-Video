@@ -90,6 +90,6 @@ def test_original_visual_assets_differ_scene_by_scene():
     case = module.SCENARIOS["water-12s"]
     a = module.visual(0, case)
     b = module.visual(1, case)
-    assert a.startswith(b"\\x89PNG")
-    assert b.startswith(b"\\x89PNG")
+    assert a.startswith(bytes.fromhex("89504e47"))
+    assert b.startswith(bytes.fromhex("89504e47"))
     assert a != b
