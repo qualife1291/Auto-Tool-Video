@@ -55,6 +55,7 @@ jobs:
           path: |
             ${{ runner.temp }}/qa-${{ matrix.case }}/*.mp4
             ${{ runner.temp }}/qa-${{ matrix.case }}/scenario-report.json
+            ${{ runner.temp }}/qa-${{ matrix.case }}/scenario-qc-failed-*.json
           if-no-files-found: warn
           retention-days: 7
 
@@ -91,5 +92,6 @@ jobs:
           path: |
             ${{ runner.temp }}/qa-water-fullhd/*.mp4
             ${{ runner.temp }}/qa-water-fullhd/scenario-report.json
+            ${{ runner.temp }}/qa-water-fullhd/scenario-qc-failed-*.json
           if-no-files-found: warn
           retention-days: 7
