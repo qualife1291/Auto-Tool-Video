@@ -11,8 +11,8 @@ import os
 import shutil
 import subprocess
 import wave
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from uuid import uuid4
 
 TEMPO = 0.92
@@ -120,7 +120,7 @@ def stretch_narration(source: Path, output: Path, expected_sha256: str) -> dict:
 
 
 def tight_audio(
-    root: Path, record: dict, index: int, *, output: Path | None = None
+    root: Path, record: dict, index: int, *, output_path: Path | None = None
 ) -> dict:
     """Keep source speech and small lead/tail margins before WSOLA retiming."""
     import numpy as np
@@ -145,7 +145,7 @@ def tight_audio(
         raise ValueError("Narration contains no measurable speech.")
     start = max(0, int(active[0]) * window - round(rate * 0.06))
     end = min(len(samples), (int(active[-1]) + 1) * window + round(rate * 0.10))
-    target = output or root / "audio-tight" / f"scene-{index + 1:02}.wav"
+    target = output_path or root / "audio-tight" / f"scene-{index + 1:02}.wav"
     target.parent.mkdir(parents=True, exist_ok=True)
     with wave.open(str(target), "wb") as output:
         output.setnchannels(1)
@@ -194,7 +194,7 @@ def prepare_timeline(root: Path) -> dict:
         changes = []
         for i, (scene, record) in enumerate(zip(scenes, source_records, strict=True)):
             tight_output = stage / "audio-tight" / f"scene-{i + 1:02}.wav"
-            trimmed = tight_audio(root, record, i, output=tight_output)
+            trimmed = tight_audio(root, record, i, output_path=tight_output)
             tempo_output = stage / "audio-tempo" / f"scene-{i + 1:02}.wav"
             stretched = stretch_narration(tight_output, tempo_output, trimmed["sha256"])
             measured = stretched["duration"]
