@@ -3,14 +3,12 @@
 import argparse
 import hashlib
 import json
-import math
 import subprocess
 import time
-import wave
 from pathlib import Path
 from uuid import uuid4
 
-import numpy as np
+from audio_tempo import prepare_timeline
 from auto_tool_video.domain import ExportInput, ProjectInput, Scene
 from auto_tool_video.jobs import enqueue
 from auto_tool_video.media import import_asset, probe
@@ -20,75 +18,6 @@ from auto_tool_video.store import Store
 from create_review_video import contact_sheet
 from PIL import Image
 from science_story import Art
-
-
-def tight_audio(root: Path, record: dict, index: int) -> dict:
-    source = root / record["file"]
-    assert hashlib.sha256(source.read_bytes()).hexdigest() == record["sha256"]
-    with wave.open(str(source), "rb") as stream:
-        assert stream.getnchannels() == 1 and stream.getsampwidth() == 2
-        rate = stream.getframerate()
-        samples = np.frombuffer(stream.readframes(stream.getnframes()), dtype="<i2")
-    window = max(1, round(rate * 0.01))
-    energies = np.array(
-        [
-            np.sqrt(np.mean(samples[i : i + window].astype(float) ** 2)) / 32768
-            for i in range(0, len(samples), window)
-        ]
-    )
-    active = np.flatnonzero(energies > max(10 ** (-52 / 20), energies.max() * 0.006))
-    if not len(active):
-        raise ValueError("Narration contains no measurable speech.")
-    start = max(0, active[0] * window - round(rate * 0.06))
-    end = min(len(samples), (active[-1] + 1) * window + round(rate * 0.10))
-    target = root / "audio-tight" / f"scene-{index + 1:02}.wav"
-    target.parent.mkdir(exist_ok=True)
-    with wave.open(str(target), "wb") as stream:
-        stream.setnchannels(1)
-        stream.setsampwidth(2)
-        stream.setframerate(rate)
-        stream.writeframes(samples[start:end].tobytes())
-    return {
-        "file": str(target.relative_to(root)),
-        "source_file": record["file"],
-        "source_sha256": record["sha256"],
-        "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
-        "trim_start_seconds": start / rate,
-        "trim_end_seconds": (len(samples) - end) / rate,
-        "duration": (end - start) / rate,
-        "margins": "60ms lead/100ms tail around -52dB RMS activity; never trim internal pauses",
-    }
-
-
-def prepare_timeline(root: Path):
-    story = json.loads((root / "story.json").read_text())
-    tts = json.loads((root / "tts-provenance.json").read_text())
-    records = []
-    for i, (scene, record) in enumerate(
-        zip(story["scenes"], tts["records"], strict=True)
-    ):
-        assert scene["narration"] == record["narration"]
-        voice = tight_audio(root, record, i)
-        records.append(voice)
-        scene["audio"] = voice["file"]
-        scene["duration"] = max(1, math.ceil((voice["duration"] + 0.10) * 30) / 30)
-    if sum(s["duration"] for s in story["scenes"]) > 60:
-        raise ValueError(
-            "Narration exceeds the short preset; edit script rather than truncate speech."
-        )
-    (root / "story.json").write_text(
-        json.dumps(story, ensure_ascii=False, indent=2) + "\n"
-    )
-    (root / "audio-timing.json").write_text(
-        json.dumps(records, ensure_ascii=False, indent=2) + "\n"
-    )
-    print(
-        "Timeline",
-        round(sum(s["duration"] for s in story["scenes"]), 3),
-        "seconds; no fixed 4-second holds",
-        flush=True,
-    )
-    return story
 
 
 def source_clip(path: Path, art: Art, duration: float):
