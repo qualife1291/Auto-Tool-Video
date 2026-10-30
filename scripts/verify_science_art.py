@@ -217,10 +217,17 @@ def mask_geometry(
     ys = np.flatnonzero(rows)
     left, right = int(xs[0]), int(xs[-1])
     top, bottom = int(ys[0]), int(ys[-1])
-    if left == 0 or top == 0 or right == width - 1 or bottom == height - 1:
+    cropped = left == 0 or top == 0 or right == width - 1 or bottom == height - 1
+    if strict_safe_zone and cropped:
         raise ValueError("garment alpha cropped at frame edge")
     mx, my = round(width * margin_fraction), round(height * margin_fraction)
-    safe = left > mx and right < width - mx and top > my and bottom < height - my
+    safe = (
+        not cropped
+        and left > mx
+        and right < width - mx
+        and top > my
+        and bottom < height - my
+    )
     if strict_safe_zone and not safe:
         raise ValueError("garment alpha crosses required safe zone")
     peg_center = None
@@ -240,6 +247,7 @@ def mask_geometry(
         ],
         "opaque_pixels": count,
         "safe_zone_ok": bool(safe),
+        "cropped_at_frame_edge": bool(cropped),
         "peg_row": peg_row,
         "peg_centroid_x": peg_center,
         "peg_pixels": peg_pixels,
