@@ -6,6 +6,22 @@ updated: 2026-10-30
 
 # Handover — Whiteboard Studio
 
+## CURRENT verified multi-agent handoff — 2026-10-31 (supersedes earlier planning text below)
+
+**Canonical:** `feat/short-video-studio` at observed merge SHA `97dfea49a712de2263648e187e08c4495098182b`. Refresh GitHub HEAD before any new action. Role/task contracts: [docs/agent-role-task-contracts.md](../../docs/agent-role-task-contracts.md); current [workboard](../../docs/agent-workboard.md), [short-term tasks](../memory/short-term/TASKS.md), BA [registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31) / [Epic #26](https://github.com/qualife1291/Auto-Tool-Video/issues/26).
+
+**People:** BA01 owns BA/PM/source research, assignments, shared-path conflict & release coordination; C03 and C04 are active coders (C01/C02 retired); T01 owns independent technical QA, authorized gated PR code merges and hourly manual reports; creator owns final full-video watch/listen/rights signoff. Role ID is not GitHub login.
+
+**Completed code integrations (human video QA NOT YET DONE):** C03 A02 [PR #34](https://github.com/qualife1291/Auto-Tool-Video/pull/34), C04 A03 [#35](https://github.com/qualife1291/Auto-Tool-Video/pull/35), A04 0.92× voice [#8](https://github.com/qualife1291/Auto-Tool-Video/pull/8), C04 P1-A WAV/MP4 beat invalidation [#40](https://github.com/qualife1291/Auto-Tool-Video/pull/40), C03 P1-C export frame cap [#42](https://github.com/qualife1291/Auto-Tool-Video/pull/42) **merged** at `97dfea49a712de2263648e187e08c4495098182b` after 335 pytest + 10 Vitest + 15 Playwright and dual FullHD/A04 regressions PASS on exact PR head. No inference of postmerge PASS until new merged-SHA workflows complete. Synthetic eSpeak is NOT approved Vietnamese narration.
+
+**Active:** C04 [P1-B #44](https://github.com/qualife1291/Auto-Tool-Video/issues/44) assigned pending claim; exclusive `api.py::fit_audio` + new test, negative RED required. T01 [PR #37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) 12/30/45/60s dual-aspect scenario videos remains QA-blocked by strict audio QC/actual MP4 proof, T01-owned. BA01 [Harness #38](https://github.com/qualife1291/Auto-Tool-Video/issues/38) and [iNew #39](https://github.com/qualife1291/Auto-Tool-Video/issues/39) are research-only, not implementation. Human user manual QA at [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36). A06–A10 are research/future backlog.
+
+**Operational rules:** BA assigns/authorizes exclusive paths → coder claim/RED→GREEN/source PR → T01 independently reviews current HEAD and integrated CI, merges only if all required checks PASS, updates BA → postmerge CI → creator actual video signoff (exact artifact hash) → BA marks feature/release. Every hour T01 reports test/standard research and manual checklist to owner. GitHub watcher [PR #43](https://github.com/qualife1291/Auto-Tool-Video/pull/43) is cron every 15 minutes or manual **ONLY**; `workflow_run` broad event trigger was removed after spam incident. Keep planned scope free-first and secrets out of Git.
+
+### Historical handover below (2026-10-30 baseline; outdated statuses superseded by section above)
+
+
+
 **Repository branch:** `feat/short-video-studio` is the canonical shared development branch. Current tracking: [workboard](../../docs/agent-workboard.md) A01–A10, [active tasks](../memory/short-term/TASKS.md), [roadmap](../../docs/development-plan.md), and [approved spec](../../specs/whiteboard-video-tool.md). This handover is a technical snapshot; do not confuse merged WIP with completed release.
 
 ## What is in source
