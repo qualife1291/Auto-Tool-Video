@@ -170,6 +170,10 @@ Capture wall and CPU time, process tree peak RSS, GPU utilization/VRAM (if avail
 
 **All task statuses = PROPOSED / NOT CLAIMED / RESEARCH FIRST.** The integrator must register them in the workboard, check active PRs, reserve write-owned paths, approve requirements, and coordinate A34 with A02/A03/A04/A05 because FPS touches renderer/audio/contracts/QC. Never start by modifying `render.py` or `quality.py` concurrently with those agents.
 
+## Performance cost and execution-evidence companion
+
+The earlier stage-optimization proposal has been expanded into [performance-cost-optimization-research.md](performance-cost-optimization-research.md) (A43–A48, stage probes, cache correctness, UI preview/AI/CI latency and operational costs) plus [plan audit](research-plan-audit-2026-10-30.md) and [performance-cost-review skill](../.agents/skills/performance-cost-review/SKILL.md). A12 owns fixture baseline; A43 owns stage spans and accounting; A36 optimizes only after profiling. A42 scheduler research need not wait for optional AI restoration/4K/interpolation; its implementation needs measured contention, agreed resource caps, compatibility and independent approval. Do not duplicate active A05/QA PR #18 work.
+
 ## 12. References — authoritative sources, researched 2026-10-30
 
 1. FFmpeg filters: `minterpolate`, `fps`, `libvmaf`, `blurdetect`, `blockdetect`, `libplacebo`, `scdet`: https://ffmpeg.org/ffmpeg-filters.html
