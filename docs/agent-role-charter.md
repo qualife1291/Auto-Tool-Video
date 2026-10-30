@@ -1,6 +1,6 @@
-# AI Agent Role Charter — BA / Tester / Coder
+# AI Agent Role Charter — BA / Tester / Coder / Technical Reviewer
 
-**Status:** proposed governance document, review via PR before it becomes effective on the canonical branch.
+**Status:** merged baseline via PR #45; TR01 addition in a separate review PR and not effective until merged.
 **Last audit:** 2026-10-31 (Asia/Ho_Chi_Minh).
 **Project:** `qualife1291/Auto-Tool-Video`, canonical development branch `feat/short-video-studio`.
 **Purpose:** stable **position definitions**, so a different model/person/session can replace an agent or new agents can join **without inheriting stale tasks, credentials, permissions or unverified claims**.
@@ -12,6 +12,7 @@
 | Stable position | Active role ID | Purpose | Position owner / oversight | System of record |
 | --- | --- | --- | --- | --- |
 | Business Analyst / Product Strategist / Project Manager | `BA01` | Research, requirements, roadmap, allocation, acceptance coordination | Product owner; QA independence maintained | [Master registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31), [Epic #26](https://github.com/qualife1291/Auto-Tool-Video/issues/26) |
+| Lead Technical Reviewer / Cross-boundary Architecture Auditor (role described in owner-supplied TR01 review; activation unverified) | `TR01` (PROPOSED / NOT ACTIVE-VERIFIED) | Independent read-only technical architecture, coding-invariant and QA-gate audit; recommendations to BA01 | BA01 triage, T01 verifies tests, product owner approves seat and cadence | [TR01 technical audit #50](https://github.com/qualife1291/Auto-Tool-Video/issues/50) |
 | Independent QA / Video Quality Gatekeeper | `T01` | Test strategy, reproduction, review, exact-SHA QA, creator feedback | Product owner and approved SRS; independent of developer | [QA registry #32](https://github.com/qualife1291/Auto-Tool-Video/issues/32), [QA #17](https://github.com/qualife1291/Auto-Tool-Video/issues/17), [Manual QA #36](https://github.com/qualife1291/Auto-Tool-Video/issues/36) |
 | Software Engineer / AI-Coder seat A | `C03` | Scoping, architecture, implementation, self-test and PR | BA01 assignment, T01 independent verification | [Coder registry #28](https://github.com/qualife1291/Auto-Tool-Video/issues/28) |
 | Software Engineer / AI-Coder seat B | `C04` | Same baseline engineering role as C03; workstream varies per claim | BA01 assignment, T01 independent verification | [Coder registry #30](https://github.com/qualife1291/Auto-Tool-Video/issues/30) |
@@ -74,6 +75,22 @@
 **Seat routing:** BA01 assigns each Coder by expertise/availability **and conflict-free write surface**, not by hard-wiring `C03=A02` or `C04=A03` forever. C03 and C04 have the **same baseline responsibility and DoD**; specialization can be recorded as a skill tag and changed without changing the role contract.
 
 **Exit/handoff contract:** issue state, CLAIm and role identity, base/head SHA, open PR link, files touched, unit/E2E/media commands with results, test artifacts, defect reproduction, open blockers and next independent review step.
+
+## 4A. TR01 — proposed independent Lead Technical Reviewer / System Auditor
+
+**Source and status:** The project owner supplied `TR01-technical-review-for-BA01-31-10-2026.md` with a TR01 role profile and a technical audit at old baseline `3e5fd85f80a932dbd1898e8e862fc3833b7aeed3`. BA01 verified findings against a newer canonical and recorded decision triage in [Issue #50](https://github.com/qualife1291/Auto-Tool-Video/issues/50). **This records the proposed role without asserting a unique authenticated GitHub identity, installed skill, confirmed recurring scheduler, or a newly authorized code-writing seat.**
+
+**Mission:** provide cross-boundary architectural and testing-controls review independent of current implementation streams. Unlike T01, TR01 audits whether invariants and workflows are **correctly designed and connected**; T01 performs independent execution/QA and user-delegated PASS-gated merge.
+
+**Review scope:**
+1. Audit backend API/schema/SQLite revision & CAS/worker/FFmpeg/quality contracts, frontend scene/preview/render parity, original science art and audio-tempo paths, and compatibility after merged PRs.
+2. Identify integration gaps, security risks (input boundaries, auth, secrets, external providers), frame/time/audio correctness, QA gate loopholes, false green CI, and misaligned agent claims. Provide static-vs-reproduced-vs-unverified classification.
+3. Prepare a technical review/architecture decision record **at the exact latest canonical SHA**, link source lines/PRs and reproducible proofs, compare alternatives with zero-fee license/cost constraints, estimate risk and minimal safe changes, propose owner-exclusive paths and testable AC.
+4. Hand off findings **to BA01** for prioritization and explicit task contract; flag T01 for independent test-gate findings. Suggested periodic review in submitted profile is **24 hours**, but cadence must be explicitly configured and checked, avoiding duplicate watchers and GitHub Actions FREE-minute cost.
+
+**Authority boundaries:** **READ-ONLY reviewer/advisor by default**. TR01 does not assign C03/C04 without BA01 decision, claim code, modify approved SRS, author an independent approval for its own work, merge/release, certify Creator G10, weaken quality gates, spend on external services or install third-party skills. A recommendation is not implementation authorization.
+
+**Takeover/addition:** to activate TR01 or a successor, BA01/product owner records identity/seat, job scope, permissions, schedule (if any), source-of-truth issue and handoff; QA independence stays with T01. Do not copy historical SHA/line numbers into a new task without fresh verification.
 
 ## 5. Standard state machine and evidence
 
