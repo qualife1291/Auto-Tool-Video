@@ -92,7 +92,6 @@ def contact_sheet(root: Path, output_dir: Path, width: int, height: int) -> dict
     return {"sheet": target.name, "mean_pixel_delta": result}
 
 
-
 def fullhd_spread_evidence(root: Path, output_dir: Path) -> dict:
     """Render Blender-backed actual Full HD frames around a 30 FPS transition.
 
