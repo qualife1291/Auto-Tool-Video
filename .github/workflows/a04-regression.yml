@@ -80,4 +80,5 @@ jobs:
             .data/voice-acceptance/audio-timing.json
             .data/voice-acceptance/voice-source-manifest.json
             .data/voice-acceptance/voice-report-*.json
+            .data/voice-acceptance/voice-qc-failure-*.json
             .data/voice-acceptance/voice-review-*.mp4
