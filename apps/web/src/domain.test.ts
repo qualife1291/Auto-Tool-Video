@@ -138,3 +138,17 @@ describe('estimated caption pages (browser preview, not pixel-exact export)', ()
     );
   });
 });
+
+/* C02_TEMP_FORMAT_DIAGNOSTIC — delete after extracting exact Prettier output. */
+it('prints exact formatter output for this allowed test file', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { format } = await import('prettier');
+  const source = readFileSync(new URL('./domain.test.ts', import.meta.url), 'utf8');
+  const formatted = await format(source, {
+    parser: 'typescript',
+    singleQuote: true,
+    trailingComma: 'all',
+    printWidth: 100,
+  });
+  console.log('C02_FORMATTED_FILE_BEGIN' + JSON.stringify(formatted) + 'C02_FORMATTED_FILE_END');
+});
