@@ -184,13 +184,13 @@ def visual(index: int, scenario: Scenario) -> bytes:
     return output.getvalue()
 
 
-def voice(text: str, path: Path) -> dict:
+def voice(text: str, path: Path, speech_rate: int) -> dict:
     espeak = shutil.which("espeak")
     if espeak is None:
         raise RuntimeError("eSpeak must be installed for these voiced fixtures")
     raw = path.with_suffix(".raw.wav")
     subprocess.run(
-        [espeak, "-v", "vi", "-s", "175", "-w", str(raw), text],
+        [espeak, "-v", "vi", "-s", str(speech_rate), "-w", str(raw), text],
         capture_output=True,
         check=True,
         timeout=30,
@@ -406,13 +406,14 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
     audio_dir.mkdir(exist_ok=True)
     voices = []
     records = []
+    speech_rate = 125 if scenario.scene_seconds <= 3 else 95
     report = {
         "scenario": key,
         "title": scenario.title,
         "scenes": len(scenario.cues),
         "target_seconds": scenario.seconds,
         "cues": [{"title": t, "narration": c} for t, c in scenario.cues],
-        "source": "Pillow art + local eSpeak vi, 175 wpm",
+        "source": f"Pillow art + local eSpeak vi, {speech_rate} wpm",
         "audio_mastering": "synthetic-fixture compressor only",
         "release_approved": False,
         "human_review": "NOT RUN",
@@ -422,7 +423,7 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
     try:
         for i, (_title, cue) in enumerate(scenario.cues):
             path = audio_dir / f"voice-{i + 1:02d}.wav"
-            info = voice(cue, path)
+            info = voice(cue, path, speech_rate)
             if info["duration"] + 0.12 > scenario.scene_seconds:
                 raise ValueError(f"Scene {i + 1}: voice overflows allotted time")
             voices.append(path)
