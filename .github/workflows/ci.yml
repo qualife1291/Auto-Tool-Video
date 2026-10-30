@@ -1,0 +1,57 @@
+name: Whiteboard Studio CI
+
+on:
+  push:
+    branches:
+      - feat/short-video-studio
+      - 'agent/**'
+  pull_request:
+    branches:
+      - feat/short-video-studio
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Backend + Web + Browser E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      APP_DATA_DIR: ${{ runner.temp }}/auto-tool-video-data
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install Python dependencies
+        run: uv sync --project backend --frozen --group dev
+      - name: Install web dependencies
+        run: npm --prefix apps/web ci
+      - name: Python lint / typing
+        run: |
+          uv run --project backend ruff check backend scripts
+          uv run --project backend ruff format --check backend scripts
+          uv run --project backend mypy backend/auto_tool_video
+      - name: Backend tests
+        run: uv run --project backend pytest backend/tests -q
+      - name: Web typecheck, unit tests, and build
+        run: |
+          npm --prefix apps/web run check
+          npm --prefix apps/web run build
+          npm --prefix apps/web run format:check
+      - name: Install Playwright Chromium
+        run: npx --prefix apps/web playwright install --with-deps chromium
+      - name: Browser E2E
+        run: npm --prefix apps/web run test:e2e
