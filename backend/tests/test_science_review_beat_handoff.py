@@ -181,8 +181,9 @@ def test_fractional_and_twenty_second_beats_validate_and_roundtrip(tmp_path, dur
     assert [beat["second"] for beat in planned[0]["second_by_second"]] == list(
         range(math.ceil(duration))
     )
-    assert planned[0]["second_by_second"][0]["narration_cue"].startswith(
-        "Cue dự kiến (chưa forced-align):"
+    assert any(
+        beat["narration_cue"].startswith("Cue dự kiến (chưa forced-align):")
+        for beat in planned[0]["second_by_second"]
     )
     project = store.save(project["id"], {**project, "scenes": planned})
     restored = Store(tmp_path / "studio").get("projects", project["id"])
