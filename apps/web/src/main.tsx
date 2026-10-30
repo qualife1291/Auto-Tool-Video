@@ -930,11 +930,10 @@ function App() {
                             Storyboard theo từng giây ({scene.second_by_second?.length || 0}/
                             {Math.ceil(scene.duration)})
                           </summary>
-                          {(scene.second_by_second?.length || 0) !==
-                            Math.ceil(scene.duration) && (
+                          {(scene.second_by_second?.length || 0) !== Math.ceil(scene.duration) && (
                             <p className="small danger">
-                              Thời lượng đã thay đổi hoặc chưa có beat. Kế hoạch cũ được giữ,
-                              cần rà soát từng giây trước khi render.
+                              Thời lượng đã thay đổi hoặc chưa có beat. Kế hoạch cũ được giữ, cần rà
+                              soát từng giây trước khi render.
                             </p>
                           )}
                           {scene.beat_plan_status === 'needs_review' &&
@@ -946,8 +945,8 @@ function App() {
                           {(scene.second_by_second || []).map((beat, beatIndex) => (
                             <details className="beat-row" key={beat.second}>
                               <summary>
-                                Giây {beat.second}–{Math.min(beat.second + 1, scene.duration)}
-                                : {beat.action}
+                                Giây {beat.second}–{Math.min(beat.second + 1, scene.duration)}:{' '}
+                                {beat.action}
                               </summary>
                               {(
                                 [

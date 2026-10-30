@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from typing import Annotated, Literal
 from uuid import uuid4
 
@@ -57,7 +58,7 @@ class CreativeBrief(StrictModel):
 class SecondBeat(StrictModel):
     """An editable, scene-relative second with visual and spoken intent."""
 
-    second: int = Field(ge=0, lt=20)
+    second: StrictInt = Field(ge=0, lt=20)
     visual_state: str = Field(min_length=1, max_length=300)
     action: str = Field(min_length=1, max_length=300)
     camera: str = Field(min_length=1, max_length=200)
@@ -99,8 +100,14 @@ class Scene(StrictModel):
             range(len(self.second_by_second))
         ):
             raise ValueError("Beat indexes must begin at zero and be consecutive.")
-        # Duration can change after authoring. Keep the old beats for manual retiming,
-        # rather than silently dropping or rewriting a creator's visual plan.
+        # A previously authored plan may be stale after changing duration.
+        # Keep its beats intact, but never claim incomplete beats are approved.
+        # The store additionally marks authored beats stale for ANY duration edit,
+        # even when ceil(duration) (and thus the expected beat count) stays equal.
+        if self.beat_plan_status == "authored" and len(self.second_by_second) != math.ceil(
+            self.duration
+        ):
+            self.beat_plan_status = "needs_review"
         return self
 
 

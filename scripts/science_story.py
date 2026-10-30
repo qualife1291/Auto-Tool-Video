@@ -213,12 +213,14 @@ def beat_timeline(scene: dict, duration: float) -> list[dict]:
             "on_screen_text": scene["caption_emphasis"] if second > 0 else "",
             "narration_cue": (
                 "Cue dự kiến (chưa forced-align): " + " ".join(words[start:end])
-                if start < end else "Nghỉ có chủ đích, đồng bộ lại theo audio."
+                if start < end
+                else "Nghỉ có chủ đích, đồng bộ lại theo audio."
             ),
             "continuity": (
                 "Cùng một chiếc áo xanh và điểm treo/kẹp; "
                 "giữ hình dáng, hướng gió và trạng thái ẩm nối cảnh."
-                if scene["template"] in {"shirt", "room", "warm", "wind", "spread", "dry"}
+                if scene["template"]
+                in {"shirt", "room", "warm", "wind", "spread", "dry"}
                 else "Giữ màu, kích thước sơ đồ và các vật thể xuyên cảnh; "
                 "không dùng animation để giả kết quả khoa học."
             ),
