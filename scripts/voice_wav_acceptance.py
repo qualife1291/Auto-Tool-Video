@@ -163,9 +163,7 @@ def render_aspect(root: Path, aspect: str) -> dict:
     project = store.save(project["id"], project)
     for i, scene in enumerate(project["scenes"]):
         # Unique original art per scene, no third-party media or downloaded assets.
-        image_width, image_height = (
-            (960, 1706) if aspect == "portrait" else (1280, 720)
-        )
+        image_width, image_height = (960, 1706) if aspect == "portrait" else (1280, 720)
         canvas = Image.new("RGB", (image_width, image_height), "#f8faf8")
         draw = ImageDraw.Draw(canvas)
         w, h = canvas.size
@@ -173,9 +171,7 @@ def render_aspect(root: Path, aspect: str) -> dict:
             (w // 8, h // 3, w * 7 // 8, h * 2 // 3),
             fill=(115 + i * 7, 170 - i * 5, 195 + i * 3),
         )
-        draw.ellipse(
-            (w // 3, h // 5, w * 2 // 3, h // 2), fill="#ecce76"
-        )
+        draw.ellipse((w // 3, h // 5, w * 2 // 3, h // 2), fill="#ecce76")
         draw.line(
             (w // 8, h * 3 // 4, w * 7 // 8, h * 3 // 4),
             fill="#254d3d",
@@ -216,8 +212,16 @@ def render_aspect(root: Path, aspect: str) -> dict:
     assert abs(observed - target) <= 0.12, (observed, target)
     subprocess.run(
         [
-            "ffmpeg", "-hide_banner", "-loglevel", "error", "-xerror",
-            "-i", str(dest), "-f", "null", "-",
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-xerror",
+            "-i",
+            str(dest),
+            "-f",
+            "null",
+            "-",
         ],
         check=True,
         capture_output=True,
