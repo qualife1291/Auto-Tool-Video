@@ -595,9 +595,8 @@ class Art:
             )
         if kind == "spread":
             self.shirt(frame, t, duration, dry=True, mini=True)
-            start_x = 500 if self.landscape else 260
-            start_y = (540 if self.landscape else 910) + 210
-            self.text(d, (start_x, start_y), "Gấp lại", 42, anchor="mt")
+            start_x, start_y = (500, 540) if self.landscape else (260, 910)
+            self.text(d, (start_x, start_y + 210), "Gấp lại", 42, anchor="mt")
             self.text(
                 d,
                 (1460, 770) if self.landscape else (780, 1220),
@@ -605,7 +604,13 @@ class Art:
                 42,
                 anchor="mt",
             )
-            self.arrow(d, (x + 190, y - 130), (x + 300, y - 150), CORAL, 7)
+            self.arrow(
+                d,
+                (start_x + 190, start_y - 130),
+                (start_x + 300, start_y - 150),
+                CORAL,
+                7,
+            )
         image = frame.convert("RGB").resize(
             (self.width, self.height), Image.Resampling.LANCZOS
         )
