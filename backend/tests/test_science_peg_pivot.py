@@ -53,7 +53,8 @@ def _render_affine(art, seconds: float, monkeypatch) -> tuple[tuple[float, ...],
     original = Image.Image.transform
 
     def record_transform(image, *args, **kwargs):
-        if len(args) > 2 and args[1] == Image.Transform.AFFINE:
+        if len(args) > 2 and args[1] == Image.Transform.AFFINE and not matrices:
+            # Pillow may delegate to transform() internally; capture once.
             matrices.append(tuple(args[2]))
         return original(image, *args, **kwargs)
 
