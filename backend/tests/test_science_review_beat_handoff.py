@@ -7,6 +7,7 @@ are replaced. These are technical fixtures, not approved voice or video.
 
 from __future__ import annotations
 
+import importlib
 import json
 import math
 import subprocess
@@ -17,11 +18,12 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
+from auto_tool_video.store import Store
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-import create_story_video as review  # noqa: E402
-from auto_tool_video.store import Store  # noqa: E402
+review = importlib.import_module("create_story_video")
 
 
 class StopBeforeExport(Exception):
