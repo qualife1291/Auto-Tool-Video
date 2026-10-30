@@ -71,9 +71,14 @@ def test_real_ffmpeg_092_slows_without_lowering_pitch_or_cutting_tail(tmp_path):
     probe = json.loads(
         subprocess.check_output(
             [
-                "ffprobe", "-v", "error", "-show_entries",
+                "ffprobe",
+                "-v",
+                "error",
+                "-show_entries",
                 "stream=codec_name,sample_rate,channels,duration",
-                "-of", "json", str(out),
+                "-of",
+                "json",
+                str(out),
             ]
         )
     )
@@ -132,15 +137,16 @@ def test_failed_ffmpeg_never_replaces_approved_audio(tmp_path, monkeypatch):
 def test_timeline_from_measured_outputs_and_repeatable(tmp_path):
     stories = [
         {
-            "title": "Cảnh 1", "narration": "Áo còn ướt.", "duration": 7,
-            "second_by_second": [{"second": 0}], "beat_plan_status": "authored",
+            "title": "Cảnh 1",
+            "narration": "Áo còn ướt.",
+            "duration": 7,
+            "second_by_second": [{"second": 0}],
+            "beat_plan_status": "authored",
         },
         {"title": "Cảnh 2", "narration": "Nước bay hơi.", "duration": 8},
     ]
     original = {"title": "Mẫu", "scenes": stories}
-    (tmp_path / "story.json").write_text(
-        json.dumps(original, ensure_ascii=False), encoding="utf-8"
-    )
+    (tmp_path / "story.json").write_text(json.dumps(original, ensure_ascii=False), encoding="utf-8")
     records = []
     for n, scene in enumerate(stories, 1):
         source = wav(tmp_path / f"raw-{n}.wav", seconds=1.3 + n / 10)
@@ -176,9 +182,7 @@ def test_invalid_second_source_does_not_rewrite_story(tmp_path):
     records = []
     for n, scene in enumerate(scenes):
         src = wav(tmp_path / f"{n}.wav")
-        records.append(
-            {"file": src.name, "sha256": digest(src), "narration": scene["narration"]}
-        )
+        records.append({"file": src.name, "sha256": digest(src), "narration": scene["narration"]})
     records[-1]["sha256"] = "0" * 64
     (tmp_path / "tts-provenance.json").write_text(json.dumps({"records": records}))
     with pytest.raises(ValueError, match="SHA256"):
@@ -194,9 +198,13 @@ def test_long_audio_is_rejected_before_story_is_replaced(tmp_path):
     (tmp_path / "story.json").write_text(text, encoding="utf-8")
     source = wav(tmp_path / "long.wav", seconds=19)
     (tmp_path / "tts-provenance.json").write_text(
-        json.dumps({
-            "records": [{"file": source.name, "sha256": digest(source), "narration": scene["narration"]}]
-        })
+        json.dumps(
+            {
+                "records": [
+                    {"file": source.name, "sha256": digest(source), "narration": scene["narration"]}
+                ]
+            }
+        )
     )
     with pytest.raises(ValueError, match="scene limit"):
         prepare_timeline(tmp_path)
