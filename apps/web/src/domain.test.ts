@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   captionParts,
+  estimateCaptionPages,
   duration,
   preflight,
   sourceNeedsUpscale,
@@ -86,5 +87,55 @@ describe('caption emphasis', () => {
     expect(captionParts('Nước bay hơi.', 'lửa')).toEqual([
       { text: 'Nước bay hơi.', emphasis: false },
     ]);
+  });
+});
+
+describe('estimated caption pages (browser preview, not pixel-exact export)', () => {
+  const long =
+    'Áo vừa giặt còn ướt, nhưng một lúc sau lại khô. ' +
+    'Các phân tử nước chuyển từ mặt vải vào không khí. ' +
+    'Gió đưa lớp không khí ẩm đi xa, giúp nước tiếp tục bay hơi. ' +
+    'Không khí ẩm quá mức sẽ làm áo khô chậm hơn ngay cả khi trời ấm.';
+
+  it('returns no overlay for empty narration and leaves a short cue unchanged', () => {
+    expect(estimateCaptionPages('', 'portrait')).toEqual([]);
+    expect(estimateCaptionPages('   \n\t  ', 'landscape')).toEqual([]);
+    for (const aspect of ['portrait', 'landscape'] as const) {
+      expect(estimateCaptionPages('Nước bay hơi.', aspect)).toEqual(['Nước bay hơi.']);
+    }
+  });
+
+  it('preserves every Vietnamese word and punctuation in two-line estimated pages', () => {
+    for (const aspect of ['portrait', 'landscape'] as const) {
+      const pages = estimateCaptionPages(long, aspect);
+      expect(pages.length).toBeGreaterThan(1);
+      expect(pages.every((page) => page.split('\n').length <= 2)).toBe(true);
+      expect(pages.join(' ').replace(/\s+/gu, ' ')).toBe(long);
+      expect(estimateCaptionPages(long, aspect)).toEqual(pages);
+    }
+    expect(estimateCaptionPages(long, 'portrait').length).toBeGreaterThanOrEqual(
+      estimateCaptionPages(long, 'landscape').length,
+    );
+  });
+
+  it('normalizes whitespace without changing diacritics, hyphenated words or token order', () => {
+    const input = '  Nước   bay-hơi\n  rất   nhẹ.  Cây uống nước\t  mỗi ngày! ';
+    const pages = estimateCaptionPages(input, 'portrait');
+    expect(pages.join(' ').replace(/\s+/gu, ' ')).toBe(
+      'Nước bay-hơi rất nhẹ. Cây uống nước mỗi ngày!',
+    );
+    expect(pages.join(' ')).toContain('bay-hơi');
+  });
+
+  it('does not emphasize a phrase on an unrelated page', () => {
+    const text = 'Một hai ba bốn năm sáu bảy tám chín mười ' + long + ' hơi nước xuất hiện.';
+    const pages = estimateCaptionPages(text, 'portrait');
+    const matched = pages
+      .map((page) => captionParts(page, 'hơi nước').filter((part) => part.emphasis))
+      .flat();
+    expect(matched.map((part) => part.text)).toEqual(['hơi nước']);
+    expect(captionParts('Nước bay hơi.', 'bay hơi').map((part) => part.text).join('')).toBe(
+      'Nước bay hơi.',
+    );
   });
 });
