@@ -30,8 +30,7 @@ def digest(path: Path) -> str:
 
 def make_project(root: Path, durations: tuple[float, ...]) -> bytes:
     scenes = [
-        {"title": f"Scene {i}", "narration": f"Đây là lời đọc {i}."}
-        for i in range(len(durations))
+        {"title": f"Scene {i}", "narration": f"Đây là lời đọc {i}."} for i in range(len(durations))
     ]
     original = (
         json.dumps({"title": "Kiểm thử", "scenes": scenes}, ensure_ascii=False) + "\n"
