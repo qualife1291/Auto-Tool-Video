@@ -14,15 +14,17 @@
 | Business Analyst / Product Strategist / Project Manager | `BA01` | Research, requirements, roadmap, allocation, acceptance coordination | Product owner; QA independence maintained | [Master registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31), [Epic #26](https://github.com/qualife1291/Auto-Tool-Video/issues/26) |
 | Lead Technical Reviewer / Cross-boundary Architecture Auditor (role described in owner-supplied TR01 review; activation unverified) | `TR01` (PROPOSED / NOT ACTIVE-VERIFIED) | Independent read-only technical architecture, coding-invariant and QA-gate audit; recommendations to BA01 | BA01 triage, T01 verifies tests, product owner approves seat and cadence | [TR01 technical audit #50](https://github.com/qualife1291/Auto-Tool-Video/issues/50) |
 | Independent QA / Video Quality Gatekeeper | `T01` | Test strategy, reproduction, review, exact-SHA QA, creator feedback | Product owner and approved SRS; independent of developer | [QA registry #32](https://github.com/qualife1291/Auto-Tool-Video/issues/32), [QA #17](https://github.com/qualife1291/Auto-Tool-Video/issues/17), [Manual QA #36](https://github.com/qualife1291/Auto-Tool-Video/issues/36) |
+| Software Engineer / AI-Coder seat C (owner-activated 2026-10-31) | `C01` | A02 illustration/motion and assigned engineering tasks | BA01 task claim; T01 independent QA/merge | [C01 registry #52](https://github.com/qualife1291/Auto-Tool-Video/issues/52), [task #55](https://github.com/qualife1291/Auto-Tool-Video/issues/55) |
+| Software Engineer / AI-Coder seat D (owner-activated 2026-10-31) | `C02` | Caption UX / frontend and assigned engineering tasks | BA01 task claim; T01 independent QA/merge | [C02 registry #54](https://github.com/qualife1291/Auto-Tool-Video/issues/54), [task #57](https://github.com/qualife1291/Auto-Tool-Video/issues/57) |
 | Software Engineer / AI-Coder seat A | `C03` | Scoping, architecture, implementation, self-test and PR | BA01 assignment, T01 independent verification | [Coder registry #28](https://github.com/qualife1291/Auto-Tool-Video/issues/28) |
 | Software Engineer / AI-Coder seat B | `C04` | Same baseline engineering role as C03; workstream varies per claim | BA01 assignment, T01 independent verification | [Coder registry #30](https://github.com/qualife1291/Auto-Tool-Video/issues/30) |
 
-**Reserved/historical IDs:** `C01` and `C02` were obsolete aliases in older issues/docs; they are **not** current coder seats. Future added coders should receive new unique IDs (`C05`, `C06`, …) **only after BA01 reserves them in registry #31**. New testers use `T02`, etc., with explicit independent review responsibility. Do not reuse an active ID for two simultaneous agents. A successor **replacing** a position may retain its stable seat ID only after owner/BA authorizes takeover and revokes the previous session's write ownership; preserve change history.
+**Reactivated coder seats (owner-authorized, 2026-10-31):** `C01` and `C02` were obsolete historical aliases as of 2026-10-30, but the owner has explicitly **activated them as NEW coder sessions** on 2026-10-31. Their new registrations [#52](https://github.com/qualife1291/Auto-Tool-Video/issues/52) and [#54](https://github.com/qualife1291/Auto-Tool-Video/issues/54) do **not** revive old claims, GitHub identities, privileges, branches or artifacts. Active coder seats are now **C01, C02, C03, C04**, each with exclusive task-specific file ownership. Add future seats `C05`, `C06` and testers `T02` by reserving a unique ID in registry #31; never duplicate active seat claims. Successors retaining a seat ID need an explicit handoff and revocation of earlier write ownership.
 
 ### Position is not task or provider identity
 
 - **Role** = lasting responsibilities, permissions and quality gates (this file).
-- **Seat ID** = coordination label (`BA01`, `T01`, `C03`, `C04`), NOT a distinct authenticated GitHub identity.
+- **Seat ID** = coordination label (`BA01`, `T01`, `C01`, `C02`, `C03`, `C04`), NOT a distinct authenticated GitHub identity.
 - **Task claim** = temporary exclusive write scope for one issue/branch/SHA, recorded in that issue.
 - **Implementer/model/provider** = replaceable; never bind obligations to a vendor, model, local PC or ChatGPT session.
 - **Execution channel** = interactive agent, explicit scheduled automation or externally deployed CI workflow. A GitHub issue/comment **does not wake a different chat session** automatically. Each channel's permissions and cadence must be tested.
@@ -59,7 +61,7 @@
 
 **Exit/handoff contract:** current PR/run SHAs; evidence table PASS/FAIL/BLOCKED/NOT RUN; exact failing tests/artifacts/timecodes; PRs eligible/blocked for merge; creator acceptance pending; open defects, retries and monitoring costs. Replacement tester must recheck historical verdicts against current canonical SHA.
 
-## 4. C03 / C04 — interchangeable AI-Coder engineer positions
+## 4. C01 / C02 / C03 / C04 — interchangeable AI-Coder engineer positions
 
 **Mission:** implement one **explicit BA-assigned**, scoped, approved task as maintainable production code with repeatable evidence; no permanent module ownership based solely on seat number.
 
@@ -72,7 +74,7 @@
 6. Submit PR for **T01 independent QA**; address reproducible T01 defects within scope, then wait for BA01 new task. No coder self-merge; no creator approval assumed after CI green. User-approved exceptions must be explicit in issue/PR.
 7. Protect secrets, model weights, source media rights and proprietary user data; no paid external provider without owner approval.
 
-**Seat routing:** BA01 assigns each Coder by expertise/availability **and conflict-free write surface**, not by hard-wiring `C03=A02` or `C04=A03` forever. C03 and C04 have the **same baseline responsibility and DoD**; specialization can be recorded as a skill tag and changed without changing the role contract.
+**Seat routing:** BA01 assigns each Coder by expertise/availability **and conflict-free write surface**, not by hard-wiring any seat to one module forever. C01/C02/C03/C04 share the **same baseline responsibility and DoD**; specialization can be recorded as a skill tag and changed without changing the role contract.
 
 **Exit/handoff contract:** issue state, CLAIm and role identity, base/head SHA, open PR link, files touched, unit/E2E/media commands with results, test artifacts, defect reproduction, open blockers and next independent review step.
 
@@ -92,9 +94,35 @@
 
 **Takeover/addition:** to activate TR01 or a successor, BA01/product owner records identity/seat, job scope, permissions, schedule (if any), source-of-truth issue and handoff; QA independence stays with T01. Do not copy historical SHA/line numbers into a new task without fresh verification.
 
+## 4B. Required developer PR lifecycle: Draft → Ready for review → T01 independent QA
+
+**Applies to ALL active software coders C01, C02, C03, C04 and future C05+.** It is a *mandatory GitHub review readiness convention*, distinct from GitHub's open/closed PR state and distinct from test results.
+
+| GitHub PR state | What it means | Responsible agent |
+| --- | --- | --- |
+| No PR; `ASSIGNED` | BA01 has approved issue/AC, file scope, reviewer, priority | BA01 |
+| Task `CLAIMED / IN_PROGRESS` | Coder has posted own claim (role, base SHA, branch, allowed paths, conflict check), researches/reproduces and starts isolated work | Coder |
+| **`DRAFT` pull request** | WIP / exploratory / RED test-only / CI failing or incomplete; T01 may triage failures but **must not treat as formal QA-ready or mergeable** | Coder |
+| **`READY FOR REVIEW`** | Coder self-test complete, full task diff and reproducible evidence supplied; GitHub PR is **not draft**. Coder explicitly invokes **Ready for review** from PR UI or corresponding GitHub tool | **Coder** |
+| `QA IN REVIEW` | T01 independently checks PR head **and effective merge ref/current base** + required workflow run results/artifacts | **T01** |
+| `CHANGES REQUESTED / QA BLOCKED` | T01 posts exact defect, failed AC, logs/SHA. Coder repairs in own scope; if substantial change, convert back to `Draft` while repairing. Existing `Ready for review` never proves tests passed after newer commits | T01 → Coder |
+| `QA-PASS-CODE` | T01 confirms **latest SHA** and mandatory gates are PASS, independent review complete | T01 |
+| `MERGED / POST-MERGE VERIFIED` | T01 merges only after QA-PASS-CODE, then checks merged SHA and reports BA01; creator video approval separate | T01 |
+| `CREATOR APPROVED` | Product owner watches/listens and approves perceptual G10, including real Vietnamese narration where applicable | Creator |
+
+**Coder's mandatory Ready-for-review gate (all items):**
+1. Task issue is properly CLAIMED and approved; correct exclusive changed files, tests, no unrelated code, no exposed secret or paid API/hosting; branch targets `feat/short-video-studio`.
+2. For defects, show **actual behavior RED on old code** (tests and SHA), then **GREEN on fixed code**. New features need positive/negative/edge regression, not an invented RED.
+3. Finish implementation and self-review, including lint/format/typecheck/unit, frontend E2E, FullHD dual-aspect QA where relevant. Document commands, test totals, skipped/failed/not-run and complete PR head SHA; do not call queued or in-progress CI PASS.
+4. Update PR description with issue, spec/AC, scope, risk, before/after, exact-head CI URLs, artifacts and limitations. If code/branch changes before review, refresh evidence and recalculate merge-base/integration checks.
+5. **Only then change GitHub PR from `Draft` to `Ready for review`** and post handoff: `READY FOR T01 REVIEW | role=Cxx | issue=#... | PR=#... | head=<40SHA> | mandatory CI=PASS/NOT RUN [links] | evidence=... | known risks=...`. GitHub reviewers can be requested **only if T01 has a separately verified GitHub username**; do not assume shared GitHub connector account is a different reviewer. Issue comment & scheduler are coordination, **not instant wake-up**.
+6. T01 must still explicitly accept a PR into its independent QA queue and evaluate actual latest evidence; `Ready for review` is a **request**, not approval, merge permission, or creator release. If current canonical advanced and merge-ref checks are stale, T01 marks `INTEGRATION BLOCKED` and returns to coder to sync before approval.
+
+**Do not promote a PR to Ready for review simply to obtain automatic CI reruns or mask a failing RED test.** Draft PRs can trigger GitHub Actions; an exact-head check and QA handoff remain required after promotion. Do not disable quality gates or weaken `local-qc-2` to make it green. Use T01 existing watcher if verified; no new high-frequency polling or workflow storms.
+
 ## 5. Standard state machine and evidence
 
-`IDEA / RESEARCH → SPEC DRAFT → APPROVED → ASSIGNED → CLAIMED / IN_PROGRESS → PR / CODE READY → T01 QA PASS-CODE or QA BLOCKED → MERGED / POST-MERGE CI → CREATOR REVIEW (when required) → FEATURE-DONE-VERIFIED → RELEASE APPROVED (separate)`
+`IDEA / RESEARCH → SPEC DRAFT → APPROVED → ASSIGNED → CLAIMED / IN_PROGRESS → DRAFT PR → READY FOR REVIEW → T01 QA IN REVIEW / CHANGES REQUESTED → QA-PASS-CODE → MERGED / POST-MERGE CI → CREATOR REVIEW (when required) → FEATURE-DONE-VERIFIED → RELEASE APPROVED (separate)`
 
 - A PR may be merged with technical QA pass while perceptual/creator approval is still pending; never label that feature `DONE-VERIFIED`.
 - `QUEUED`, `IN_PROGRESS`, `SKIPPED` and `NOT RUN` are **not** PASS. CI result at an old SHA is historical.
@@ -114,7 +142,7 @@
 
 ```text
 [AGENT TAKEOVER]
-Seat: BA01 | T01 | C03 | C04 | C05...
+Seat: BA01 | T01 | C01 | C02 | C03 | C04 | C05...
 Predecessor session/owner: ...
 Successor session/owner: ...
 Authorized by / timestamp: ...
@@ -129,7 +157,7 @@ Next accountable step + acceptance reviewer: ...
 
 ## 7. Expand the team — multiple agents without collisions
 
-- BA01 registers a **new, never-active ID**, position type, skills, purpose, time window and one initial task; never revive C01/C02 as if they were active.
+- BA01 registers a **unique, unclaimed ID** with its position, skills, work window and first task; owner-approved reactivations C01/C02 are recorded in #52/#54 and must never inherit older session claims.
 - One task owner per exclusive write path; allocate separate subissues and feature branches for parallel work. Shared source files/contracts need explicit integration owner and serialized handoff.
 - Multiple testers may divide test *execution* by platform/format, but final independent technical QA and creator acceptance must have one accountable approver, documented in the task.
 - Agents must not approve their own PRs or count a self-run test as independent QA. Assign a different tester/reviewer if T01 writes QA tooling.
