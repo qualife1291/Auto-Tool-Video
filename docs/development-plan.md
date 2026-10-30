@@ -1,5 +1,11 @@
 # Kế hoạch phát triển
 
+## Quy tắc bắt buộc trước khi triển khai tính năng mới
+
+**Research-first gate G0–G6:** [Quy trình nghiên cứu, đo lường và nghiệm thu](research-first-quality-gates.md). Mọi AI agent phải khảo sát source và phương án thay thế, xác minh version/license/chi phí/rủi ro, lập test matrix và quyết định GO trước khi code. Không có evidence thực tế thì ghi NOT RUN; không merge chỉ vì unit test pass. Mọi tính năng mới phải được đăng ký task ID và phân quyền file trên [workboard](agent-workboard.md). Không thay đổi phạm vi spec chưa duyệt.
+
+**Lộ trình mở rộng sau baseline:** A11 quy trình nghiên cứu/QC → A12 benchmark và CI render thật → A13 Animate POC độc lập, A15 alignment tiếng Việt → A14 renderer adapter → A16 orchestration, A17 learned QC, A18 AI video consistency, A19 UX. Đây là backlog đề xuất, chưa được triển khai; A02–A05 vẫn là P0 chặn phát triển engine mới.
+
 ## Ưu tiên hiện tại: Hoàn thiện video 2D
 
 **Một môi trường tài liệu và một branch chung:** `feat/short-video-studio`. Trạng thái từng task A01–A10, phạm vi file, điều kiện nghiệm thu và phối hợp AI agent nằm tại [AI Agent Workboard](agent-workboard.md). [TASKS](../.agent/memory/short-term/TASKS.md) chỉ tóm tắt task đang mở; [LATEST](../.agent/handover/LATEST.md) là tình trạng kiểm chứng.
