@@ -140,7 +140,7 @@ def test_spread_follows_one_garment_from_folded_position_to_open_position(shirts
     centers, widths = [], []
     for seconds in np.linspace(0, 4, 9):
         alpha = rendered_shirt(art, float(seconds), mini=True)[:, :, 3]
-        ys, xs = np.where(alpha > 180)
+        _, xs = np.where(alpha > 180)
         assert len(xs) > 100, seconds
         centers.append(float(xs.mean()))
         widths.append(int(xs.max() - xs.min() + 1))
@@ -156,7 +156,8 @@ def test_spread_follows_one_garment_from_folded_position_to_open_position(shirts
     # A separate blue, shrinking rectangular pile is not the same shirt.
     # The original implementation rendered one such pile next to the cutout.
     frame = np.asarray(art.frame(0, 4), dtype=np.int16)
-    px, py = round(start * art.unit), round(910 * art.unit if not art.landscape else 540 * art.unit)
+    px = round(start * art.unit)
+    py = round((540 if art.landscape else 910) * art.unit)
     patch = frame[py - 10 : py + 10, px - 10 : px + 10]
     fake_fold_color = np.array((101, 179, 195))
     assert np.count_nonzero(np.all(abs(patch - fake_fold_color) <= 1, axis=2)) < 4
