@@ -156,10 +156,10 @@ def validate_proposal(raw: str, project: dict[str, Any], mode: str) -> dict[str,
                     visual_state=draft.visual_description,
                     action=(
                         "Thiết lập trạng thái và hành động đầu cảnh."
-                        if second == 0 else
-                        "Tiếp diễn chuyển đổi vật thể và quan hệ nhân quả của cảnh."
-                        if second < expected - 1 else
-                        "Hoàn tất hành động để nối sang cảnh kế tiếp."
+                        if second == 0
+                        else "Tiếp diễn chuyển đổi vật thể và quan hệ nhân quả của cảnh."
+                        if second < expected - 1
+                        else "Hoàn tất hành động để nối sang cảnh kế tiếp."
                     ),
                     camera="Giữ chủ thể trong vùng an toàn; rà soát chuyển động camera.",
                     on_screen_text="",
@@ -176,7 +176,8 @@ def validate_proposal(raw: str, project: dict[str, Any], mode: str) -> dict[str,
                     "Cần người lớn kiểm nội dung và nguồn trước khi sản xuất.",
                     *(
                         ["Kế hoạch từng giây mới là phác thảo tự động; cần viết chi tiết."]
-                        if not draft.second_by_second else []
+                        if not draft.second_by_second
+                        else []
                     ),
                     *draft.fact_flags,
                 ]
