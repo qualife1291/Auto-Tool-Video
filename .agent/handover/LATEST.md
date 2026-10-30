@@ -1,8 +1,47 @@
 ---
 status: partial
-slug: whiteboard-video-tool
+slug: second-by-second-motion-voice
 updated: 2026-10-30
 ---
+
+# Handover hiện tại — nhiều agent / WIP chưa kiểm thử
+
+**Nơi nhận việc:** [docs/agent-workboard.md](../../docs/agent-workboard.md) và [TASKS.md](../memory/short-term/TASKS.md). Branch `feat/second-by-second-motion-voice` được tạo từ default `feat/short-video-studio` commit `a7d000f6`.
+
+## Đã commit trong nhánh WIP (chưa chạy test trong phiên này)
+
+- `backend/auto_tool_video/domain.py`: model `SecondBeat` có visual_state/action/camera/on_screen_text/narration_cue/continuity và metadata status; giữ scene đời cũ.
+- `backend/auto_tool_video/planning.py`: yêu cầu kế hoạch từng giây trong system prompt và kiểm thứ tự số giây nếu được trả về; provider cũ thiếu beats được thay bằng outline **cần duyệt**, không nhận là kế hoạch chi tiết.
+- `scripts/science_story.py`: thêm beat timeline theo loại cảnh; thử alpha blend áo ướt/khô, shear vạt áo nhẹ giữ đỉnh, áo mở dần khi so sánh gấp/trải. Chưa kiểm hình native/crop/continuity.
+- `backend/auto_tool_video/render.py`: thêm hiệu ứng vào phụ đề có thời gian ngắn, ngừng chuyển động sau 0,26s; chưa kiểm pixel/safe zone.
+- `apps/web/src/domain.ts` và `apps/web/src/main.tsx`: thêm type và editor từng giây; có cảnh báo độ dài kế hoạch khác `ceil(scene.duration)`. Chưa chạy typecheck, E2E hoặc kiểm truy hồi lưu project.
+
+**Quan trọng:** Đây là implementation mới dựng lại từ mô tả người dùng. Các thay đổi local chưa push từ phiên khác **không** có trong GitHub và chưa được phục hồi. Thông tin 0,92×/41,9s/47 giây từ phiên kia là báo cáo chưa kiểm chứng, không phải artifact hiện có.
+
+## Chưa làm, blocker và phối hợp
+
+- A01–A03: kiểm/hoàn thiện code, strict acceptance test, giữ các cảnh cũ hoạt động; cảnh báo khi duration thay đổi cần rà soát lại status, không âm thầm xóa beats.
+- A04: tạo giọng thật 0,92× giữ cao độ, ghi hash và tính lại frame/timing; chưa có file audio hiện hành trong Git.
+- A05: dựng MP4 mới ở hai tỷ lệ, decode+technical QC và gửi người duyệt nghe/xem; **chưa thể nhận technical pass cho video mới**. File `.data/story-upgrade/` từ môi trường trước không được commit.
+- A06/A07: kiểm chứng HF Spaces/@gradio/client/HF Hub và NVIDIA NIM theo quyền, độ trễ, phí, khả dụng; A08 chỉ tích hợp optional sau đánh giá, mặc định vẫn offline/local.
+- A09/M3 TTS UI, A10/M4 OAuth đăng video để backlog sau; ưu tiên video 2D.
+
+## Test mới nhất
+
+- **Phiên này trên feature branch:** NOT RUN (không có cloud/local checkout hoặc FFmpeg/GPU/assets trong phiên GitHub connector); không tuyên bố 205 pass.
+- **Baseline trước khi fork:** báo cáo ở handover lịch sử bên dưới: 182 pytest, 10 Vitest, 13 Playwright = 205 pass; 12 cảnh 38,7s, QC kỹ thuật pass, creator listening/manual review vẫn pending; 6 motion-warning/aspect; ASR 9/12 normalized exact.
+- Lệnh chạy/điều kiện nghiệm thu xem `docs/agent-workboard.md`, README và `docs/video-quality-standard.md`.
+
+## File và nhánh
+
+- Default `feat/short-video-studio` không thay đổi trong phiên này. Các commit feature WIP đã được ghi qua GitHub connector trực tiếp lên `feat/second-by-second-motion-voice`; chưa merge.
+- Khuyến nghị agent nhận một task ID A01–A10, tạo nhánh task, PR về feature branch; không nhận phần đang dở là thành công QA.
+- Không publish cloud/social, không tự thêm paid API, không commit weights/secrets/video và không nhận đã lấy file audio local chưa push.
+
+---
+
+## Handover lịch sử — baseline trước đợt cải tiến này
+
 
 # Handover — whiteboard-video-tool
 
