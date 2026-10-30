@@ -1,10 +1,10 @@
 # Kế hoạch phát triển
 
-## Trạng thái triển khai được xác minh 2026-10-31 (bổ sung mới; kế hoạch gốc bên dưới là lịch sử)
+## ARCHIVED 2026-10-31 planning checkpoint (live state: docs/agent-workboard.md)
 
-- **Agent roles:** [BA01 / C03 / C04 / T01 và owner/approval contracts](agent-role-task-contracts.md); task/AC at [workboard](agent-workboard.md). Chỉ dùng issue/PR và CI đúng SHA mới nhất để suy ra tiến độ.
+- **Agent roles:** [BA01 / C01–C05 / T01+T02 và owner/approval contracts](agent-role-task-contracts.md); task/AC at [workboard](agent-workboard.md). Chỉ dùng issue/PR và CI đúng SHA mới nhất để suy ra tiến độ.
 - **Code merged, creator gate pending:** A02 [PR #34](https://github.com/qualife1291/Auto-Tool-Video/pull/34), A03 [#35](https://github.com/qualife1291/Auto-Tool-Video/pull/35), A04 [#8](https://github.com/qualife1291/Auto-Tool-Video/pull/8), P1-A [#40](https://github.com/qualife1291/Auto-Tool-Video/pull/40), P1-C [#42](https://github.com/qualife1291/Auto-Tool-Video/pull/42) (last merge SHA `97dfea49a712de2263648e187e08c4495098182b`). Đây là QA-PASS-CODE trước merge, không thay thế FullHD merged-SHA CI hay human video review.
-- **Active code issue:** C04 P1-B [#44](https://github.com/qualife1291/Auto-Tool-Video/issues/44) pending claim and actual old-code RED; T01 scenario/test coverage [PR #37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) blocked strict final audio QC until actual eight MP4s pass. BA01 researches FREE-first harness [#38](https://github.com/qualife1291/Auto-Tool-Video/issues/38), newsroom-like intake [#39](https://github.com/qualife1291/Auto-Tool-Video/issues/39) only, not shipped.
+- **Active code issue:** C04 P1-B [#44](https://github.com/qualife1291/Auto-Tool-Video/issues/44) pending claim and actual old-code RED; T01 scenario/test coverage [PR #37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) đã có 8 preview MP4 pass trên head cũ; chờ current-base QA_OWNER=T02. BA01 researches FREE-first harness [#38](https://github.com/qualife1291/Auto-Tool-Video/issues/38), newsroom-like intake [#39](https://github.com/qualife1291/Auto-Tool-Video/issues/39) only, not shipped.
 - **QA cadence:** T01 sends user manual test samples/checklist hourly and rotates standards/regression. GitHub T01 watcher every 15m cron only; never re-enable broad workflow_run hook which caused spam. Human voice/motion/science/safe-zone/rights and final release remain separate.
 
 ### Historical roadmap below (do not use old WIP labels as live statuses)

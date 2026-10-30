@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from .domain import ExportInput
 from .store import DomainError, Store, now
+from .timing import frames_for
 
 
 def enqueue(store: Store, project_id: str, options: ExportInput) -> dict[str, Any]:
@@ -31,7 +32,9 @@ def enqueue(store: Store, project_id: str, options: ExportInput) -> dict[str, An
         if not project["scenes"]:
             raise DomainError("MISSING_IMAGE", "Tạo cảnh và nhập ảnh trước khi xuất.")
         duration = sum(scene["duration"] for scene in project["scenes"])
-        if duration > 60:
+        # Renderer quantizes EACH scene independently; raw seconds can undercount.
+        total_frames = sum(frames_for(scene["duration"]) for scene in project["scenes"])
+        if duration > 60 or total_frames > 1800:
             raise DomainError(
                 "DURATION_LIMIT", "Preset chung tối đa 60 giây. Hãy rút gọn các cảnh."
             )

@@ -4,35 +4,23 @@ Updated: 2026-10-31 · **Development-in-progress**, technical code merges ≠ cr
 
 **Canonical branch:** `feat/short-video-studio`. All new agent tasks branch from it and submit PRs back to it. This document is the single source of truth for open task ownership, status and acceptance criteria. `.agent/memory/short-term/TASKS.md` is a brief index; `.agent/handover/LATEST.md` gives the latest evidence; `docs/development-plan.md` is the long-term roadmap.
 
-## Latest verified handoff after T01 merged QA race fix — 2026-10-31
+## Bảng hiện hành — 2026-10-31 ICT (lấy live GitHub làm chuẩn)
 
-**Canonical code:** `ba58bc8e9b48abdfd327d97b14d3e620c6795ace` after independent T01 [PR #67](https://github.com/qualife1291/Auto-Tool-Video/pull/67) merge. C03 beat-persistence E2E test now waits for matching async PUT/save revision and verifies persisted GET; main/dual1080 CI on **merge SHA queued at audit**, so do not count merged-SHA PASS early. Prior `C03 #58 claim pending` entries below are historical.
+Canonical đã quan sát: `ba58bc8e9b48abdfd327d97b14d3e620c6795ace` ([PR #67](https://github.com/qualife1291/Auto-Tool-Video/pull/67) C03 E2E synchronization merged). **Refresh branch, issue, PR và CI đúng SHA trước mọi hành động.** BA01 phụ trách SRS/AC, phân việc và quyền sở hữu file; **C01–C05** là năm coder seat đã được owner kích hoạt. **T01 và T02 có quyền QA-PASS-CODE và merge code ngang nhau** theo [owner registry #70](https://github.com/qualife1291/Auto-Tool-Video/issues/70), nhưng mỗi PR có đúng **một QA_OWNER=T01 hoặc T02**, reviewer còn lại hỗ trợ khi cần. Không được tự QA/merge PR do chính mình viết. QA_OWNER khác chỉ takeover qua comment/handoff chính thức; mọi phát hiện BLOCKED phải được xử lý trước khi merge.
 
-| Role | Verified current role / task |
+| Seat | Task/PR và trạng thái kiểm chứng |
 | --- | --- |
-| **BA01** | Owns assignments, reusable role charter [PR #51](https://github.com/qualife1291/Auto-Tool-Video/pull/51) about TR01/C01–C05/Draft→Ready, **QA-BLOCKED** on old exact-head A04 E2E until integrated retest; [Epic #26](https://github.com/qualife1291/Auto-Tool-Video/issues/26). |
-| **C01** | [#55](https://github.com/qualife1291/Auto-Tool-Video/issues/55) / [PR #63](https://github.com/qualife1291/Auto-Tool-Video/pull/63) peg-anchor art **Ready for review but old main CI FAILED at beat-persistence E2E**, must sync/retest with merged #67. |
-| **C02** | [#57](https://github.com/qualife1291/Auto-Tool-Video/issues/57) / [PR #62](https://github.com/qualife1291/Auto-Tool-Video/pull/62) caption preview **Draft**, latest code integration tests ongoing. |
-| **C03** | [#58 / PR #67](https://github.com/qualife1291/Auto-Tool-Video/pull/67) **QA-PASS-CODE / MERGED** `ba58bc8...`; [#49 / PR #65](https://github.com/qualife1291/Auto-Tool-Video/pull/65) research **Draft/paused**, may be reprioritized by BA01. |
-| **C04** | [#44 / PR #47](https://github.com/qualife1291/Auto-Tool-Video/pull/47) Fit Audio **Ready but old main CI red from #58**, needs fresh integrated tests; [#61 / PR #64](https://github.com/qualife1291/Auto-Tool-Video/pull/64) imported frame-grid **Draft** at latest inspection. |
-| **C05** | [#68 / PR #69](https://github.com/qualife1291/Auto-Tool-Video/pull/69) proposed science beats **Ready + three old-base HEAD CI green**, independent T01 **integration HOLD** until sync with #67 merged SHA and new combined CI. |
-| **T01/T02** | T01 primary independent merge authority; T02 independent supplementary QA/test sharing, no implied release signoff. [#37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) QA scenario FullHD artifact still strict-audio QC blocked; [#60](https://github.com/qualife1291/Auto-Tool-Video/pull/60) watcher fix Draft. Human creator review [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36) remains separate. |
+| **BA01** | Role/Ready flow [PR #51](https://github.com/qualife1291/Auto-Tool-Video/pull/51) Ready nhưng A04 E2E cũ FAIL; cần sync canonical và retest. TR01 mới là vị trí read-only đề xuất. |
+| **C01** | Peg anchor [#55 / PR #63](https://github.com/qualife1291/Auto-Tool-Video/pull/63) **Ready**, đã sync #67, FullHD và A02 Blender/A04 PASS; Main CI mới chưa hoàn tất ở thời điểm cập nhật, **QA_OWNER=T01**. |
+| **C02** | Caption preview [#57 / PR #62](https://github.com/qualife1291/Auto-Tool-Video/pull/62) **Draft**, đã sync canonical, main + dual FullHD PASS, A04 chưa hoàn tất; không merge Draft. |
+| **C03** | Beat persistence [#58 / PR #67](https://github.com/qualife1291/Auto-Tool-Video/pull/67) QA-PASS-CODE/**MERGED**; nghiên cứu [#49 / PR #65](https://github.com/qualife1291/Auto-Tool-Video/pull/65) **Draft/paused**. |
+| **C04** | Fit Audio [#44 / PR #47](https://github.com/qualife1291/Auto-Tool-Video/pull/47) Ready, Main CI ở head cũ FAIL do shared E2E #58; cần sync/retest, **QA_OWNER=T01**. Media frame grid [#61 / PR #64](https://github.com/qualife1291/Auto-Tool-Video/pull/64) **Draft**, main/A04/dual1080 PASS trên head `813727e1...`, chờ chuyển Ready và **QA_OWNER=T02**. |
+| **C05** | Proposed science beats [#68 / PR #69](https://github.com/qualife1291/Auto-Tool-Video/pull/69) **Ready**, ba CI head cũ PASS, chờ sync nhánh #67 và CI tích hợp, **QA_OWNER=T01**. |
+| **T01/T02** | **QA_OWNER=T01:** #69, #63, #47. **QA_OWNER=T02:** #37, #60, #64 và PR tài liệu #46 (do T01 viết). [#37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) đã có **4 scenario jobs PASS, 8 MP4 preview** 12/30/45/60s × 9:16/16:9 ở [run #41103011675](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41103011675); job scenario-native FullHD 12s **SKIPPED** có chủ ý, không phải PASS. #37 hiện **BLOCKED vì head cũ/chưa có CI current-base**, **không phải do audio QC đang FAIL**. eSpeak chỉ là fixture, creator G10 chưa ký duyệt. |
 
-**Gate:** Only coder-submitted non-Draft **Ready for review** PR with exact-current-base integrated CI, owned diff, complete T01 QA can merge; no old-SHA CI reuse. `QA-PASS-CODE` ≠ creator video approval. Earlier snapshot headings below are kept for history, not current assignments.
+**Quy trình coder và QA-tooling/docs:** BA01 giao issue/AC và path → agent CLAIM → Draft PR → RED→GREEN, self-test exact HEAD → tác giả chuyển **Ready for review** → **QA_OWNER độc lập** rà soát code, CI exact-head và current-base/merge-ref, artifacts/scope → PASS-CODE hoặc CHANGES REQUESTED → chính QA_OWNER merge theo expected SHA → postmerge CI → **Creator G10** xem/nghe và ký duyệt nếu áp dụng. PASS ở head cũ, skipped, queued và Draft không thay thế bước nào. Role ID không đồng nghĩa tài khoản GitHub riêng.
 
-## Live role/task refresh — 2026-10-31 02:35 ICT (overrides older historical snapshots)
-
-| Role | Current BA assignment / live GitHub status |
-| --- | --- |
-| **BA01** | Product/PM/Technology Scout; stable charter #45 merged, update [PR #51](https://github.com/qualife1291/Auto-Tool-Video/pull/51) adds TR01 proposal and C01/C02 workflow, but **A04 E2E failed, PR not merged**. |
-| **C01** | Owner-reactivated [#52](https://github.com/qualife1291/Auto-Tool-Video/issues/52), BA-assigned peg motion [#55](https://github.com/qualife1291/Auto-Tool-Video/issues/55); [PR #63](https://github.com/qualife1291/Auto-Tool-Video/pull/63) **Draft**, main CI failed; no merge. |
-| **C02** | Owner-activated [#54](https://github.com/qualife1291/Auto-Tool-Video/issues/54), BA-assigned caption preview [#57](https://github.com/qualife1291/Auto-Tool-Video/issues/57); [PR #62](https://github.com/qualife1291/Auto-Tool-Video/pull/62) **Draft**, CI ongoing; no merge. |
-| **C03** | Harness [#48 / PR #56](https://github.com/qualife1291/Auto-Tool-Video/pull/56) **merged** at `980b7185b4cbcabf02d33edd1b4ba98ca9f89328`; urgent [Playwright issue #58](https://github.com/qualife1291/Auto-Tool-Video/issues/58) assigned/claim pending; P2 research [#49 / PR #65](https://github.com/qualife1291/Auto-Tool-Video/pull/65) paused/Draft. |
-| **C04** | [P1-B #44 / PR #47](https://github.com/qualife1291/Auto-Tool-Video/pull/47) Ready for T01 but QA **BLOCKED** by #58 shared E2E failure; [P1-D #61 / PR #64](https://github.com/qualife1291/Auto-Tool-Video/pull/64) Draft. |
-| **T01** | Independent QA/merge upon current-base exact-SHA PASS; [scenario #37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) actual MP4 QC blocked, [GitHub watcher #59 / PR #60](https://github.com/qualife1291/Auto-Tool-Video/pull/60) Draft; creator feedback [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36). |
-| **C05** | New [onboarding #66](https://github.com/qualife1291/Auto-Tool-Video/issues/66), awaiting BA01 reservation, not yet claimed an active task. |
-
-**Required coder handoff:** `ASSIGNED → CLAIMED → DRAFT PR → SELF-TEST exact SHA → READY FOR REVIEW → T01 independent QA → QA PASS / FIX REQUESTED → T01 gated MERGE → postmerge CI → creator human approval`. Draft and pending/failed CI cannot be merged. GitHub identity and agent role ID are not interchangeable. Historical statuses below are evidence snapshots, not current assignments.
+### Archived planning snapshots (historical only; not live ownership)
 
 ## VERIFIED CURRENT ASSIGNMENTS — 2026-10-31 (supersedes historical A01 snapshot below)
 
@@ -51,7 +39,7 @@ Updated: 2026-10-31 · **Development-in-progress**, technical code merges ≠ cr
 | Research | FREE-first Harness [#38](https://github.com/qualife1291/Auto-Tool-Video/issues/38), iNew-style workflow [#39](https://github.com/qualife1291/Auto-Tool-Video/issues/39) | **BA01** | RESEARCH PROPOSAL only, no implementation assignment |
 | Research/backlog | A06–A10 | BA01 for allocation | Provider licensing/free quotas research and future TTS/OAuth; not a deployed feature |
 
-**Workflow:** BA01 issues AC/path reservation → Coder CLAIM+RED→GREEN+exclusive PR → T01 independent exact-HEAD & current-base CI gate → T01 may MERGE when fully PASS (user authorized) → postmerge CI → creator manual watch/listen exact file SHA → BA01 records feature/release approval. Missing mandatory evidence = `NOT RUN`/`BLOCKED`, never PASS. C03 only `jobs.py` enqueue + NEW export cap test on #41; C04 only `api.py::fit_audio` + NEW fit-audio cap test on #44; T01 owns scenario QA paths; no overlapping edits without BA01. For full evidence, see [quality gate matrix](qa-evidence-gates.md).
+**Workflow:** BA01 issues AC/path reservation → Coder CLAIM+RED→GREEN+exclusive PR → T01 independent exact-HEAD & current-base CI gate → the independent QA_OWNER=T01|T02 may MERGE when fully PASS (user authorized) → postmerge CI → creator manual watch/listen exact file SHA → BA01 records feature/release approval. Missing mandatory evidence = `NOT RUN`/`BLOCKED`, never PASS. C03 only `jobs.py` enqueue + NEW export cap test on #41; C04 only `api.py::fit_audio` + NEW fit-audio cap test on #44; T01 authored scenario QA paths; T02 QA-owns #37; no overlapping edits without BA01. For full evidence, see [quality gate matrix](qa-evidence-gates.md).
 
 **Operational QA:** T01 hourly ChatGPT summary **always includes 3–6 manual test steps and verified media link or explicit NO BUILD**, plus rotating research or focused regression. GitHub T01 watcher is **15-minute cron/manual only** after spam hotfix [PR #43](https://github.com/qualife1291/Auto-Tool-Video/pull/43); do **not** re-add `workflow_run.completed` broad trigger.
 
