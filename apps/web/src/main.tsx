@@ -925,6 +925,63 @@ function App() {
                             placeholder="Ví dụ: bay hơi"
                           />
                         </label>
+                        <details className="beat-editor">
+                          <summary>
+                            Storyboard theo từng giây ({scene.second_by_second?.length || 0}/
+                            {Math.ceil(scene.duration)})
+                          </summary>
+                          {(scene.second_by_second?.length || 0) !==
+                            Math.ceil(scene.duration) && (
+                            <p className="small danger">
+                              Thời lượng đã thay đổi hoặc chưa có beat. Kế hoạch cũ được giữ,
+                              cần rà soát từng giây trước khi render.
+                            </p>
+                          )}
+                          {scene.beat_plan_status === 'needs_review' &&
+                            !!scene.second_by_second?.length && (
+                              <p className="small muted">
+                                Đây là phác thảo tự động; cần viết rõ hành động, camera và lời.
+                              </p>
+                            )}
+                          {(scene.second_by_second || []).map((beat, beatIndex) => (
+                            <details className="beat-row" key={beat.second}>
+                              <summary>
+                                Giây {beat.second}–{Math.min(beat.second + 1, scene.duration)}
+                                : {beat.action}
+                              </summary>
+                              {(
+                                [
+                                  ['visual_state', 'Trạng thái hình và vật thể'],
+                                  ['action', 'Hành động và diễn biến'],
+                                  ['camera', 'Khung hình và camera'],
+                                  ['on_screen_text', 'Chữ trên hình'],
+                                  ['narration_cue', 'Cue lời đọc / khoảng nghỉ'],
+                                  ['continuity', 'Nhất quán và nối cảnh'],
+                                ] as const
+                              ).map(([field, title]) => (
+                                <label key={field}>
+                                  {title}
+                                  <textarea
+                                    rows={2}
+                                    disabled={busy}
+                                    value={beat[field]}
+                                    onChange={(event) => {
+                                      const updated = [...(scene.second_by_second || [])];
+                                      updated[beatIndex] = {
+                                        ...beat,
+                                        [field]: event.target.value,
+                                      };
+                                      updateScene({
+                                        second_by_second: updated,
+                                        beat_plan_status: 'authored',
+                                      });
+                                    }}
+                                  />
+                                </label>
+                              ))}
+                            </details>
+                          ))}
+                        </details>
                         <label>
                           Kỳ vọng chuyển động
                           <select
