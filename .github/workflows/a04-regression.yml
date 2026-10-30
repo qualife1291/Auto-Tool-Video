@@ -29,6 +29,12 @@ jobs:
         run: |
           uv sync --project backend --frozen --group dev
           npm --prefix apps/web ci
+      - name: Install and verify real FFmpeg and FFprobe
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          ffmpeg -hide_banner -version | head -1
+          ffprobe -hide_banner -version | head -1
       - name: Python lint, changed-file format and types
         run: |
           uv run --project backend ruff check backend scripts
