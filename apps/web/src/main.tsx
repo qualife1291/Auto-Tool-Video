@@ -749,7 +749,7 @@ function App() {
                           </div>
                         )}
                       </div>
-                      {captions && currentCaption && (
+                      {captions && scene && currentCaption && (
                         <div
                           className={`portrait-caption caption-${scene.caption_style || 'card'}`}
                         >
