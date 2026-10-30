@@ -215,11 +215,7 @@ def technical_checks(
         and reported_frames.is_integer()
         and int(reported_frames) == expected_frames
     )
-    cfr = bool(
-        on_frame_grid
-        and count_matches
-        and np.all(np.abs(gaps - 1 / 30) <= 0.002)
-    )
+    cfr = bool(on_frame_grid and count_matches and np.all(np.abs(gaps - 1 / 30) <= 0.002))
     add(
         "frame_timestamps",
         cfr,
