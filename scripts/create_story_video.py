@@ -8,13 +8,13 @@ import time
 from pathlib import Path
 from uuid import uuid4
 
+from audio_tempo import prepare_timeline
 from auto_tool_video.domain import ExportInput, ProjectInput, Scene
 from auto_tool_video.jobs import enqueue
 from auto_tool_video.media import import_asset, probe
 from auto_tool_video.quality import csv_sheet
 from auto_tool_video.render import render_job
 from auto_tool_video.store import Store
-from audio_tempo import prepare_timeline
 from create_review_video import contact_sheet
 from PIL import Image
 from science_story import Art
