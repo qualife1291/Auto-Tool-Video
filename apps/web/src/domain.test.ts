@@ -127,6 +127,23 @@ describe('estimated caption pages (browser preview, not pixel-exact export)', ()
     expect(pages.join(' ')).toContain('bay-hơi');
   });
 
+  it('preserves unbroken long Unicode tokens without silently dropping characters', () => {
+    const token = 'Nước-'.repeat(25) + 'hoà';
+    for (const aspect of ['portrait', 'landscape'] as const) {
+      const pages = estimateCaptionPages(token, aspect);
+      expect(pages.join(' ')).toBe(token);
+      expect(estimateCaptionPages('  ' + token + '  ', aspect)).toEqual(pages);
+    }
+  });
+
+  it('avoids a one-word last page when a balanced split fits in two lines per page', () => {
+    const narration = Array(11).fill('Nước').join(' ');
+    const pages = estimateCaptionPages(narration, 'portrait');
+    expect(pages).toHaveLength(2);
+    expect(pages[1].split(/\s+/u).length).toBeGreaterThanOrEqual(3);
+    expect(pages.join(' ').replace(/\s+/gu, ' ')).toBe(narration);
+  });
+
   it('does not emphasize a phrase on an unrelated page', () => {
     const text = 'hơi nước mở đầu câu chuyện. ' + long;
     const pages = estimateCaptionPages(text, 'portrait');
