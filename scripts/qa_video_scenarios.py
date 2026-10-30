@@ -3,6 +3,7 @@
 Pillow art and offline eSpeak are engineering fixtures, not approved voices or
 fact-checked creator footage. Never mark production/human review approved.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,45 +41,65 @@ class Scenario:
 
 
 SCENARIOS = {
-    "water-12s": Scenario("water-12s", "Vòng tuần hoàn của nước", 3, (
-        ("Giọt nước", "Nhìn giọt nước nhỏ."),
-        ("Bay hơi", "Nước đang bay hơi."),
-        ("Mây trắng", "Hơi nước tạo thành mây."),
-        ("Mưa xuống", "Rồi mưa lại rơi xuống."),
-    )),
-    "shirt-30s": Scenario("shirt-30s", "Vì sao áo ướt lại khô?", 5, (
-        ("Áo ướt", "Chiếc áo vừa được giặt."),
-        ("Ánh nắng", "Nắng mang thêm năng lượng."),
-        ("Gió thổi", "Gió giúp hơi nước đi xa."),
-        ("Bay hơi", "Nước bay hơi từ sợi vải."),
-        ("Trải rộng", "Trải áo ra để thoáng khí."),
-        ("Áo khô", "Cuối cùng áo đã khô."),
-    )),
-    "traffic-45s": Scenario("traffic-45s", "An toàn khi qua đường", 5, (
-        ("Dừng lại", "Dừng ở mép vỉa hè."),
-        ("Quan sát", "Nhìn trái rồi nhìn phải."),
-        ("Lắng nghe", "Nghe tiếng xe gần mình."),
-        ("Đèn đường", "Chờ đèn dành cho người đi bộ."),
-        ("Vạch đi bộ", "Chọn đúng vạch qua đường."),
-        ("Đi chậm", "Không chạy vội qua phố."),
-        ("Tập trung", "Tập trung quan sát giao thông."),
-        ("Người lớn", "Trẻ nhỏ cần người lớn đi cùng."),
-        ("An toàn", "Cẩn thận khi qua đường nhé."),
-    )),
-    "energy-60s": Scenario("energy-60s", "Một phút tiết kiệm năng lượng", 5, (
-        ("Bắt đầu", "Điện giúp cuộc sống tiện lợi."),
-        ("Bật đèn", "Chỉ bật đèn khi cần."),
-        ("Ánh sáng", "Tận dụng ánh sáng ban ngày."),
-        ("Quạt mát", "Tắt quạt khi ra khỏi phòng."),
-        ("Máy lạnh", "Đóng cửa khi dùng máy lạnh."),
-        ("Thiết bị", "Chọn thiết bị phù hợp nhu cầu."),
-        ("Sạc điện", "Rút bộ sạc khi không dùng."),
-        ("Nấu ăn", "Đậy nắp nồi để giữ nhiệt."),
-        ("Tủ lạnh", "Đóng cửa tủ lạnh thật kín."),
-        ("Gia đình", "Cùng nhau nhắc thói quen tốt."),
-        ("Việc nhỏ", "Việc nhỏ tạo thay đổi lớn."),
-        ("Tổng kết", "Tiết kiệm điện mỗi ngày nhé."),
-    )),
+    "water-12s": Scenario(
+        "water-12s",
+        "Vòng tuần hoàn của nước",
+        3,
+        (
+            ("Giọt nước", "Nhìn giọt nước nhỏ."),
+            ("Bay hơi", "Nước đang bay hơi."),
+            ("Mây trắng", "Hơi nước tạo thành mây."),
+            ("Mưa xuống", "Rồi mưa lại rơi xuống."),
+        ),
+    ),
+    "shirt-30s": Scenario(
+        "shirt-30s",
+        "Vì sao áo ướt lại khô?",
+        5,
+        (
+            ("Áo ướt", "Chiếc áo vừa được giặt."),
+            ("Ánh nắng", "Nắng mang thêm năng lượng."),
+            ("Gió thổi", "Gió giúp hơi nước đi xa."),
+            ("Bay hơi", "Nước bay hơi từ sợi vải."),
+            ("Trải rộng", "Trải áo ra để thoáng khí."),
+            ("Áo khô", "Cuối cùng áo đã khô."),
+        ),
+    ),
+    "traffic-45s": Scenario(
+        "traffic-45s",
+        "An toàn khi qua đường",
+        5,
+        (
+            ("Dừng lại", "Dừng ở mép vỉa hè."),
+            ("Quan sát", "Nhìn trái rồi nhìn phải."),
+            ("Lắng nghe", "Nghe tiếng xe gần mình."),
+            ("Đèn đường", "Chờ đèn dành cho người đi bộ."),
+            ("Vạch đi bộ", "Chọn đúng vạch qua đường."),
+            ("Đi chậm", "Không chạy vội qua phố."),
+            ("Tập trung", "Tập trung quan sát giao thông."),
+            ("Người lớn", "Trẻ nhỏ cần người lớn đi cùng."),
+            ("An toàn", "Cẩn thận khi qua đường nhé."),
+        ),
+    ),
+    "energy-60s": Scenario(
+        "energy-60s",
+        "Một phút tiết kiệm năng lượng",
+        5,
+        (
+            ("Bắt đầu", "Điện giúp cuộc sống tiện lợi."),
+            ("Bật đèn", "Chỉ bật đèn khi cần."),
+            ("Ánh sáng", "Tận dụng ánh sáng ban ngày."),
+            ("Quạt mát", "Tắt quạt khi ra khỏi phòng."),
+            ("Máy lạnh", "Đóng cửa khi dùng máy lạnh."),
+            ("Thiết bị", "Chọn thiết bị phù hợp nhu cầu."),
+            ("Sạc điện", "Rút bộ sạc khi không dùng."),
+            ("Nấu ăn", "Đậy nắp nồi để giữ nhiệt."),
+            ("Tủ lạnh", "Đóng cửa tủ lạnh thật kín."),
+            ("Gia đình", "Cùng nhau nhắc thói quen tốt."),
+            ("Việc nhỏ", "Việc nhỏ tạo thay đổi lớn."),
+            ("Tổng kết", "Tiết kiệm điện mỗi ngày nhé."),
+        ),
+    ),
 }
 
 SIZES = {
@@ -118,14 +139,23 @@ def visual(index: int, scenario: Scenario) -> bytes:
         width=17,
     )
     if scenario.key.startswith("water"):
-        draw.polygon(
-            [(650, 240), (460, 650), (835, 650)], fill="#73BFD0"
-        )
+        draw.polygon([(650, 240), (460, 650), (835, 650)], fill="#73BFD0")
     elif scenario.key.startswith("shirt"):
         draw.polygon(
-            [(390, 250), (520, 220), (600, 310), (740, 310),
-             (825, 220), (960, 250), (1020, 470), (865, 540),
-             (865, 745), (475, 745), (475, 540), (330, 470)],
+            [
+                (390, 250),
+                (520, 220),
+                (600, 310),
+                (740, 310),
+                (825, 220),
+                (960, 250),
+                (1020, 470),
+                (865, 540),
+                (865, 745),
+                (475, 745),
+                (475, 540),
+                (330, 470),
+            ],
             fill=colors[index % len(colors)],
             outline="#254D3D",
             width=12,
@@ -133,7 +163,9 @@ def visual(index: int, scenario: Scenario) -> bytes:
     elif scenario.key.startswith("traffic"):
         draw.rectangle(
             (600, 250, 780, 705),
-            fill="#344B45", outline="#132823", width=15,
+            fill="#344B45",
+            outline="#132823",
+            width=15,
         )
         for i, light in enumerate(("#DE6B62", "#E9BE67", "#76BD88")):
             y = 285 + i * 135
@@ -141,7 +173,9 @@ def visual(index: int, scenario: Scenario) -> bytes:
     else:
         draw.rectangle(
             (490, 380, 850, 610),
-            fill="#F8E19B", outline="#254D3D", width=15,
+            fill="#F8E19B",
+            outline="#254D3D",
+            width=15,
         )
         draw.line((565, 480, 760, 480), fill="#254D3D", width=17)
     draw.line((85, 920, 1315, 920), fill="#254D3D", width=16)
@@ -157,14 +191,29 @@ def voice(text: str, path: Path) -> dict:
     raw = path.with_suffix(".raw.wav")
     subprocess.run(
         [espeak, "-v", "vi", "-s", "175", "-w", str(raw), text],
-        capture_output=True, check=True, timeout=30,
+        capture_output=True,
+        check=True,
+        timeout=30,
     )
     try:
         subprocess.run(
-            ["ffmpeg", "-hide_banner", "-v", "error", "-y",
-             "-i", str(raw), "-af", COMPRESSOR,
-             "-c:a", "pcm_s16le", str(path)],
-            capture_output=True, check=True, timeout=30,
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-v",
+                "error",
+                "-y",
+                "-i",
+                str(raw),
+                "-af",
+                COMPRESSOR,
+                "-c:a",
+                "pcm_s16le",
+                str(path),
+            ],
+            capture_output=True,
+            check=True,
+            timeout=30,
         )
     finally:
         raw.unlink(missing_ok=True)
@@ -172,9 +221,7 @@ def voice(text: str, path: Path) -> dict:
         duration = wav.getnframes() / wav.getframerate()
         if wav.getnchannels() != 1 or wav.getsampwidth() != 2:
             raise ValueError("Source voice not mono PCM16")
-    return {
-        "duration": duration, "narration": text, "sha256": digest(path)
-    }
+    return {"duration": duration, "narration": text, "sha256": digest(path)}
 
 
 def beats(seconds: int, narration: str) -> list[dict]:
@@ -193,18 +240,27 @@ def beats(seconds: int, narration: str) -> list[dict]:
 
 
 def render_one(
-    root: Path, scenario: Scenario, aspect: str,
-    kind: str, voices: list[Path],
+    root: Path,
+    scenario: Scenario,
+    aspect: str,
+    kind: str,
+    voices: list[Path],
 ) -> dict:
     store = Store(root / aspect)
-    project = store.create({
-        "title": scenario.title, "profile": "family",
-        "platform": "shorts", "aspect": aspect,
-        "narration": " ".join(cue for _, cue in scenario.cues),
-    })
+    project = store.create(
+        {
+            "title": scenario.title,
+            "profile": "family",
+            "platform": "shorts",
+            "aspect": aspect,
+            "narration": " ".join(cue for _, cue in scenario.cues),
+        }
+    )
     project["scenes"] = [
         Scene(
-            title=title, narration=cue, duration=scenario.scene_seconds,
+            title=title,
+            narration=cue,
+            duration=scenario.scene_seconds,
             style=("whiteboard", "motion")[i % 2],
             caption_style=("card", "contrast", "accent")[i % 3],
             caption_emphasis=cue.split()[0] if i % 3 == 2 else "",
@@ -218,12 +274,18 @@ def render_one(
     project = store.save(project["id"], project)
     for i, scene in enumerate(project["scenes"]):
         project = import_asset(
-            store, project["id"], scene["id"],
-            project["revision"], visual(i, scenario),
+            store,
+            project["id"],
+            scene["id"],
+            project["revision"],
+            visual(i, scenario),
         )
         project = import_asset(
-            store, project["id"], scene["id"],
-            project["revision"], voices[i].read_bytes(),
+            store,
+            project["id"],
+            scene["id"],
+            project["revision"],
+            voices[i].read_bytes(),
         )
     for scene in project["scenes"]:
         scene["duration"] = scenario.scene_seconds
@@ -231,8 +293,11 @@ def render_one(
         scene["beat_plan_status"] = "needs_review"
     project = store.save(project["id"], project)
     options = ExportInput(
-        revision=project["revision"], aspect=aspect,
-        kind=kind, silent=False, idempotency_key=str(uuid4()),
+        revision=project["revision"],
+        aspect=aspect,
+        kind=kind,
+        silent=False,
+        idempotency_key=str(uuid4()),
     )
     job = enqueue(store, project["id"], options)
     render_job(store, store.claim())
@@ -259,16 +324,42 @@ def render_one(
     if abs(duration - scenario.seconds) > 0.12:
         raise ValueError(f"Duration {duration} != {scenario.seconds}")
     subprocess.run(
-        ["ffmpeg", "-hide_banner", "-v", "error", "-xerror",
-         "-i", str(output), "-map", "0", "-f", "null", "-"],
-        check=True, capture_output=True, timeout=180,
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-v",
+            "error",
+            "-xerror",
+            "-i",
+            str(output),
+            "-map",
+            "0",
+            "-f",
+            "null",
+            "-",
+        ],
+        check=True,
+        capture_output=True,
+        timeout=180,
     )
-    frames = json.loads(subprocess.check_output(
-        ["ffprobe", "-v", "error", "-select_streams", "v:0",
-         "-show_frames", "-show_entries", "frame=best_effort_timestamp_time",
-         "-of", "json", str(output)],
-        timeout=120,
-    ))["frames"]
+    frames = json.loads(
+        subprocess.check_output(
+            [
+                "ffprobe",
+                "-v",
+                "error",
+                "-select_streams",
+                "v:0",
+                "-show_frames",
+                "-show_entries",
+                "frame=best_effort_timestamp_time",
+                "-of",
+                "json",
+                str(output),
+            ],
+            timeout=120,
+        )
+    )["frames"]
     if len(frames) != scenario.seconds * 30:
         raise ValueError("Wrong decoded frame count")
     for i, frame in enumerate(frames):
@@ -276,10 +367,14 @@ def render_one(
         if not math.isfinite(pts) or abs(pts - i / 30) > 0.002:
             raise ValueError("Frame PTS gap/duplication")
     return {
-        "file": output.name, "sha256": digest(output),
-        "aspect": aspect, "resolution": list(expected),
-        "seconds": duration, "frames": len(frames),
-        "technical": "PASS", "full_decode": "PASS",
+        "file": output.name,
+        "sha256": digest(output),
+        "aspect": aspect,
+        "resolution": list(expected),
+        "seconds": duration,
+        "frames": len(frames),
+        "technical": "PASS",
+        "full_decode": "PASS",
         "creator_review": "NOT RUN",
     }
 
@@ -293,13 +388,17 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
     voices = []
     records = []
     report = {
-        "scenario": key, "title": scenario.title,
-        "scenes": len(scenario.cues), "target_seconds": scenario.seconds,
+        "scenario": key,
+        "title": scenario.title,
+        "scenes": len(scenario.cues),
+        "target_seconds": scenario.seconds,
         "cues": [{"title": t, "narration": c} for t, c in scenario.cues],
         "source": "Pillow art + local eSpeak vi, 175 wpm",
         "audio_mastering": "synthetic-fixture compressor only",
-        "release_approved": False, "human_review": "NOT RUN",
-        "voice_approval": "NOT APPROVED", "outputs": [],
+        "release_approved": False,
+        "human_review": "NOT RUN",
+        "voice_approval": "NOT APPROVED",
+        "outputs": [],
     }
     try:
         for i, (_title, cue) in enumerate(scenario.cues):
@@ -311,9 +410,7 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
             records.append(info)
         report["voice_inputs"] = records
         for aspect in ("portrait", "landscape"):
-            report["outputs"].append(
-                render_one(root, scenario, aspect, kind, voices)
-            )
+            report["outputs"].append(render_one(root, scenario, aspect, kind, voices))
         report["status"] = "TECHNICAL_PASS_ONLY"
     except Exception as exc:
         report["status"] = "FAILED"
