@@ -1,0 +1,102 @@
+"""Verify actual Blender wet/dry cutouts and sample science motion.
+
+Run AFTER producing original RGBA art via blender_review_art.py. Unlike
+synthetic unit fixtures this checks the real renderer and records visual
+contact sheets. Perceptual/physics suitability still requires creator review.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+import numpy as np
+from PIL import Image
+
+from science_story import Art
+
+
+def validate_assets(root: Path) -> dict:
+    arrays = {}
+    records = {}
+    for name in ("wet", "dry"):
+        path = root / f"{name}.png"
+        with Image.open(path) as img:
+            if img.mode != "RGBA" or img.size[0] < 320 or img.size[1] < 320:
+                raise ValueError(f"{name} is not a supported RGBA Blender cutout")
+            pixels = np.asarray(img).copy()
+        alpha = pixels[:, :, 3]
+        if int(alpha.min()) != 0 or int(alpha.max()) < 240:
+            raise ValueError(f"{name}: invalid transparent alpha")
+        visible = alpha > 128
+        if not np.any(visible) or np.all(visible):
+            raise ValueError(f"{name}: missing isolated silhouette")
+        ys, xs = np.where(visible)
+        records[name] = {
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "width": pixels.shape[1],
+            "height": pixels.shape[0],
+            "opaque_pixels": int(visible.sum()),
+            "bbox": [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())],
+            "centroid": [round(float(xs.mean()), 2), round(float(ys.mean()), 2)],
+        }
+        arrays[name] = (pixels, visible)
+    if arrays["wet"][0].shape != arrays["dry"][0].shape:
+        raise ValueError("wet/dry source dimensions differ")
+    overlap = np.count_nonzero(arrays["wet"][1] & arrays["dry"][1])
+    union = np.count_nonzero(arrays["wet"][1] | arrays["dry"][1])
+    iou = overlap / union
+    if iou < 0.94:
+        raise ValueError(f"wet/dry silhouette alpha mismatch: intersection/union={iou:.3f}")
+    a = records["wet"]["centroid"]
+    b = records["dry"]["centroid"]
+    if abs(a[0] - b[0]) > 3 or abs(a[1] - b[1]) > 3:
+        raise ValueError("wet/dry peg/garment centroid moved")
+    records["alpha_iou"] = round(iou, 5)
+    return records
+
+
+def contact_sheet(root: Path, output_dir: Path, width: int, height: int) -> dict:
+    kinds = ["shirt", "warm", "wind", "spread", "dry"]
+    sheet = Image.new("RGB", (width * 3, height * len(kinds)), "#FFF8EB")
+    result = {}
+    for row, kind in enumerate(kinds):
+        art = Art(width, height, root, kind, supersample=1)
+        frames = [art.frame(t, 4) for t in (0, 2, 4)]
+        for col, frame in enumerate(frames):
+            if frame.size != (width, height):
+                raise AssertionError("Motion frame dimensions changed")
+            sheet.paste(frame, (col * width, row * height))
+        changes = [
+            float(np.mean(np.abs(np.asarray(a, dtype=np.int16) - np.asarray(b, dtype=np.int16))))
+            for a, b in zip(frames, frames[1:], strict=True)
+        ]
+        if any(change <= 0.02 for change in changes):
+            raise AssertionError(f"{kind} appears frozen at {width}x{height}: {changes}")
+        result[kind] = [round(change, 4) for change in changes]
+    label = "portrait" if height > width else "landscape"
+    target = output_dir / f"a02-{label}-real-blender-contact-sheet.png"
+    sheet.save(target)
+    return {"sheet": target.name, "mean_pixel_delta": result}
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--art-dir", type=Path, required=True)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    args = parser.parse_args()
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    report = {"source": "REAL Blender Cycles RGBA assets", "assets": validate_assets(args.art_dir)}
+    for width, height in [(270, 480), (480, 270)]:
+        report[f"{width}x{height}"] = contact_sheet(args.art_dir, args.output_dir, width, height)
+    (args.output_dir / "a02-real-art-report.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n"
+    )
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()
