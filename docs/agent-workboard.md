@@ -23,6 +23,12 @@ Updated: 2026-10-30 · **Development-in-progress**, not release-ready.
 
 Status language: **DONE-VERIFIED** = current code passed recorded CI, **DONE-BASELINE** = evidenced on earlier commit, **WIP-UNTESTED** = committed but not verified, **TODO** = not implemented, **BLOCKED** = prerequisite/asset/human review missing. **Merging source into a branch changes none of these evidence statuses.**
 
+## Research-first requirement for every new feature
+
+Before feature code, follow [G0–G6 research and quality gates](research-first-quality-gates.md): source/architecture audit, official upstream/version/license evidence, alternatives and risk comparison, approved spec/decision, isolated POC, actual tests, real video/audio and creator review when relevant, independent PR review and post-merge regression. New task owners must attach a research note and test matrix. `NOT RUN` is not `PASS`. No silent scope changes, dependency installs, cloud costs, arbitrary AI-generated code execution or overlapping file ownership.
+
+**Proposed follow-on IDs (not yet claimed):** A11 research-first governance (docs PR); A12 reproducible benchmark/CI render; A13 Animate sandbox POC; A14 render-engine adapter; A15 Vietnamese alignment; A16 orchestration/approval research; A17 learned QC calibration; A18 AI video consistency/provider research; A19 editor UX research. Detailed dependencies, acceptance and stop conditions are in the linked plan. Existing A01–A10 statuses are unchanged. Agent claims require checking open PRs first.
+
 ## Workstreams — claim tasks through a PR
 
 | ID | Priority | Area / primary files | Status | Immediate deliverable |
