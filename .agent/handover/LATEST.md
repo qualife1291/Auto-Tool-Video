@@ -8,7 +8,7 @@ updated: 2026-10-30
 
 ## CURRENT verified multi-agent handoff — 2026-10-31 (supersedes earlier planning text below)
 
-**Canonical:** `feat/short-video-studio` at observed merge SHA `97dfea49a712de2263648e187e08c4495098182b`. Refresh GitHub HEAD before any new action. Role/task contracts: [docs/agent-role-task-contracts.md](../../docs/agent-role-task-contracts.md); current [workboard](../../docs/agent-workboard.md), [short-term tasks](../memory/short-term/TASKS.md), BA [registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31) / [Epic #26](https://github.com/qualife1291/Auto-Tool-Video/issues/26).
+**Canonical:** `feat/short-video-studio` at observed merge SHA `97dfea49a712de2263648e187e08c4495098182b`. Refresh GitHub HEAD before any new action. Stable [role charter](../../docs/agent-role-charter.md); role/task contracts: [docs/agent-role-task-contracts.md](../../docs/agent-role-task-contracts.md); current [workboard](../../docs/agent-workboard.md), [short-term tasks](../memory/short-term/TASKS.md), BA [registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31) / [Epic #26](https://github.com/qualife1291/Auto-Tool-Video/issues/26).
 
 **People:** BA01 owns BA/PM/source research, assignments, shared-path conflict & release coordination; C03 and C04 are active coders (C01/C02 retired); T01 owns independent technical QA, authorized gated PR code merges and hourly manual reports; creator owns final full-video watch/listen/rights signoff. Role ID is not GitHub login.
 
