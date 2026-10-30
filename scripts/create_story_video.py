@@ -78,19 +78,32 @@ def _proposed_science_beats(scenes: list[dict], sources: list[dict]) -> list[dic
     The cues remain estimates, not forced-aligned word timings.
     """
     if not scenes or len(scenes) != len(sources):
-        raise ValueError("Science scene/source count mismatch; refusing to replace beats.")
+        raise ValueError(
+            "Science scene/source count mismatch; refusing to replace beats."
+        )
 
     planned = []
     for index, (scene, source) in enumerate(zip(scenes, sources, strict=True)):
-        required = ("title", "narration", "template", "visual_description", "caption_emphasis")
+        required = (
+            "title",
+            "narration",
+            "template",
+            "visual_description",
+            "caption_emphasis",
+        )
         if not isinstance(source, dict) or any(
             not isinstance(source.get(field), str) for field in required
         ):
             raise ValueError(f"Science scene {index} is missing required source text.")
-        if scene.get("title") != source["title"] or scene.get("narration") != source["narration"]:
+        if (
+            scene.get("title") != source["title"]
+            or scene.get("narration") != source["narration"]
+        ):
             raise ValueError(f"Science scene {index} no longer matches its source.")
         if scene.get("second_by_second") or scene.get("beat_plan_status") == "authored":
-            raise ValueError(f"Science scene {index} already has a beat plan; refusing overwrite.")
+            raise ValueError(
+                f"Science scene {index} already has a beat plan; refusing overwrite."
+            )
 
         try:
             beats = beat_timeline(source, scene["duration"])
@@ -98,11 +111,15 @@ def _proposed_science_beats(scenes: list[dict], sources: list[dict]) -> list[dic
                 {**scene, "second_by_second": beats, "beat_plan_status": "needs_review"}
             )
         except (KeyError, TypeError, ValueError) as exc:
-            raise ValueError(f"Invalid science beat plan for scene {index}: {exc}") from exc
+            raise ValueError(
+                f"Invalid science beat plan for scene {index}: {exc}"
+            ) from exc
         planned.append(
             {
                 **scene,
-                "second_by_second": [beat.model_dump() for beat in validated.second_by_second],
+                "second_by_second": [
+                    beat.model_dump() for beat in validated.second_by_second
+                ],
                 "beat_plan_status": "needs_review",
             }
         )

@@ -158,9 +158,7 @@ def science_source(duration: float) -> dict:
 
 
 @pytest.mark.parametrize("duration", [3.0, 91 / 30, 599 / 30, 20.0])
-def test_fractional_and_twenty_second_beats_validate_and_roundtrip(
-    tmp_path, duration
-):
+def test_fractional_and_twenty_second_beats_validate_and_roundtrip(tmp_path, duration):
     """Real Scene validation and Store.save cover 30fps and <=20-second limits."""
     store = Store(tmp_path / "studio")
     project = store.create(
@@ -237,8 +235,9 @@ def test_source_count_mismatch_fails_before_writing_any_plan():
 def test_synthetic_multiscene_timing_stays_under_sixty_seconds():
     sources = [science_source(599 / 30), science_source(20), science_source(3)]
     scenes = [
-        Scene(title=source["title"], narration=source["narration"], duration=source["duration"])
-        .model_dump()
+        Scene(
+            title=source["title"], narration=source["narration"], duration=source["duration"]
+        ).model_dump()
         for source in sources
     ]
     result = review._proposed_science_beats(scenes, sources)
