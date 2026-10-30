@@ -219,7 +219,8 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
         # Store.save accepts raw project dicts and cannot enforce Scene's 20s field.
         if any(scene["duration"] > 20 for scene in project["scenes"]):
             raise DomainError(
-                "DURATION_LIMIT", "Giọng và khoảng nghỉ vượt 20 giây mỗi cảnh; rút gọn lời trước."
+                "DURATION_LIMIT",
+                "Giọng và khoảng nghỉ vượt 20 giây mỗi cảnh; rút gọn lời trước.",
             )
         if sum(s["duration"] for s in project["scenes"]) > 60:
             raise DomainError(
