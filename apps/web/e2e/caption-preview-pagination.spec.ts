@@ -19,7 +19,13 @@ for (const viewport of [
     const title = `Phân trang tiếng Việt ${viewport.width}`;
     await page.getByLabel('Tên dự án').fill(title);
     await page.getByLabel('Lời thoại', { exact: true }).fill(narration);
+    if (viewport.width === 1366) {
+      await page.getByLabel('Khung hình', { exact: true }).selectOption('landscape');
+    }
     await page.getByRole('button', { name: 'Tạo storyboard' }).click();
+    await expect(page.locator('.portrait')).toHaveClass(
+      viewport.width === 1366 ? /landscape/ : /^portrait(?!.*landscape)/,
+    );
     await expect(page.locator('.scene-item')).toHaveCount(1);
     await expect(page.getByLabel('Lời thoại của cảnh')).toHaveValue(narration);
 
