@@ -80,9 +80,7 @@ def test_mask_geometry_catches_empty_crop_and_safe_zone(qa):
         qa.mask_geometry(Image.new("RGBA", (80, 80)))
     with pytest.raises(ValueError, match="cropped"):
         qa.mask_geometry(isolated(bbox=(0, 20, 40, 60)), strict_safe_zone=True)
-    assert qa.mask_geometry(isolated(bbox=(0, 20, 40, 60)))[
-        "cropped_at_frame_edge"
-    ]
+    assert qa.mask_geometry(isolated(bbox=(0, 20, 40, 60)))["cropped_at_frame_edge"]
     with pytest.raises(ValueError, match="safe zone"):
         qa.mask_geometry(
             isolated(bbox=(3, 20, 40, 60)),
