@@ -13,6 +13,8 @@ import wave
 import pytest
 from conftest import create_story, save
 
+from auto_tool_video.timing import frames_for
+
 
 def _beats(count: int) -> list[dict]:
     return [
@@ -76,7 +78,7 @@ def test_audio_import_retime_invalidates_authored_beats_without_discarding_text(
     result = imported.json()
     scene = result["scenes"][0]
     assert result["revision"] == project["revision"] + 1
-    assert scene["duration"] == pytest.approx(audio_seconds + 0.12)
+    assert scene["duration"] == pytest.approx(frames_for(audio_seconds + 0.12) / 30)
     assert scene["beat_plan_status"] == "needs_review"
     assert scene["second_by_second"] == beat_set
     assert result["scenes"][1:] == unchanged_scenes
@@ -87,11 +89,11 @@ def test_audio_import_retime_invalidates_authored_beats_without_discarding_text(
 
 
 def test_import_does_not_invalidate_when_duration_is_unchanged(client):
-    project, beat_set = _approved_project(client, duration=2.12)
+    project, beat_set = _approved_project(client, duration=frames_for(2.0 + 0.12) / 30)
     imported = _import(client, project, _pcm_wav(2.0), "unchanged.wav")
     assert imported.status_code == 200, imported.text
     scene = imported.json()["scenes"][0]
-    assert scene["duration"] == pytest.approx(2.12)
+    assert scene["duration"] == pytest.approx(frames_for(2.0 + 0.12) / 30)
     assert scene["beat_plan_status"] == "authored"
     assert scene["second_by_second"] == beat_set
 
