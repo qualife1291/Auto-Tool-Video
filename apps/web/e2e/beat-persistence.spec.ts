@@ -121,7 +121,7 @@ for (const width of [390, 1366]) {
     await expect(reviewNotice).toBeVisible();
     const partial = await saveAndRead(page, project.id, lastRevision, 'needs_review');
     lastRevision = partial.revision;
-    expect(partial.scenes[0].action).toBe(revised);
+    expect(partial.scenes[0].second_by_second[0].action).toBe(revised);
 
     // The author confirms the complete, unchanged beat set explicitly.
     await page.getByRole('button', { name: 'Xác nhận đã rà soát từng giây' }).click();
