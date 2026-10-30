@@ -187,7 +187,18 @@ def test_real_decodable_h264_catches_one_missing_tail_frame(tmp_path, frame_coun
     assert len(pts) == frame_count
     # Prove the stream is fully decodable; this alone is insufficient for QC.
     subprocess.run(
-        ["ffmpeg", "-hide_banner", "-loglevel", "error", "-xerror", "-i", str(video), "-f", "null", "-"],
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-xerror",
+            "-i",
+            str(video),
+            "-f",
+            "null",
+            "-",
+        ],
         check=True,
         capture_output=True,
         timeout=30,
