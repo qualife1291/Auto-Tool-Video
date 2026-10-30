@@ -1,0 +1,61 @@
+name: QA Dual FullHD MP4 Integrity
+
+on:
+  pull_request:
+    branches:
+      - feat/short-video-studio
+  push:
+    branches:
+      - feat/short-video-studio
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dual-fullhd:
+    name: FullHD portrait + landscape encode, PTS, AAC and full decode
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      APP_DATA_DIR: /tmp/qa-dual1080-isolated
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Verify FFmpeg, FFprobe and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version | head -1
+          ffprobe -version | head -1
+          uv sync --project backend --frozen --group dev
+      - name: Enforce independent validator style and negative tests
+        run: |
+          uv run --project backend ruff check scripts/verify_dual_1080_smoke.py backend/tests/test_dual_1080_smoke.py
+          uv run --project backend ruff format --check scripts/verify_dual_1080_smoke.py backend/tests/test_dual_1080_smoke.py
+          uv run --project backend pytest backend/tests/test_dual_1080_smoke.py -q
+      - name: Render actual native FullHD exports with synthetic sine audio
+        run: |
+          uv run --project backend python scripts/smoke_export.py --portrait1080 \
+            --output-dir "$RUNNER_TEMP/qa-dual1080"
+      - name: Fully decode both MP4 files and independently enforce codec, CFR, audio QC
+        run: |
+          uv run --project backend python scripts/verify_dual_1080_smoke.py \
+            --root "$RUNNER_TEMP/qa-dual1080" \
+            --report "$RUNNER_TEMP/qa-dual1080-report.json"
+      - name: Preserve actual FullHD test media and failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-dual1080-synthetic-media-and-report
+          path: |
+            ${{ runner.temp }}/qa-dual1080-report.json
+            ${{ runner.temp }}/qa-dual1080/portrait/exports/*.mp4
+            ${{ runner.temp }}/qa-dual1080/landscape/exports/*.mp4
+          if-no-files-found: warn
+          retention-days: 7
