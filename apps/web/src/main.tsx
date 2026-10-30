@@ -79,7 +79,10 @@ function App() {
   const estimatedCaptionPages = scene
     ? estimateCaptionPages(scene.narration, project?.aspect ?? 'portrait')
     : [];
-  const captionPage = Math.min(captionPageIndex, Math.max(0, estimatedCaptionPages.length - 1));
+  const captionPage = Math.min(
+    captionPageIndex,
+    Math.max(0, estimatedCaptionPages.length - 1),
+  );
   const currentCaption = estimatedCaptionPages[captionPage] || '';
   useEffect(() => {
     setCaptionPageIndex(0);
@@ -772,7 +775,10 @@ function App() {
                       )}
                     </div>
                     {captions && currentCaption && (
-                      <div className="caption-preview-controls" aria-label="Phân trang phụ đề ước lượng">
+                      <div
+                        className="caption-preview-controls"
+                        aria-label="Phân trang phụ đề ước lượng"
+                      >
                         <span className="caption-preview-status" role="status">
                           Trang {captionPage + 1}/{estimatedCaptionPages.length} (ước lượng)
                         </span>
@@ -782,7 +788,9 @@ function App() {
                               type="button"
                               aria-label="Trang phụ đề trước"
                               disabled={captionPage === 0}
-                              onClick={() => setCaptionPageIndex((index) => Math.max(0, index - 1))}
+                              onClick={() =>
+                                setCaptionPageIndex((index) => Math.max(0, index - 1))
+                              }
                             >
                               Trước
                             </button>
