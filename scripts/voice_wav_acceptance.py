@@ -219,6 +219,12 @@ def render_aspect(root: Path, aspect: str) -> dict:
         project = import_asset(
             store, project["id"], scene["id"], project["revision"], voice.read_bytes()
         )
+    # import_asset safely fits raw audio with an extra 120ms margin. The A04
+    # timeline has already allocated its measured 30FPS duration; restore it
+    # explicitly after all imports, as create_story_video.build does.
+    for scene, authored in zip(project["scenes"], story["scenes"], strict=True):
+        scene["duration"] = authored["duration"]
+    project = store.save(project["id"], project)
     request = ExportInput(
         revision=project["revision"],
         silent=False,
