@@ -55,7 +55,16 @@ for (const viewport of [
     // Make a real editor change before using the Save button (otherwise it is disabled).
     await page.getByLabel('Kiểu phụ đề').selectOption('contrast');
     await expect(preview).toHaveClass(/caption-contrast/);
-    await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
+    const [persisted] = await Promise.all([
+      page.waitForResponse(
+        (response) =>
+          response.request().method() === 'PUT' &&
+          response.url().includes('/api/projects/'),
+      ),
+      page.getByRole('button', { name: 'Lưu thay đổi' }).click(),
+    ]);
+    expect(persisted.ok()).toBeTruthy();
+    await expect(page.getByText('Đã lưu trên máy.', { exact: true })).toBeVisible();
     await page.reload();
     await page.getByRole('button', { name: new RegExp(title) }).click();
     await page.getByRole('button', { name: /Storyboard/ }).click();
