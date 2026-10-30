@@ -34,7 +34,7 @@ The object below is a **synthetic authoring example**, not a live API response, 
 ~~~json
 {
   "schema_version": 1,
-  "purpose": "sd lc evidence index / proposal only",
+  "purpose": "SDLC evidence index / proposal only",
   "task": {
     "issue_url": "https://github.com/qualife1291/Auto-Tool-Video/issues/48",
     "task_id": "C03-HARN-H01-CONTRACT-POC",
