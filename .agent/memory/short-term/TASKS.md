@@ -1,6 +1,6 @@
 # Việc đang code — snapshot 2026-10-31
 
-**Canonical:** `feat/short-video-studio` @ `09c4a8ea858e26f7e3f0b5147377d9d0930a541a` khi cập nhật; **refresh HEAD GitHub trước mỗi hành động**. Nguồn phân vai/ownership/AC: [Agent Role and Task Contracts](../../../docs/agent-role-task-contracts.md), [BA registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31) và [workboard](../../../docs/agent-workboard.md). **BA01** điều phối/PM/R&D; **C03/C04** dev; **T01** QA độc lập và code-merge gate khi đủ evidence; **Creator** nghiệm thu video. C01/C02 không còn active.
+**Canonical:** `feat/short-video-studio` @ `09c4a8ea858e26f7e3f0b5147377d9d0930a541a` khi cập nhật; **refresh HEAD GitHub trước mỗi hành động**. Nguồn phân vai/ownership/AC: [stable role charter](../../../docs/agent-role-charter.md), [Agent Role and Task Contracts](../../../docs/agent-role-task-contracts.md), [BA registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31) và [workboard](../../../docs/agent-workboard.md). **BA01** điều phối/PM/R&D; **C03/C04** dev; **T01** QA độc lập và code-merge gate khi đủ evidence; **Creator** nghiệm thu video. C01/C02 không còn active.
 
 ## Active work / trạng thái chính thức
 
