@@ -8,13 +8,13 @@ in the separate A02 workflow; creator perceptual review remains outstanding.
 from __future__ import annotations
 
 import importlib.util
+import itertools
 import math
 from pathlib import Path
 
 import numpy as np
 import pytest
 from PIL import Image, ImageDraw
-
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("science_story_a02", ROOT / "scripts/science_story.py")
@@ -107,7 +107,7 @@ def test_spread_comparison_grows_the_same_open_cutout_smoothly(shirts, size):
         int(np.count_nonzero(rendered_shirt(art, time, mini=True)[:, :, 3] > 128))
         for time in np.linspace(0, 4, 9)
     ]
-    assert all(left <= right for left, right in zip(coverage, coverage[1:], strict=False))
+    assert all(left <= right for left, right in itertools.pairwise(coverage))
     assert coverage[-1] > 1.8 * coverage[0]
     # This is the right-hand comparative cutout only, NOT cloth physics or a
     # proven one-object folding transition. The left folded stack is separate.
