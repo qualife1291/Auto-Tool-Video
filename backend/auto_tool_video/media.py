@@ -149,6 +149,7 @@ def import_asset(
             if current["revision"] != revision:
                 raise DomainError("REVISION_CONFLICT", "Dự án vừa đổi; hãy thử nhập lại.", 409)
             target = next(item for item in current["scenes"] if item["id"] == scene_id)
+            previous_duration = target["duration"]
             target[f"{'image' if kind == 'clip' else kind}_id"] = identifier
             if kind == "clip":
                 target.update(style="motion", duration=max(1, duration))
@@ -157,6 +158,10 @@ def import_asset(
                     target["duration"] = max(target["duration"], existing_audio["duration"] + 0.12)
             if kind == "audio":
                 target.update(duration=max(1, duration + 0.12), audio_stale=False)
+            # This direct SQL path bypasses Store.save's duration-change invalidation.
+            # Keep authored beat text intact, but require re-review after any retime.
+            if target["duration"] != previous_duration:
+                target["beat_plan_status"] = "needs_review"
             current["revision"] += 1
             from .store import now
 
