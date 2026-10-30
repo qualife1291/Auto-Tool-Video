@@ -130,10 +130,9 @@ describe('estimated caption pages (browser preview, not pixel-exact export)', ()
   it('does not emphasize a phrase on an unrelated page', () => {
     const text = 'hơi nước mở đầu câu chuyện. ' + long;
     const pages = estimateCaptionPages(text, 'portrait');
-    const matched = pages
-      .map((page) => captionParts(page, 'hơi nước').filter((part) => part.emphasis))
-      .flat();
-    expect(matched.map((part) => part.text)).toEqual(['hơi nước']);
+    const parts = pages.flatMap((page) => captionParts(page, 'hơi nước'));
+    const emphasized = parts.filter((part) => part.emphasis);
+    expect(emphasized.map((part) => part.text)).toEqual(['hơi nước']);
     expect(captionParts('Nước bay hơi.', 'bay hơi').map((part) => part.text).join('')).toBe(
       'Nước bay hơi.',
     );
