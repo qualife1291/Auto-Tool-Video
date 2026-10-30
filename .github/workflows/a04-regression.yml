@@ -1,0 +1,52 @@
+name: A04 full regression
+
+on:
+  push:
+    branches:
+      - agent/A04-pitch-preserving-tempo
+  pull_request:
+    branches:
+      - feat/short-video-studio
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: astral-sh/setup-uv@v6
+      - name: Install Python and Web dependencies
+        run: |
+          uv sync --project backend --frozen --group dev
+          npm --prefix apps/web ci
+      - name: Python lint, format and types
+        run: |
+          uv run --project backend ruff check backend scripts
+          uv run --project backend ruff format --check backend scripts
+          uv run --project backend mypy backend/auto_tool_video
+      - name: Python full regression (includes real FFmpeg WAV tests)
+        run: uv run --project backend pytest backend/tests -q
+      - name: Frontend typecheck, Vitest, format and build
+        run: |
+          npm --prefix apps/web run check
+          npm --prefix apps/web run format:check
+          npm --prefix apps/web run build
+      - name: Install Chromium for browser integration
+        run: |
+          cd apps/web
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_BIN=$(node -p "require('playwright').chromium.executablePath()")" >> "$GITHUB_ENV"
+      - name: Browser E2E with local server and independent test data
+        run: npm --prefix apps/web run test:e2e
+      - name: Real 1080p portrait export smoke
+        run: uv run --project backend python scripts/smoke_export.py --portrait1080
