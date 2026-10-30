@@ -2,6 +2,8 @@
 
 > Verified snapshot: **2026-10-31 (Asia/Ho_Chi_Minh)** on canonical `feat/short-video-studio` at `09c4a8ea858e26f7e3f0b5147377d9d0930a541a`. **Refresh GitHub before each action; this SHA is a historical checkpoint, not a permanent pin.** Approved product scope: `specs/whiteboard-video-tool.md`; coding rules: `AGENT-CODING-STANDARD.md`; BA registry: [#31](https://github.com/qualife1291/Auto-Tool-Video/issues/31). Role IDs are **not independently verified GitHub accounts**.
 
+**Stable role/job definitions, replacement and succession policy:** [BA01-approved Agent Role Charter](agent-role-charter.md), merged [PR #45](https://github.com/qualife1291/Auto-Tool-Video/pull/45). **This file is the dated task/owner/status matrix**; if a permanent role description differs, the charter governs and BA01 must reconcile the inconsistency.
+
 ## Roles and authority
 
 | Agent | Accountable job and output | Decision boundary |
