@@ -6,7 +6,7 @@ Updated: 2026-10-31 · **Development-in-progress**, technical code merges ≠ cr
 
 ## VERIFIED CURRENT ASSIGNMENTS — 2026-10-31 (supersedes historical A01 snapshot below)
 
-**[Stable agent role charter](agent-role-charter.md)** (BA01-owned) and **[current role/task responsibility, file ownership and QA gates](agent-role-task-contracts.md)** are mandatory before assigning or testing. Agent IDs: **BA01 coordinator/Product/PM/Technology Scout; C03 coder; C04 coder; T01 independent tester; human creator final perceptual reviewer**. C01/C02 are historical placeholders, not active coder lanes. This workboard is a status index; for latest timing and exact SHA consult GitHub task issues/PRs.
+**[Stable agent role charter](agent-role-charter.md)** (BA01-owned) and **[current role/task responsibility, file ownership and QA gates](agent-role-task-contracts.md)** are mandatory before assigning or testing. Agent IDs: **BA01 coordinator/Product/PM/Technology Scout; C01, C02, C03, C04 are four active coder seats; T01 independent tester; human creator final perceptual reviewer**. Owner has newly activated [C01 #52](https://github.com/qualife1291/Auto-Tool-Video/issues/52) and [C02 #53](https://github.com/qualife1291/Auto-Tool-Video/issues/53); both AVAILABLE/UNASSIGNED with no code claims. Earlier retired aliases are historical. This workboard is a status index; for latest timing and exact SHA consult GitHub task issues/PRs.
 
 | Priority | Workstream / official issue | Role owner | VERIFIED STATUS at this snapshot |
 | --- | --- | --- | --- |
