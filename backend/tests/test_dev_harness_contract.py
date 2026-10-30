@@ -39,8 +39,7 @@ def contract(*, owner="C03", task="C03-HARN-H01-CONTRACT-POC", paths=None):
 
 def markdown(*contracts):
     return "# BA01 issue text\n" + "\n".join(
-        "```agent-task-contract\n" + json.dumps(c, ensure_ascii=False) + "\n```"
-        for c in contracts
+        "```agent-task-contract\n" + json.dumps(c, ensure_ascii=False) + "\n```" for c in contracts
     )
 
 
@@ -139,7 +138,7 @@ def test_unsupported_keys_invalid_json_and_duplicate_json_keys_fail():
     assert code == 2 and "duplicate JSON key" in "\n".join(report["errors"])
     for source in (
         "```agent-task-contract\n{\n```",
-        "```agent-task-contract\n{\"schema_version\": NaN}\n```",
+        '```agent-task-contract\n{"schema_version": NaN}\n```',
         "```agent-task-contract\n[]\n```",
         "```agent-task-contract\n{}",
         "```agent-task-contract\n",
