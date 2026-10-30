@@ -35,6 +35,9 @@ for (const viewport of [
     await page.getByRole('button', { name: 'Trang phụ đề trước' }).click();
     await expect(preview).toHaveText(firstPage);
 
+    // Make a real editor change before using the Save button (otherwise it is disabled).
+    await page.getByLabel('Kiểu phụ đề').selectOption('contrast');
+    await expect(preview).toHaveClass(/caption-contrast/);
     await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
     await page.reload();
     await page.getByRole('button', { name: new RegExp(title) }).click();
