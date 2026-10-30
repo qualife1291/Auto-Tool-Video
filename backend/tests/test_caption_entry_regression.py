@@ -69,9 +69,7 @@ def test_each_caption_page_bounces_on_entry_then_stays_still(tmp_path, size, cap
             return np.asarray(image)
 
         # The second page animates afresh at its own cue, not only at scene start.
-        assert not np.array_equal(
-            overlay_at(page_seconds + 0.01), overlay_at(page_seconds + 0.12)
-        )
+        assert not np.array_equal(overlay_at(page_seconds + 0.01), overlay_at(page_seconds + 0.12))
         # Once the 0.26s entry ends, the entire card and Vietnamese glyphs are stable.
         hold = overlay_at(page_seconds + 0.35)
         assert np.array_equal(hold, overlay_at(page_seconds + 0.65))
