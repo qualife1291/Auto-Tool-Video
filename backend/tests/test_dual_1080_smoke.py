@@ -78,8 +78,10 @@ def test_native_dimensions_and_video_audio_contract():
 def test_bad_stream_metadata_fails_closed(change):
     obj = copy.deepcopy(metadata())
     kind, key, value = change
-    target = obj["format"] if kind == "format" else next(
-        stream for stream in obj["streams"] if stream["codec_type"] == kind
+    target = (
+        obj["format"]
+        if kind == "format"
+        else next(stream for stream in obj["streams"] if stream["codec_type"] == kind)
     )
     target[key] = value
     with pytest.raises(IntegrityError):
