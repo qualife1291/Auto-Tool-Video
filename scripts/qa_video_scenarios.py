@@ -406,7 +406,7 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
     audio_dir.mkdir(exist_ok=True)
     voices = []
     records = []
-    speech_rate = 125 if scenario.scene_seconds <= 3 else 95
+    speech_rate = 125 if scenario.scene_seconds <= 3 else (80 if key == "energy-60s" else 95)
     report = {
         "scenario": key,
         "title": scenario.title,
