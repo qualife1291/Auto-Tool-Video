@@ -9,9 +9,7 @@ from auto_tool_video.render import ScenePainter
 
 @pytest.mark.parametrize("size", [(360, 640), (640, 360)])
 @pytest.mark.parametrize("caption_style", ["card", "contrast", "accent"])
-def test_caption_bounce_only_on_entry_and_then_remains_pixel_stable(
-    tmp_path, size, caption_style
-):
+def test_caption_bounce_only_on_entry_and_then_remains_pixel_stable(tmp_path, size, caption_style):
     source = tmp_path / "plain.png"
     Image.new("RGB", (64, 64), "#FFF8EB").save(source)
     scene = {
