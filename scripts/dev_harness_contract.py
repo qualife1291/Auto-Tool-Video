@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Optional, read-only, standard-library task contract lint for Markdown issues.
 
 No GitHub access, shell execution, interpolation, dependency installation or writes.
@@ -167,14 +166,13 @@ def validate_contract(value: Any, index: int) -> list[str]:
             errors.append(f"{prefix}.{key}: internally overlapping paths")
 
     writes, forbidden = value.get("write_paths"), value.get("forbidden_paths")
-    if isinstance(writes, list) and isinstance(forbidden, list):
-        if any(
-            collides(a, b)
-            for a in writes
-            for b in forbidden
-            if valid_path(a) and valid_path(b)
-        ):
-            errors.append(f"{prefix}: write_paths conflict with forbidden_paths")
+    if isinstance(writes, list) and isinstance(forbidden, list) and any(
+        collides(a, b)
+        for a in writes
+        for b in forbidden
+        if valid_path(a) and valid_path(b)
+    ):
+        errors.append(f"{prefix}: write_paths conflict with forbidden_paths")
     for key in ("acceptance_criteria", "tests", "dependencies"):
         items = value.get(key)
         if not isinstance(items, list) or (key != "dependencies" and not items):
@@ -249,8 +247,10 @@ def lint_markdown(markdown: str, *, multi: bool = False) -> dict[str, Any]:
         ],
         "errors": sorted(set(errors)),
         "warnings": [
-            "Offline only: spec approval, base_sha freshness, actual GitHub claims "
-            "and permissions NOT verified."
+            (
+                "Offline only: spec approval, base_sha freshness, actual GitHub claims "
+                "and permissions NOT verified."
+            )
         ],
     }
 
