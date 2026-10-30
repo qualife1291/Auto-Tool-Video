@@ -145,7 +145,7 @@ def test_spread_follows_one_garment_from_folded_position_to_open_position(shirts
         centers.append(float(xs.mean()))
         widths.append(int(xs.max() - xs.min() + 1))
 
-    start, end = ((500, 1460) if art.landscape else (260, 780))
+    start, end = (500, 1460) if art.landscape else (260, 780)
     assert abs(centers[0] - start * art.unit) < 15, (size, centers[0])
     assert abs(centers[-1] - end * art.unit) < 15, (size, centers[-1])
     assert all(right > left for left, right in itertools.pairwise(centers))
