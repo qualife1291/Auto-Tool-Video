@@ -6,6 +6,7 @@ import hashlib
 import json
 import re
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -24,6 +25,9 @@ def main():
     parser.add_argument("--model-dir", type=Path, required=True)
     args = parser.parse_args()
     root = args.output_dir.resolve()
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "backend"))
+    from auto_tool_video.timing import scene_timeline, silence_report
+
     results = []
     for aspect, dimensions in [("portrait", (1080, 1920)), ("landscape", (1920, 1080))]:
         path = root / f"review-{aspect}.mp4"
@@ -65,7 +69,7 @@ def main():
                 str(path),
                 "-vn",
                 "-af",
-                "loudnorm=I=-16:TP=-1:LRA=11:print_format=json",
+                "silencedetect=noise=-42dB:d=0.25,loudnorm=I=-16:TP=-1:LRA=11:print_format=json",
                 "-f",
                 "null",
                 "-",
@@ -88,6 +92,9 @@ def main():
                 "bytes": path.stat().st_size,
                 "probe": info,
                 "measured_loudness": loudness,
+                "pacing": silence_report(
+                    measured.stderr, float(info["format"]["duration"])
+                ),
                 "full_decode": "passed",
             }
         )
@@ -122,6 +129,9 @@ def main():
     )
     story = json.loads((root / "story.json").read_text())
     records = []
+    timeline = scene_timeline(
+        json.loads((root / "report-portrait.json").read_text())["project"]["scenes"]
+    )
     # Transcribe the exported MP4, including its AAC normalization and scene holds.
     for index, scene in enumerate(story["scenes"]):
         clip = root / f"asr-scene-{index + 1:02}.wav"
@@ -132,9 +142,9 @@ def main():
                 "error",
                 "-y",
                 "-ss",
-                str(index * 4),
+                str(timeline[index]["start"]),
                 "-t",
-                "4",
+                str(timeline[index]["duration"]),
                 "-i",
                 str(root / "review-portrait.mp4"),
                 "-vn",

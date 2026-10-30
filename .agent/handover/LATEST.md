@@ -8,74 +8,73 @@ updated: 2026-10-30
 
 ## Kết quả
 
-Đã triển khai QC sau gen và phiếu nghiệm thu1–5 theo nguồn người dùng, sửa lỗi âm lượng cảnh ngắn, kiểm lại hai mẫu và dựng lại với cùng input.176test qua. Toàn spec vẫn partial (M2 model live/M3 TTS UI/alignment/M4 OAuth chưa hoàn tất), không đổi status approved. Mẫu chờ creator nghe/xem; không tự chấm điểm manual, physics hoặc learned benchmark.
+Sửa nhịp/layout/renderer theo feedback và xuất mẫu12cảnh có lời,1080p hai aspect.205test qua. Silence17,361→3,173s, longest2,536→0,361s. Technicalpass, creatorreview còn pending:6motion warnings/aspect và3ASRmismatch. Toàn spec vẫn approved/partial vì M2live/M3UI/alignment/M4OAuth còn backlog.
 
 ## Đối chiếu đặc tả
 
-- specs/whiteboard-video-tool.md; amendment QC commit4ccba21 đã push trước code.
-- Khớp: QC tự động, manual rubric/no-average-critical/hash/CAS, source/provenance/disclosure, CSV/JSON/UI, CLI audit và test/regression thật.
-- Lệch đã được duyệt: không; không có lệch chưa duyệt. Giữ quyền code/push, không đổi/publish môi trường hoặc đăng video công khai.
+- specs/whiteboard-video-tool.md; amendment69ad80a đã push trước code, caption page balancing bổ sung trước sửa khi thấy lỗi trên sample.
+- Khớp fullframe/fit/focal/legacy/float/pen-up/frameclock/dissolve/PCM/singleAAC/fit-audio/story/nativeclips/pacingQC/test.
+- Không lệch đã/chưa duyệt. Giữ quyền code/commit/push trên feat/short-video-studio; không đổi/publish cloud hoặc mạng xã hội.
 
 ## Đã làm
 
-- quality.py: metadata/PTS/CFR/decode/audio gates; cancellation/process/output bounds; ROI scan mọi frame, flash/near-repeat có timestamp, motion intent/scene cuts/whiteboard hold; sharpness chỉ mô tả. Không thêm dependencies/weights/API trả phí.
-- Renderer chạy QC trước success, report lỗi vẫn nằm ở job; file/project tốt trước giữ nguyên. Trim/pad hữu hạn trước loudnorm sửa fixture1s−9,6LUFS; silent không qua loudnorm để tránh NaN/AAC failure.
-- Report/SHA/provenance/input hashes/known provider/snapshot; metadata MP4 export ID/origin/signature none. Không C2PA/robust watermark/AI detector/legal compliance certification.
-- API project/export quality JSON/CSV/review; review_revision CAS và video SHA thực, cross-project/kind/hash/timestamp/score guards. Publish pack kèm gate/disclosure từ đúng export snapshot; download/hub vẫn để creator review/đăng thủ công.
-- QualityPanel: kỹ thuật/warnings/seek/đối chiếu script-hình nguồn,5hạng1–5, critical override, playback/audio/caption/fact-age/disclosure/ack steps. Không prefill5 hoặc tự approved. Saved_at chỉ là metadata, lọc khỏi payload lần lưu sau.
-- Scene.motion_expectation defaultallow_static tương thích project cũ; editor cho motion_required. Old export thiếu QC hiển thị unavailable.
-- scripts/check_video_quality.py audit media read-only, JSON/CSV; docs/video-quality-standard.md có rubric và sheet dùng không cần code. Source-review/snapshot/license/development/QA/skill được cập nhật.
-- Nguồn: VBench pinnedfd18b3d.../AIGCBenchcc230c84... Apache2.0 code, PDF CVPRW2026 và EU code hiện tại, Apiframe/Turing. Chỉ đọc/tóm tắt, không vendor/cài benchmark; learned metrics not_run.
+- layout.py dùng chung geometry/affine với QC; newScene full_frame/cover/dissolve, legacy board/contain/cut/reveal0,65. API giữ fields cũ thiếu theo sceneID; editor fit/focal/transition/reveal và warning crop/upscale theo canvas thật.
+- Float affine ảnh, floor sourceclip clock theo outputframe, pen-up travel không nối nét giả. Visual dissolve5frame rồi title/caption riêng; caption dài cân toàn cue để bỏ trang cuối1–2từ.
+- Video-only per scene; PCM48kHz/sample-exact theo frame rồi normalize/AAC một lần cuối. fit-audio revision/all fresh audio/60s, giữ trọn file+0,12s; import pause0,12 thay0,35.
+- timing.py frame grid chịu microsecond rounding, scene timeline và silence parser thuần stdlib cho renderer/QC/isolated verifier. Policy local-qc-2: ROI đúng layout, hold theo draw_fraction, silence tổng/ratio/longest, warning>=0,8s; QualityPanel hiển thị nhịp, ack500findings, creator rubric/hash/CAS giữ nguyên.
+- Planner yêu cầu đầu/giữa/cuối và cơ chế/hành động rõ hơn; UI sample12cảnh. science_story.py/create_story_video.py dựng native motion2×SSAA với áo Blender RGBA gốc, nhập app/render/QC thật; docs/storyboard-review.md ghi lời/timing/action/assumptions.
+- TTS CLI bounded3seed retry khi clipping, strict empty/nonfinite/peakguard; trim outer silence có hash/margins, không cắt internal pauses. Đây chưa là TTS UI, physics simulation hoặc AI video diffusion.
+- README/QA/quality-standard/development/skill/D-007/memory cập nhật; no dependencies/lock/media/weights trong Git. .data/review và .data/quality-upgrade giữ nguyên.
 
 ## Chưa làm
 
-- Learned VBench/VBench2/AIGCBench checkpoints/datasets/runtime và GPU benchmark; chưa có điểm benchmark chính thức. Các pixel proxies chưa được hiệu chuẩn trên dataset người chấm.
-- Human full-playback/listening, physical/semantic/age approval và thiết bị thật. Machine checks/ASR không thay người duyệt.
-- M2 model live/ref/batch/3D editor, M3 TTS UI/packaging/20câu/alignment/SRT, M4 OAuth/token/upload private-draft có quyền, cover/180s/packaging còn backlog như trước.
+- Creator fullplayback/listening/manual/age và thiết bị thật; cảnh so sánh11 rất ít motion cần xem lại. Không suy cảm nhận từ205test/stills/ASR.
+- Learned VBench/AIGCBench/runtime/checkpoints/dataset/GPU/calibration not_run; không C2PA/legalcertificate.
+- M2 models live/ref/batch/3Deditor; M3TTSUI/packaging20câu/alignment/SRT; M4OAuth/live private-draft upload/cover/180s/packaging còn backlog.
 
 ## Cách chạy
 
-- README.md chạy app; sau xuất xem Kiểm định sau khi dựng và tải JSON/CSV. Rubric/lệnh CLI ở docs/video-quality-standard.md.
-- .data/quality-upgrade có MP4/report/QC/CSV/verification và SQLite project, ngoài Git. APP_DATA_DIR=.data/quality-upgrade/studio-portrait bash scripts/dev.sh để mở mẫu (hoặc landscape). Bản cũ .data/review giữ nguyên.
+- README chạy app; chọn fullframe/fit/focal, nhập đủ giọng rồi Khớp nhịp theo giọng đã nhập; xem QC sau xuất.
+- APP_DATA_DIR=.data/story-upgrade/studio-portrait bash scripts/dev.sh (hoặc studio-landscape), chọn project mới nhất/Xuất. MP4/report/QC/CSV/verification/art/provenance/SQLite ở .data/story-upgrade ngoài Git. Tái tạo ở docs/qa-review.md; lời/diễn biến ở docs/storyboard-review.md.
 
 ## Test sẵn có
 
-- Trước code:114pytest/8Vitest/9Playwright=131pass,1upstream deprecation; working tree clean.
-- Sau code:156pytest/9Vitest/11Playwright=176pass, khôngskip. Benchmark và nghe tay không được tính vào test pass.
+- Trước code156pytest/9Vitest/11Playwright=176pass; clean,1Starlette/httpx deprecation.
+- Sau code182pytest/10Vitest/13Playwright=205pass, khôngskip. ASR/humanreview không tính vào testpass.
 
 ## Test đã chạy
 
-- pytest156pass/17,62s:9technical negative gates, nonfinite/silent, flash/freeze/intent/hold/cut, critical1–2/3/4–5 và thiếu review; real export/hash/CAS/restart/cross-project/tamper/strictscore/CSVformula/oldjobs/publish snapshot. QC fail giữ file cũ, cancel dọn childprocess, output lớn reject. RegressionM1/M2/typography qua.
-- npm check:TypeScript/9Vitest qua (thêm hồi quy saved_at). Vitebuild/Prettier qua; Ruff/format/mypy13module qua.
-- Playwright11pass/35,6s:2newQC cases dùng real frozenMP4/worker/API ở1366/390, seek/rejectcritical/ack/approved/reload/CSV/plaintext/axe;9regression qua.3AI cases vẫn mock contract.
-- E2E từng fail vì silent loudnorm, selector label select và review saved_at422; đã sửa nguyên nhân và giữ assertion, full suite cuối qua. Không tắt check/assertion/warning để pass.
-- npm runtime audit/pip-audit backend0known advisory; package nội bộ không được external DB audit.1Starlette/httpx deprecation còn upstream.
-- Hai MP4 cũ audit policy mới technicalpass/0warning; hai MP4 dựng lại32,021333s, H264/yuv420p30fps/AAC48kHz/full decode/PTS/audio qua,−15,69LUFS/−1,43dBTP; ASR dọc8/8cue khớp chuẩn hóa. QA/report/hash tại docs/qa-review.md và runtime files.
-- Xem contact sheets24frame/aspect bản mới, cùng art inputs đã kiểm native đợt trước; creator playback/listening chưa có. Manual_review=null, gate pending_review đúng sự thật.
+- Pytest182pass/36,66s:cover/focal/4mép/title/subpixel/penlift/dissolve/clipclock/PCM/framegrid/timeline/fit/stale/revision/legacy/invalidinput; real long-silence warning và intentional silent not_applicable, QC hold theo draw_fraction. Caption6newcases giữ đủ chữ/2dòng/trangcuối. M1/M2/QC regressions qua.
+- Vitest10/TypeScript/build/Prettier qua; Ruff/format/mypy15module và diffcheck qua. Không thay lock/dependencies.
+- E2E13pass/47,4s cuối:1366/390/axe/realFFmpeg/API,2newlayout/focal/reveal/fit/reload cases;3AI cases mock như trước. Lượt đầu buildUI cũ thiếu controls; lượt sau đo nhầm border2px. Build lại/đo clientWidthHeight, giữ assertion phủ kín.
+- Hai MP4 H264/yuv420p/30fps/1160frame/AAC48kHz,38,666667s video/38,7s container, decode/CFR/PTS/audio qua. Cả hai−16,94LUFS/−1,53dBTP, AAC packet hashes giống nhau. Dọc4188150byte SHAebd70986f9476b8d70fefd3ab54275351a8f1e5b92b166faafbcdbcfeedf12e4; ngang4282634byte SHAf6b601b7a76e11257be4eb2804d50b872e4726ef4ed134630ad87db4babf009f.
+- Silence−42dB/d>=0,25s:3,173459s/11intervals/longest0,361459s/0long-silencewarnings.6near-repeat warnings/aspect scene1/6/7/8/10/11 giữ nguyên; manual_review null/pending_review.
+- ASR MP4dọc theo timeline thực9/12exactnormalizedtokens;scene3 phần/phân tử0,917;scene5 truyền/chuyển0,923;scene6 nhưng/những0,923. Cần nghe đối chiếu, không kết luận chắc TTS/ASR sai hoặc đổi script để làm khớp.
+- Đã xem36frame đầu/giữa/cuối mỗi aspect và nativeart; sửa label đè kẹp áo/trang captionđuôi. Không nhận đã nghe hoặc xem fullplayback tốc độ thật.
 
 ## Test không chạy
 
-- VBench/AIGCBench/VLM/physics learned evaluations: chưa cài runtime/checkpoint/dataset/hardware phù hợp; không auto tải để có tên benchmark.
-- Human scoring/listening/full playback/5profile×style×thiết bị thật; chưa có người duyệt.
-- M2 live models/OAuth/social live upload/nativeWindows-macOS như backlog; không dựng mock thành thành công thật.
+- Human listening/playback/scoring/age/native devices chưa có người duyệt; GPU/livebench/OAuth như backlog, không fakepass.
+- Audit dependencies không lặp vì lock không đổi; audit baseline0knownadvisory ở archive, không nhận đó là audit mới.
+- USGS fact reference timeout; doc ghi chưa đọc/pin, không tự nhận factchecked.
 
 ## Quyết định đã ghi vào nhớ dài hạn
 
-D-006: tách hard technical gates, proxies và creator rubric; learned metrics not_run, unsigned provenance không chứng nhận EU. PROJECT/ARCHITECTURE cập nhật dataflow QC/review.
+D-007:nhịp theo audio/fullframe/legacy/float/PCM và QCsilence sau feedback; không game proxies/ASR. PROJECT/ARCHITECTURE cập nhật; TASKS giữ backlog, SESSION trống.
 
 ## Rủi ro và nợ
 
-- Heuristic có false positives/negatives; static không tự kém chất lượng, motion mạnh không tự tốt. Require creator ack/review, không claim an toàn nhạy sáng hoặc đúng khoa học tự động.
-- Metadata/sidecar unsigned có thể bị strip/tamper ngoài tool; khai báo nhập ngoài chưa xác minh, creator chịu trách nhiệm xác nhận/nhãn/quyền trước đăng. Không hứa legal compliance/Kids/viral.
-- TTS review CLI packaging Gradio metadata còn hạn chế từ trước; không installer M3, không model weights/video/private data trong Git.
+- Proxies falsepositive/negative; motion nhẹ không tự là giật hoặc đạt. Chưa semanticvectorartist/clothfluidphysics; safezones cần device/platform QA.
+- TTS3câu cần người nghe; CLI Gradio metadata vẫn hạn chế, chưa installerM3. Retry không chứng nhận phát âm.
+- Unsigned metadata có thể strip; disclosure/audience/license cần creator. Không hứa viral/Kids/legal; cá nhân kiếm tiền không miễnNC, sample không dùng Tongjiang assets.
 
 ## File đã đụng
 
-backend quality/domain/render/api và tests quality/studio; frontend QualityPanel/test/main/domain/style/e2equality; scripts/check_video_quality.py; spec/README/docs QA/rubric/source snapshot/review/license/development; skill local và memory/handover. No dependency lock changes/media in Git.
+Backend domain/api/media/planning/render/quality/layout/timing và tests composition/quality/typography; web main/domain/domain.test/style/QualityPanel/e2estudio; Blender/TTS generate/verify/science_story/create_story_video; spec/README/docs QA/storyboard/rubric/development/skill/memory/handover. Media/models/data ignored.
 
 ## Agent sau đọc gì
 
-1. AGENTS.md, spec đãapproved, handover này.
-2. docs/video-quality-standard.md và qa-review.md; source-review/snapshot cho bằng chứng nguồn.
-3. PROJECT/ARCHITECTURE/DECISIONS vàTASKS; tiếp backlog theo quyền code/push đã có.
-4. Skill video-quality-review khi đổi renderer/provider; không publish cấu hình cloud hoặc video công khai.
+1. AGENTS.md, spec approved, handover này.
+2. docs/storyboard-review.md, qa-review.md và video-quality-standard.md cho artifact/timestamp/giới hạn thật.
+3. PROJECT/ARCHITECTURE/DECISIONS D-007/TASKS; skill video-quality-review khi sửa renderer/provider.
+4. Không áp lại/publish cloud hoặc đăng công khai; quyền Git push trên branch hiện tại đã có.

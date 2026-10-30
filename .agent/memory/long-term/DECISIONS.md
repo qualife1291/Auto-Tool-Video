@@ -47,3 +47,11 @@
 - Lý do:người dùng yêu cầu áp dụng VBench/CVPRW2026/AIGCBench/EU và QA/QC1–5 sau gen.
 - Hệ quả:hard metadata/PTS/decode/audio gate; pixel proxies có intent/boundaries, không là benchmark score. Creator1–5/hash/CAS/no-average-critical, JSON/CSV và disclosure theo export. Learned benchmark not_run, không tự tải/cài/paid API; metadata unsigned không là C2PA hoặc chứng nhận EU. Rubric tại docs/video-quality-standard.md.
 - Đặc tả:specs/whiteboard-video-tool.md
+
+## D-007 — Nhịp theo giọng và hình toàn khung sau phản hồi thực
+
+- Ngày:2026-10-30
+- Trạng thái:accepted
+- Lý do:creator báo script sơ sài, hình nhỏ, nhiều nghỉ và chuyển động khựng dù technical QC pass.
+- Hệ quả:new scenes full_frame/cover/focal/dissolve, legacy board giữ nguyên; affine float/pen-up/frameclock và PCM+single AAC. Fit-audio giữ trọn lời; đo silence thực trong QC/UI. Mẫu12cảnh chi tiết/native motion hai aspect, giữ video cũ; caption pages cân toàn câu. Không tăng motion vô nghĩa/hạ proxy/đổi script để giấu warning hoặc ASR mismatch; creator cần nghe/xem. docs/storyboard-review.md và qa-review.md ghi bằng chứng, TTS vẫn CLI riêng.
+- Đặc tả:specs/whiteboard-video-tool.md

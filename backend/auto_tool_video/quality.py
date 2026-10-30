@@ -19,10 +19,12 @@ import cv2
 import numpy as np
 
 from .domain import QualityReviewInput
+from .layout import boxes
 from .media import probe
 from .store import DomainError, Store, now
+from .timing import frames_for, silence_report
 
-POLICY = "local-qc-1"
+POLICY = "local-qc-2"
 CRITERIA = {
     "prompt_alignment": (
         "Khớp kịch bản / prompt",
@@ -167,7 +169,7 @@ def technical_checks(
         if options["kind"] == "preview"
         else ((1920, 1080) if landscape else (1080, 1920))
     )
-    duration = sum(math.ceil(s["duration"] * 30) / 30 for s in snapshot["scenes"])
+    duration = sum(frames_for(s["duration"]) / 30 for s in snapshot["scenes"])
     checks = []
 
     def add(identifier: str, passed: bool, actual: Any, message: str):
@@ -281,7 +283,7 @@ def scene_signals(rows: list[dict], scene: dict, start: float, scene_number: int
             0.15
             <= i / 30
             <= (
-                scene["duration"] * 0.65
+                scene["duration"] * scene.get("draw_fraction", 0.65)
                 if scene.get("style") == "whiteboard"
                 else scene["duration"] - 0.15
             )
@@ -321,21 +323,18 @@ def scan_video(path: Path, scenes: list[dict], check: Callable[[], None]) -> dic
         for number, scene in enumerate(scenes, 1):
             rows, previous = [], None
             start = frame_number / 30
-            for _ in range(math.ceil(scene["duration"] * 30)):
+            for _ in range(frames_for(scene["duration"])):
                 check()
                 ok, frame = capture.read()
                 if not ok:
                     raise RuntimeError("Không đủ frame để QC theo snapshot.")
                 height, width = frame.shape[:2]
-                box = (
-                    (240 / 1920, 230 / 1080, 1440 / 1920, 580 / 1080)
-                    if width > height
-                    else (90 / 1080, 420 / 1920, 810 / 1080, 850 / 1920)
-                )
-                x, y, w, h = box
+                x, y, w, h = boxes(width, height, scene.get("layout", "board"))["image"]
+                if scene.get("layout") == "full_frame":
+                    y, h = round(height * 0.24), round(height * 0.43)
                 roi = frame[
-                    round(y * height) : round((y + h) * height),
-                    round(x * width) : round((x + w) * width),
+                    y : y + h,
+                    x : x + w,
                 ]
                 gray = cv2.resize(
                     cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY), (160, 160), interpolation=cv2.INTER_AREA
@@ -384,7 +383,7 @@ def inspect_video(
         "artifact": {
             "sha256": sha256_file(path, check),
             "bytes": path.stat().st_size,
-            "duration": sum(math.ceil(s["duration"] * 30) / 30 for s in snapshot["scenes"]),
+            "duration": sum(frames_for(s["duration"]) / 30 for s in snapshot["scenes"]),
             "silent": bool(options.get("silent")),
             "captions": bool(options.get("captions")),
         },
@@ -427,12 +426,15 @@ def inspect_video(
             "-i",
             str(path),
             "-af",
-            "loudnorm=I=-16:TP=-1:LRA=11:print_format=json",
+            "silencedetect=noise=-42dB:d=0.25,loudnorm=I=-16:TP=-1:LRA=11:print_format=json",
             "-f",
             "null",
             "-",
         ]
         code, _, error = _run(argv, check)
+        report["pacing"] = silence_report(
+            error, report["artifact"]["duration"], bool(options.get("silent"))
+        )
         loudness = (
             json.JSONDecoder().raw_decode(error[error.rfind("{") :])[0] if "{" in error else {}
         )
@@ -469,6 +471,29 @@ def inspect_video(
             if code == 0
             else {"findings": [], "not_run_reason": "Decode failed."}
         )
+        for index, interval in enumerate(report["pacing"]["intervals"]):
+            if interval["duration"] >= 0.8:
+                report["signals"]["findings"].append(
+                    {
+                        "id": f"pause-{index}",
+                        "kind": "long_silence",
+                        "timestamp": round(interval["start"], 3),
+                        "scene": next(
+                            (
+                                i + 1
+                                for i, s in enumerate(snapshot["scenes"])
+                                if sum(
+                                    frames_for(x["duration"]) / 30
+                                    for x in snapshot["scenes"][: i + 1]
+                                )
+                                > interval["start"]
+                            ),
+                            len(snapshot["scenes"]),
+                        ),
+                        "message": f"Khoảng im lặng {interval['duration']:.2f}s; kiểm đây có phải hold cần thiết.",
+                        "remedy": "Khớp nhịp theo giọng, kiểm đuôi audio và giảm khoảng giữ hình không cần; không cắt từ để che lỗi.",
+                    }
+                )
     except (OSError, RuntimeError, ValueError, KeyError, subprocess.SubprocessError, DomainError):
         report["technical"] = {
             "status": "failed",

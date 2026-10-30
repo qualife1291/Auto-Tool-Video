@@ -6,6 +6,8 @@ Studio video tiếng Việt local; M1 whiteboard/motion, nhập ảnh/clip/giọ
 
 Xuất video có QC local tự động (PTS/decode/audio/proxies), phiếu creator1–5/hash/CAS và CSV/JSON. Benchmark learned VBench/AIGCBench chưa chạy; không tự chấm vật lý/nội dung hoặc chứng nhận EU.
 
+Cảnh mới full_frame/cover/focal/dissolve, legacy giữ board/contain/cut; fit-audio để giảm hold dư. Renderer affine float/pen-up và PCM timeline với một lần AAC; QC có silence/pacing. Mẫu12cảnh native science motion tại scripts/science_story.py/create_story_video.py và docs/storyboard-review.md, vẫn cần creator nghe/xem; không phải TTS UI hoặc physics simulator.
+
 ## Người dùng
 
 Người tạo nội dung; đối tượng xem chọn theo độ tuổi, không gộp mọi lứa tuổi vào một kịch bản.

@@ -23,6 +23,8 @@ Mở trình duyệt local ở cổng8765. Launcher mặc định lưu vào `.dat
 
 Tạo dự án → nhập lời thoại, mỗi đoạn một cảnh → nhập `assets/examples/wet-shirt.png` hoặc ảnh của bạn → nhập giọng từng cảnh (hoặc chủ động chọn không lời đọc) → chọn tỷ lệ và xuất. Clip MP4 chỉ nhận H.264, tối đa19,65s/cảnh; tắt tiếng gốc, dùng narration riêng. Nguồn thấp nét không trở thành nhiều chi tiết hơn chỉ vì xuất1080p. Video ngang không tự thành YouTube Shorts.
 
+Cảnh mới mặc định hình toàn khung; chọn giữ toàn ảnh hoặc phủ kín và chỉnh tiêu điểm để kiểm crop. Có tùy chọn bố cục bảng cũ, hòa hình nhẹ và tốc độ reveal nét vẽ. Sau khi nhập đủ giọng khớp lời, bấm **Khớp nhịp theo giọng đã nhập** để bỏ thời gian giữ hình dư, giữ trọn audio và thêm khoảng nghỉ ngắn. QC hiển thị tổng khoảng im lặng và báo đoạn dài; nghe/xem vẫn là bước duyệt cần thiết. Kịch bản mẫu12cảnh và diễn biến hình được ghi tại [storyboard](docs/storyboard-review.md).
+
 Prototype3D có tham số, không phải model AI hay mô phỏng khoa học chính xác:
 
 ```bash

@@ -1217,6 +1217,25 @@ hr {
   left: 7%;
   right: 7%;
 }
+.portrait.full-frame .portrait-image {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.portrait.full-frame .portrait-title {
+  z-index: 2;
+  background: #fff8ebed;
+  border-radius: 6px;
+  padding: 4px;
+  width: auto;
+  max-width: 75%;
+}
+.portrait.full-frame .portrait-caption {
+  z-index: 2;
+}
+.portrait.full-frame .safe-guide {
+  z-index: 3;
+}
 .portrait-image video {
   width: 100%;
   height: 100%;

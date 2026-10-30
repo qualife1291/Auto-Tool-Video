@@ -24,6 +24,8 @@ scripts/review-tts là CLI isolated, lock/hash riêng; model chính thức pin r
 
 quality.py chạy sau render trước success; hard metadata/decode/CFR/audio gates, ROI pixel proxies theo scene/motion intent. Review trong jobs JSON với review_revision CAS và artifact SHA; API project/export/quality(.csv)/quality-review, QualityPanel xem/seek/chấm. Publish pack theo export snapshot kèm gate/disclosure. Không SQL migration/dependency mới; signed provenance/learned benchmark chưa có. CLI check_video_quality.py audit media cũ không sửa tệp. Silent bỏ loudnorm, narration trim/pad hữu hạn trước normalize để cảnh ngắn không quá lớn.
 
+layout.py chia sẻ geometry full_frame/board, cover/contain và affine float với QC; timing.py là frame grid30fps/timeline/silence parser thuần stdlib, được verifier isolated import. Render scene video-only, visual dissolve rồi text overlay; narration PCM48kHz/sample-exact, AAC/loudnorm một lần cuối. POST projects/{id}/fit-audio kiểm revision/all audio fresh/60s. Save legacy dựa field-set và sceneID để không tự đổi bố cục. Policy local-qc-2 có pacing và draw_fraction-aware hold; ack tối đa500findings. Science templates gốc dựng clip native theo aspect và nhập app; không chạy code LLM.
+
 ## Lệnh
 
 - Cài: npm --prefix apps/web ci; uv sync --project backend --frozen --group dev.

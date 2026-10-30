@@ -70,6 +70,12 @@ export type Scene = {
   caption_style?: 'card' | 'contrast' | 'accent';
   caption_emphasis?: string;
   motion_expectation?: 'allow_static' | 'motion_required';
+  layout?: 'board' | 'full_frame';
+  visual_fit?: 'contain' | 'cover';
+  focal_x?: number;
+  focal_y?: number;
+  transition?: 'cut' | 'dissolve';
+  draw_fraction?: number;
   visual_description?: string;
   role?: string;
   reveal_order?: string[];
@@ -135,8 +141,20 @@ export const profiles = [
   ],
 ] as const;
 export const steps = ['Kịch bản', 'Storyboard', 'Giọng & nhịp', 'Xuất video'];
-export const example =
-  'Một chiếc áo vừa giặt còn ướt. Treo một lúc, áo lại khô. Vậy nước đã đi đâu?\nNước không tự biến mất. Từng chút nước đi vào không khí dưới dạng hơi nước. Hiện tượng này gọi là bay hơi.\nNước không cần sôi mới bay hơi. Áo treo trong nhà vẫn có thể khô dù không có nắng chiếu vào.\nNơi ấm và thoáng thường giúp áo khô nhanh hơn. Theo bạn, áo trải rộng hay cuộn lại sẽ dễ khô hơn?';
+export const example = [
+  'Áo vừa giặt còn ướt. Một lúc sau lại khô. Nước đã đi đâu?',
+  'Nước thấm giữa các sợi vải. Ta cùng phóng to để xem nhé!',
+  'Nước gồm những phần tử rất nhỏ, gọi là các phân tử.',
+  'Ở bề mặt, một số phân tử nước thoát vào không khí.',
+  'Nước lỏng chuyển thành hơi nước. Quá trình này gọi là bay hơi.',
+  'Hơi nước thường vô hình. Những chấm xanh chỉ là hình minh họa.',
+  'Bay hơi không cần nước sôi. Áo trong nhà vẫn có thể khô.',
+  'Nơi ấm thường giúp nước bay hơi nhanh hơn. Nhưng còn một yếu tố nữa!',
+  'Gió đưa không khí ẩm quanh áo đi, giúp nước tiếp tục bay hơi.',
+  'Không khí quá ẩm thường làm áo lâu khô hơn, ngay cả khi trời nóng.',
+  'Trải áo rộng, treo nơi thoáng, để nhiều bề mặt tiếp xúc với không khí.',
+  'Nước không biến mất: nó chuyển vào không khí. Bạn thử quan sát chiếc khăn ướt nhé!',
+].join('\n');
 export function duration(scenes: Scene[]) {
   return scenes.reduce((total, scene) => total + scene.duration, 0);
 }
@@ -156,8 +174,21 @@ export function sourceNeedsUpscale(
   width: number,
   height: number,
   aspect: 'portrait' | 'landscape',
+  layout: Scene['layout'] = 'board',
+  fit: Scene['visual_fit'] = 'contain',
 ) {
   if (width <= 0 || height <= 0) return true;
-  const [boxWidth, boxHeight] = aspect === 'landscape' ? [1440, 580] : [810, 850];
-  return Math.min(boxWidth / width, boxHeight / height) > 1;
+  const [boxWidth, boxHeight] =
+    layout === 'full_frame'
+      ? aspect === 'landscape'
+        ? [1920, 1080]
+        : [1080, 1920]
+      : aspect === 'landscape'
+        ? [1440, 580]
+        : [810, 850];
+  const ratio =
+    layout === 'full_frame' && fit === 'cover'
+      ? Math.max(boxWidth / width, boxHeight / height)
+      : Math.min(boxWidth / width, boxHeight / height);
+  return ratio > 1;
 }

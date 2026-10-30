@@ -29,6 +29,25 @@ def test_two_line_caption_avoids_a_single_orphan_question_word():
     assert len(lines) == 2 and len(lines[-1].split()) >= 3
 
 
+@pytest.mark.parametrize("bold", [False, True])
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Nước lỏng chuyển thành hơi nước. Quá trình này gọi là bay hơi.",
+        "Hơi nước thường vô hình. Những chấm xanh chỉ là hình minh họa.",
+        "Nước không biến mất: nó chuyển vào không khí. Bạn thử quan sát chiếc khăn ướt nhé!",
+    ],
+)
+def test_long_narration_has_balanced_pages_without_an_orphan_last_word(text, bold):
+    for width in (770, 1400):
+        face = font(48, bold)
+        pages = caption_pages(text, face, width)
+        assert " ".join(page.replace("\n", " ") for page in pages) == text
+        assert all(len(page.split()) >= 3 for page in pages)
+        assert all(len(page.splitlines()) <= 2 for page in pages)
+        assert all(face.getlength(line) <= width for page in pages for line in page.splitlines())
+
+
 def test_review_sentences_fit_a_single_two_line_caption_page():
     from importlib.util import module_from_spec, spec_from_file_location
     from pathlib import Path

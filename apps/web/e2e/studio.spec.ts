@@ -2,6 +2,28 @@ import { test, expect } from '@playwright/test';
 import { resolve } from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
 
+function shortVoice() {
+  const rate = 24000;
+  const frames = rate / 2;
+  const wav = Buffer.alloc(44 + frames * 2);
+  wav.write('RIFF', 0);
+  wav.writeUInt32LE(wav.length - 8, 4);
+  wav.write('WAVEfmt ', 8);
+  wav.writeUInt32LE(16, 16);
+  wav.writeUInt16LE(1, 20);
+  wav.writeUInt16LE(1, 22);
+  wav.writeUInt32LE(rate, 24);
+  wav.writeUInt32LE(rate * 2, 28);
+  wav.writeUInt16LE(2, 32);
+  wav.writeUInt16LE(16, 34);
+  wav.write('data', 36);
+  wav.writeUInt32LE(frames * 2, 40);
+  for (let i = 0; i < frames; i++) {
+    wav.writeInt16LE(Math.round(Math.sin((2 * Math.PI * 440 * i) / rate) * 4000), 44 + i * 2);
+  }
+  return { name: 'voice.wav', mimeType: 'audio/wav', buffer: wav };
+}
+
 for (const viewport of [
   { name: 'desktop', width: 1366, height: 900 },
   { name: 'mobile', width: 390, height: 844 },
@@ -104,6 +126,56 @@ test('accessible labels and contrast on initial and storyboard screens', async (
 });
 
 for (const width of [1366, 390]) {
+  test(`full frame, focal crop and audio pacing persist at width ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Tạo câu chuyện đầu tiên' }).click();
+    const title = `Nhịp kể ${width}`;
+    await page.getByLabel('Tên dự án').fill(title);
+    await page.getByLabel('Lời thoại', { exact: true }).fill('Nước bay hơi.');
+    await page.getByRole('button', { name: 'Tạo storyboard' }).click();
+    await expect(page.getByLabel('Bố cục hình')).toHaveValue('full_frame');
+    await expect(page.getByLabel('Cách lấp khung')).toHaveValue('cover');
+    await expect(page.getByRole('button', { name: 'Khớp nhịp theo giọng đã nhập' })).toBeDisabled();
+    await page
+      .getByLabel('Nhập ảnh minh họa', { exact: true })
+      .setInputFiles(resolve('../../assets/examples/wet-shirt.png'));
+    await expect(page.locator('.portrait.full-frame img')).toBeVisible();
+    const preview = await page.locator('.portrait-image').boundingBox();
+    const canvas = await page.locator('.portrait').evaluate((element) => ({
+      width: element.clientWidth,
+      height: element.clientHeight,
+    }));
+    expect(preview?.width).toBeCloseTo(canvas.width, 0);
+    expect(preview?.height).toBeCloseTo(canvas.height, 0);
+    await page.getByLabel('Tiêu điểm ngang').fill('0.72');
+    await page.getByLabel('Tiêu điểm dọc').fill('0.35');
+    await expect(page.locator('.portrait-image img')).toHaveCSS('object-position', '72% 35%');
+    await page.getByLabel('Bố cục hình').selectOption('board');
+    await expect(page.getByLabel('Tiêu điểm ngang')).toHaveCount(0);
+    await page.getByLabel('Bố cục hình').selectOption('full_frame');
+    await page.getByLabel('Chuyển cảnh').selectOption('cut');
+    await page.getByLabel('Phần thời gian dành để vẽ').fill('0.85');
+    await page.getByLabel('Nhập giọng đọc', { exact: true }).setInputFiles(shortVoice());
+    await expect(page.getByRole('button', { name: 'Khớp nhịp theo giọng đã nhập' })).toBeEnabled();
+    await page.getByRole('button', { name: 'Khớp nhịp theo giọng đã nhập' }).click();
+    await expect(page.getByLabel('Thời lượng cảnh (giây)')).toHaveValue('1');
+    expect(
+      (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()).violations,
+    ).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.reload();
+    await page.getByRole('button', { name: new RegExp(title) }).click();
+    await page.getByRole('button', { name: /Storyboard/, exact: false }).click();
+    await expect(page.getByLabel('Tiêu điểm ngang')).toHaveValue('0.72');
+    await expect(page.getByLabel('Tiêu điểm dọc')).toHaveValue('0.35');
+    await expect(page.getByLabel('Chuyển cảnh')).toHaveValue('cut');
+    await expect(page.getByLabel('Phần thời gian dành để vẽ')).toHaveValue('0.85');
+    await expect(page.getByLabel('Thời lượng cảnh (giây)')).toHaveValue('1');
+  });
+
   test(`lesson idea preserves script and requires confirmation at width ${width}`, async ({
     page,
   }) => {

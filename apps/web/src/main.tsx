@@ -104,7 +104,13 @@ function App() {
             setVisualKinds((v) => ({ ...v, [s.image_id!]: a.kind }));
             setSourceWarnings((v) => ({
               ...v,
-              [s.image_id!]: sourceNeedsUpscale(a.width, a.height, project.aspect),
+              [s.image_id!]: sourceNeedsUpscale(
+                a.width,
+                a.height,
+                project.aspect,
+                s.layout,
+                s.visual_fit,
+              ),
             }));
           })
           .catch(() => {});
@@ -325,6 +331,12 @@ function App() {
           audio_id: null,
           audio_stale: false,
           duration: 5,
+          layout: 'full_frame',
+          visual_fit: 'cover',
+          transition: 'dissolve',
+          focal_x: 0.5,
+          focal_y: 0.5,
+          draw_fraction: 0.78,
           style: 'whiteboard',
         },
       ],
@@ -680,7 +692,7 @@ function App() {
                       </span>
                     </div>
                     <div
-                      className={`portrait ${project.aspect === 'landscape' ? 'landscape' : ''}`}
+                      className={`portrait ${project.aspect === 'landscape' ? 'landscape' : ''} ${scene?.layout === 'full_frame' ? 'full-frame' : ''}`}
                     >
                       <div className="portrait-title">{scene?.title || 'Chưa có cảnh'}</div>
                       <div className="portrait-image">
@@ -690,11 +702,28 @@ function App() {
                               controls
                               playsInline
                               muted
+                              style={{
+                                objectFit:
+                                  scene.layout === 'full_frame'
+                                    ? scene.visual_fit || 'cover'
+                                    : 'contain',
+                                objectPosition: `${(scene.focal_x ?? 0.5) * 100}% ${(scene.focal_y ?? 0.5) * 100}%`,
+                              }}
                               src={asset(scene.image_id)}
                               aria-label={`Clip ${scene.title}`}
                             />
                           ) : (
-                            <img alt={`Bố cục ${scene.title}`} src={asset(scene.image_id)} />
+                            <img
+                              alt={`Bố cục ${scene.title}`}
+                              src={asset(scene.image_id)}
+                              style={{
+                                objectFit:
+                                  scene.layout === 'full_frame'
+                                    ? scene.visual_fit || 'cover'
+                                    : 'contain',
+                                objectPosition: `${(scene.focal_x ?? 0.5) * 100}% ${(scene.focal_y ?? 0.5) * 100}%`,
+                              }}
+                            />
                           )
                         ) : (
                           <div className="image-placeholder">
@@ -798,6 +827,95 @@ function App() {
                           </select>
                         </label>
                         <label>
+                          Bố cục hình
+                          <select
+                            disabled={busy}
+                            value={scene.layout || 'board'}
+                            onChange={(e) =>
+                              updateScene({ layout: e.target.value as Scene['layout'] })
+                            }
+                          >
+                            <option value="full_frame">Toàn khung · chữ phủ trên hình</option>
+                            <option value="board">Bảng minh họa · có lề</option>
+                          </select>
+                        </label>
+                        {scene.layout === 'full_frame' && (
+                          <>
+                            <label>
+                              Cách lấp khung
+                              <select
+                                disabled={busy}
+                                value={scene.visual_fit || 'cover'}
+                                onChange={(e) =>
+                                  updateScene({ visual_fit: e.target.value as Scene['visual_fit'] })
+                                }
+                              >
+                                <option value="cover">Phủ kín · có thể cắt mép</option>
+                                <option value="contain">Giữ toàn bộ ảnh</option>
+                              </select>
+                            </label>
+                            {scene.visual_fit !== 'contain' && (
+                              <>
+                                <label>
+                                  Tiêu điểm ngang
+                                  <input
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.01"
+                                    value={scene.focal_x ?? 0.5}
+                                    onChange={(e) =>
+                                      updateScene({ focal_x: Number(e.target.value) })
+                                    }
+                                  />
+                                </label>
+                                <label>
+                                  Tiêu điểm dọc
+                                  <input
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.01"
+                                    value={scene.focal_y ?? 0.5}
+                                    onChange={(e) =>
+                                      updateScene({ focal_y: Number(e.target.value) })
+                                    }
+                                  />
+                                </label>
+                                <p className="small muted">
+                                  Phủ kín có thể cắt mép ảnh khác tỷ lệ. Chỉnh tiêu điểm và xem thử
+                                  để giữ chủ thể quan trọng.
+                                </p>
+                              </>
+                            )}
+                          </>
+                        )}
+                        <label>
+                          Chuyển cảnh
+                          <select
+                            disabled={busy}
+                            value={scene.transition || 'cut'}
+                            onChange={(e) =>
+                              updateScene({ transition: e.target.value as Scene['transition'] })
+                            }
+                          >
+                            <option value="dissolve">Hòa hình nhẹ · chữ giữ rõ</option>
+                            <option value="cut">Cắt thẳng</option>
+                          </select>
+                        </label>
+                        <label>
+                          Phần thời gian dành để vẽ
+                          <input
+                            type="range"
+                            min="0.3"
+                            max="0.9"
+                            step="0.01"
+                            disabled={busy || scene.style !== 'whiteboard'}
+                            value={scene.draw_fraction ?? 0.65}
+                            onChange={(e) => updateScene({ draw_fraction: Number(e.target.value) })}
+                          />
+                        </label>
+                        <label>
                           Cụm từ nhấn
                           <input
                             maxLength={70}
@@ -898,6 +1016,37 @@ function App() {
                             aria-label={`Giọng đọc ${scene.title}`}
                           />
                         )}
+                        <button
+                          className="button"
+                          disabled={
+                            busy || project.scenes.some((s) => !s.audio_id || s.audio_stale)
+                          }
+                          onClick={() =>
+                            task(async () => {
+                              const current = await save();
+                              const fitted = await api<Project>(
+                                `/projects/${current.id}/fit-audio`,
+                                {
+                                  method: 'POST',
+                                  body: JSON.stringify({
+                                    revision: current.revision,
+                                    pause_after: 0.12,
+                                  }),
+                                },
+                              );
+                              setProject(fitted);
+                              setDirty(false);
+                              await refresh();
+                              setNotice('Đã khớp thời lượng theo giọng, thêm khoảng nghỉ ngắn.');
+                            })
+                          }
+                        >
+                          Khớp nhịp theo giọng đã nhập
+                        </button>
+                        <p className="small muted">
+                          Cần giọng khớp lời ở mọi cảnh. Giữ trọn tệp audio và thêm 0,12 giây; không
+                          ép mỗi cảnh 4–5 giây.
+                        </p>
                         <p className={scene.audio_stale ? 'danger small' : 'muted small'}>
                           {scene.audio_stale
                             ? 'Lời thoại đã đổi. Cần nhập lại giọng trước khi xuất có tiếng.'

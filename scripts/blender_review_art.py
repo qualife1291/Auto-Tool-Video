@@ -333,6 +333,7 @@ def main():
     parser.add_argument("--width", type=int, default=1600)
     parser.add_argument("--height", type=int, default=1400)
     parser.add_argument("--samples", type=int, default=64)
+    parser.add_argument("--transparent", action="store_true")
     parser.add_argument("--cpu-threads", type=int, choices=[1, 2, 3, 4], default=2)
     parser.add_argument("--only", choices=["wet", "dry", "cup", "all"], default="all")
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1 :])
@@ -348,6 +349,16 @@ def main():
         started = time.monotonic()
         scene = setup(args.width, args.height, args.samples, args.cpu_threads)
         cup() if name == "cup" else shirt(name == "wet")
+        if args.transparent:
+            scene.render.film_transparent = True
+            scene.render.image_settings.color_mode = "RGBA"
+            for obj in scene.objects:
+                if (
+                    obj.type == "MESH"
+                    and obj.data.materials
+                    and obj.data.materials[0].name.startswith("Warm ivory cyclorama")
+                ):
+                    obj.hide_render = True
         scene.render.filepath = str((args.output_dir / f"{name}.png").resolve())
         bpy.ops.render.render(write_still=True)
         records.append(
@@ -357,6 +368,7 @@ def main():
                 "width": args.width,
                 "height": args.height,
                 "samples": args.samples,
+                "transparent": args.transparent,
                 "engine": "Cycles CPU",
                 "cpu_threads": args.cpu_threads,
                 "script_sha256": hashlib.sha256(

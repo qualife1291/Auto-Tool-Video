@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import os
 import shutil
 from pathlib import Path
@@ -15,6 +16,7 @@ from .domain import (
     PROFILES,
     ApplyInput,
     ExportInput,
+    FitAudioInput,
     ImageInput,
     PlanInput,
     ProjectInput,
@@ -173,7 +175,41 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
         payload = data.model_dump()
         if "brief" not in data.model_fields_set:
             payload.pop("brief")
+        before = {scene["id"]: scene for scene in store.get("projects", identifier)["scenes"]}
+        legacy_defaults = {
+            "layout": "board",
+            "visual_fit": "contain",
+            "transition": "cut",
+            "draw_fraction": 0.65,
+            "focal_x": 0.5,
+            "focal_y": 0.5,
+        }
+        for scene, original in zip(payload["scenes"], data.scenes, strict=True):
+            if scene["id"] in before:
+                for key, default in legacy_defaults.items():
+                    if key not in original.model_fields_set:
+                        scene[key] = before[scene["id"]].get(key, default)
         return store.save(identifier, payload)
+
+    @app.post("/api/projects/{identifier}/fit-audio")
+    def fit_audio(identifier: str, data: FitAudioInput):
+        project = store.get("projects", identifier)
+        if project["revision"] != data.revision:
+            raise DomainError("REVISION_CONFLICT", "Lưu hoặc tải lại dự án trước khớp nhịp.", 409)
+        if not project["scenes"]:
+            raise DomainError("VALIDATION_ERROR", "Tạo cảnh và nhập giọng trước khớp nhịp.")
+        for scene in project["scenes"]:
+            if not scene.get("audio_id") or scene.get("audio_stale"):
+                raise DomainError(
+                    "MISSING_AUDIO", "Mọi cảnh cần giọng khớp lời trước khi khớp nhịp."
+                )
+            asset = store.get("assets", scene["audio_id"])
+            scene["duration"] = max(1, math.ceil((asset["duration"] + data.pause_after) * 30) / 30)
+        if sum(s["duration"] for s in project["scenes"]) > 60:
+            raise DomainError(
+                "DURATION_LIMIT", "Giọng và khoảng nghỉ vượt 60 giây; rút gọn lời trước."
+            )
+        return store.save(identifier, project)
 
     @app.post("/api/projects/{identifier}/split")
     def split(identifier: str, data: SplitInput):

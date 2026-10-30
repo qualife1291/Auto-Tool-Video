@@ -1,6 +1,54 @@
 # Kiểm thử và video review
 
-## Kết quả và phạm vi
+## Sửa theo phản hồi nhịp, hình nhỏ và chuyển động
+
+Kết quả mới ngày2026-10-30: **182pytest +10Vitest +13Playwright =205test qua**, khôngskip; Ruff/format/mypy15module/TypeScript/build/Prettier qua. Baseline trước đợt sửa là156+9+11=176pass. Một deprecation upstream Starlette/httpx còn nguyên, không tắt assertion hoặc warning. Backend cuối36,66s; E2E cuối47,4s, desktop1366/mobile390/axe với backend/FFmpeg thật. Ba E2E AI vẫn là mock contract, không được tính là chất lượng model live.
+
+Feedback đúng với file cũ `.data/quality-upgrade`: 8cảnh cố định4s và khoảng im lặng tổng **17,361s/32,021s**, dài nhất2,536s,8khoảng>=0,25s. Hình bị giới hạn trong vùng board nhỏ; integer resize/paste và clock clip làm tròn gây chuyển động theo nấc/skip. Technical pass trước đó không thay thế nghiệm thu cảm nhận.
+
+Đã sửa full_frame/cover/focal và preview/cảnh báo crop/upscale; snapshot cũ giữ board/contain/cut. Zoom ảnh bằng affine float, clock clip floor theo frame đầu ra, bút di chuyển pen-up giữa các contour không vẽ đường nối giả. Visual dissolve5frame rồi overlay chữ riêng. Ghép video-only và PCM48kHz chính xác theo frame, normalize/AAC một lần cuối; UI có fit-audio+0,12s giữ trọn tệp. Caption dài cân cả trang để không còn một trang cuối chỉ1–2từ. Planner yêu cầu beginning/middle/end, hành động/camera và cơ chế cụ thể hơn; live Qwen vẫn chưa kiểm.
+
+Mẫu mới **12cảnh/38,667s video**, container38,700s, original native motion templates9:16/16:9, art2×supersample và cutout áo Blender trong suốt. Có vẽ sợi vải theo thời gian, phân tử rời bề mặt, các chấm sơ đồ mờ dần, luồng khí và so độ ẩm/diện tích; [storyboard](storyboard-review.md) ghi đầy đủ lời/diễn biến/giả định. Không phải AI video diffusion hoặc mô phỏng vật lý; có một số cảnh minh họa ít chuyển động. Audio mới dùng cùng preset/weights local đã pin, không lấy asset Tongjiang, không phí API.
+
+| Chỉ số file cuối | Dọc9:16 | Ngang16:9 |
+|---|---:|---:|
+| Canvas / FPS / frame |1080×1920 /30 /1160|1920×1080 /30 /1160|
+| Container / audio-video gap |38,700s /33,333ms|38,700s /33,333ms|
+| Max PTS gap |0,033334s|0,033334s|
+| LUFS / truepeak sau AAC |−16,94 /−1,53dBTP|−16,94 /−1,53dBTP|
+| Silence−42dBFS, đoạn>=0,25s |3,173459s, khoảng8,2%|3,173459s, khoảng8,2%|
+| Khoảng dài nhất / warning silence>=0,8s |0,361459s /0|0,361459s /0|
+| Dung lượng |4188150byte|4282634byte|
+| Dựng + QC + contact sheets |200,722s|179,984s|
+| SHA256 |`ebd70986f9476b8d70fefd3ab54275351a8f1e5b92b166faafbcdbcfeedf12e4`|`f6b601b7a76e11257be4eb2804d50b872e4726ef4ed134630ad87db4babf009f`|
+
+Đây là lượt CPU warm có tác vụ khác đồng thời, không là benchmark tốc độ hoặc SLA. Chưa đo peak RSS toàn pipeline. Hai MP4 decode toàn tệp/codec/yuv420p/CFR/LUFS/truepeak qua; máy không xác nhận độ hấp dẫn, khoa học hoặc cảm nhận chuyển động.
+
+Policy `local-qc-2` vẫn giữ **6warning near-repeat mỗi aspect**, cảnh1/6/7/8/10/11 (motion nhẹ hoặc so sánh gần tĩnh; cảnh11 khoảng3,4s). Không hạ threshold, đổi intent để che warning hoặc tự chấm5. Gate **pending_review**, manual_review=null. Creator cần xem cảnh so sánh và quyết định tăng chuyển động giải thích hay giữ thời gian đọc. Một số cảnh nền/camera rất nhẹ có thể kích hoạt proxy dù không có lỗi decode/frame skip.
+
+Đã xem contact sheets **36frame/aspect** đầu/giữa/cuối mọi cảnh và native art/stills; sửa nhãn lặp đè kẹp áo, sửa trang phụ đề đuôi ngắn. Không nhận đã xem full playback hoặc nghe duyệt. ASR từ MP4 dọc theo timeline thực khớp token chuẩn hóa9/12câu; cảnh3 nghe thành “phần tử” thay “phân tử” (similarity0,917), cảnh5 “truyền” thay “chuyển” (0,923), cảnh6 “nhưng” thay “những” (0,923). Ba câu cần nghe đối chiếu, chưa kết luận do TTS hay ASR. Không sửa script/threshold để làm khớp. `verification.json` lưu đầy đủ và `audio-identity.json` xác nhận AAC packet hash hai aspect giống nhau. ASR không là thước đo phát âm hoặc thay người nghe.
+
+Artifacts mới ở `.data/story-upgrade`: MP4, contact/poster, quality-report/CSV, verification, art/clip/audio-tight và provenance/SQLite project. `.data/quality-upgrade` và `.data/review` cũ giữ nguyên. Mở sample: `APP_DATA_DIR=.data/story-upgrade/studio-portrait bash scripts/dev.sh` (hoặc studio-landscape), chọn project mới nhất và bước Xuất để xem QC. Runtime media/weights không được đưa vào Git.
+
+Test mới kiểm cover/focal/không méo/4mép ở hai aspect, subpixel, overlay title, pen-up không nối nét giả, clip clock, dissolve visual-only, timeline microsecond và silence trailing/silent. Kiểm số mẫu PCM, fit-audio/stale/revision/legacy/invalid fields; real exports có long silence phải cảnh báo còn chủ động silent ghi not_applicable. Whiteboard QC theo draw_fraction thật. Sáu case caption câu dài giữ đủ chữ/trang2dòng, một Vitest kiểm upscale theo full-frame, hai E2E thêm layout/focal/fit/reload/axe. Lỗi E2E lần đầu do chạy build frontend cũ; lần sau phép đo lấy cả2px border thay nội dung canvas. Đã sửa quy trình build và đo clientWidth/clientHeight, giữ kiểm yêu cầu phủ kín.
+
+TTS gặp một waveform clipping ở câu12 với seed ban đầu. Không nới guard hoặc normalize waveform lỗi: script thử tối đa3seed có log từng peak; lần tạo thành công câu12 dùng lần thử2. Vẫn reject rỗng/nonfinite/clipping; inference thật/nguồn/hash/trim margins được lưu. Giới hạn Gradio packaging của CLI riêng còn như phần dưới.
+
+Tái tạo (venv/model đã cài và pin như phần TTS bên dưới):
+
+```bash
+blender -b --threads 4 --python scripts/blender_review_art.py -- --output-dir .data/story-upgrade/art --samples 128 --transparent --cpu-threads 4 --only wet
+blender -b --threads 4 --python scripts/blender_review_art.py -- --output-dir .data/story-upgrade/art --samples 128 --transparent --cpu-threads 4 --only dry
+backend/.venv/bin/python scripts/science_story.py --output-dir .data/story-upgrade
+.tools/review-tts/bin/python scripts/review-tts/generate.py --output-dir .data/story-upgrade --model-dir .data/review-models
+PYTHONPATH=backend backend/.venv/bin/python scripts/create_story_video.py --output-dir .data/story-upgrade --timeline
+PYTHONPATH=backend backend/.venv/bin/python scripts/create_story_video.py --output-dir .data/story-upgrade
+.tools/review-tts/bin/python scripts/review-tts/verify.py --output-dir .data/story-upgrade --model-dir .data/review-models
+```
+
+`--reuse-clips` kiểm dimensions/FPS/framecount/limit trước nhập lại để chỉ dựng app; `--rebuild-template room` kết hợp flag đó dựng lại template cần sửa. `--stills` chỉ xem bố cục; không lấy nó thay kiểm chuyển động. Tái tạo vào thư mục mới để giữ baseline; không đổi story sau khi TTS mà không kiểm khớp lời/hash.
+
+## Baseline QC trước phản hồi
 
 Kiểm ngày **2026-10-30**, Linux:5CPU logic/quota4core/RAM32GiB, không GPU NVIDIA. Sau nâng QC: **156pytest+9Vitest+11Playwright=176test qua**, khôngskip (baseline trước code114+8+9=131). Một deprecation upstream Starlette/httpx, không tắt assertion/warning. Ruff/format/mypy13module/TypeScript/build/Prettier qua. Ba E2E AI là mock contract; hai E2E QC mới dùng MP4/FFmpeg và API thật, không fake model quality.
 

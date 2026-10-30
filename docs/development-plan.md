@@ -26,6 +26,8 @@
 
 ## M3 — Giọng và chất lượng
 
+Đợt sửa theo feedback nhịp/hình: full_frame/cover/focal và legacy board, affine float, pen-up travel, visual-only dissolve; PCM timeline với một lần AAC/loudnorm. UI khớp thời lượng theo audio thực và QC đo/cảnh báo silence. Kịch bản mẫu12cảnh kèm clip minh họa native hai aspect, không chỉ8ảnh giữ4s; xem [storyboard](storyboard-review.md) và [QA](qa-review.md). Motion nhẹ vẫn có warning và cần creator playback; không tăng chuyển động vô nghĩa để qua proxy.
+
 Đã triển khai QC sau render: metadata/PTS/CFR/decode/LUFS/truepeak/silence, lightweight flash/freeze proxies theo scene và motion intent; hard gate kỹ thuật, phiếu creator1–5/hash/review revision, critical override, timestamp/seek và JSON/CSV. Nguồn VBench/AIGCBench/CVPRW2026/EU được đối chiếu trong [quy trình QA](video-quality-standard.md); chưa chạy benchmark learned metrics hoặc C2PA. Sửa normalize audio ngắn và silent branch; human listening/physics/semantic quality vẫn cần creator.
 
 Đã sửa word-wrap/cân2dòng, contour silhouette-first và AAC headroom; thêm3kiểu caption card/contrast/accent với literal emphasis, lưu/preview/render hai aspect. Mẫu review thật dùng tranh procedural Blender/Pillow có chi tiết và VieNeu FP32 local qua CLI riêng, ASR/loudness/full decode có báo cáo ở [QA](qa-review.md). Đây chưa là TTS trong UI, forced alignment hoặc quality gate có người nghe duyệt; SDK CLI còn giới hạn packaging được ghi trong QA.

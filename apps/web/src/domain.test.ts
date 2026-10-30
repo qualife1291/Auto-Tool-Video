@@ -61,6 +61,13 @@ it('warns based on contain scaling rather than a fixed source dimension', () => 
   expect(sourceNeedsUpscale(1920, 1080, 'landscape')).toBe(false);
 });
 
+it('warns when full frame cover needs upscale even though the old board did not', () => {
+  expect(sourceNeedsUpscale(800, 1200, 'portrait', 'full_frame', 'cover')).toBe(true);
+  expect(sourceNeedsUpscale(1920, 1080, 'portrait', 'full_frame', 'cover')).toBe(true);
+  expect(sourceNeedsUpscale(1080, 1920, 'portrait', 'full_frame', 'cover')).toBe(false);
+  expect(sourceNeedsUpscale(1920, 1080, 'portrait', 'full_frame', 'contain')).toBe(false);
+});
+
 describe('caption emphasis', () => {
   it('matches accented Vietnamese and preserves all original text', () => {
     const text = 'Đây là Bay Hơi, không phải khói.';

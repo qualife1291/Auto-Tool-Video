@@ -24,6 +24,14 @@ type Review = {
 };
 type Quality = {
   policy_version: string;
+  pacing?:
+    | {
+        status: 'measured';
+        silence_seconds: number;
+        silence_ratio: number;
+        longest_interval_seconds: number;
+      }
+    | { status: 'not_applicable'; reason: string };
   artifact?: { sha256: string; duration: number; silent: boolean; captions: boolean };
   technical?: {
     status: string;
@@ -215,6 +223,13 @@ export function QualityPanel({
                 ))}
               </ul>
             </details>
+          )}
+          {report.pacing && (
+            <p className="small">
+              {report.pacing.status === 'measured'
+                ? `Nhịp lời đọc: ${report.pacing.silence_seconds.toFixed(2)} giây im lặng (${(report.pacing.silence_ratio * 100).toFixed(1)}%); đoạn dài nhất ${report.pacing.longest_interval_seconds.toFixed(2)} giây. Chỉ tính khoảng từ 0,25 giây; cần nghe lại để đánh giá nhịp.`
+                : 'Nhịp lời đọc: không áp dụng vì đã chủ động chọn không lời.'}
+            </p>
           )}
           {report.signals?.findings.map((finding) => (
             <article className="qc-finding" key={finding.id}>

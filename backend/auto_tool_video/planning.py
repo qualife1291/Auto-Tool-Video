@@ -62,6 +62,10 @@ fake prizes, invented sources or unsupported certainty. Image prompts must descr
 illustrations, consistent characters, no text/logos/watermarks. Text will be typeset separately.
 Reference sources ONLY by indexes in the input sources array. Sources are NOT verified by you.
 List claims needing review in fact_flags, and visual object order in reveal_order.
+visual_description must specify concrete beginning, middle and end actions, camera/framing,
+and how the scene demonstrates the narrated mechanism. Avoid a sequence of generic stills.
+Reveal_order must name visible parts in an intelligible drawing sequence. Include causal detail
+appropriate to the age profile, rather than repeating one vague takeaway in multiple scenes.
 Each scene duration is 1..20 seconds; sum must not exceed target_duration (maximum 60 seconds).
 In preserve mode: group every source chunk ID exactly once in ascending order. Do NOT write new
 narration; narration must be empty and source_ids must cover ALL chunks. Combined chunks per scene

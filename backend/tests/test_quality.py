@@ -138,6 +138,18 @@ def test_freeze_requires_declared_motion_and_whiteboard_hold_is_expected():
     )
 
 
+def test_whiteboard_active_region_follows_the_selected_drawing_fraction():
+    rows = signal_rows([100] * 120, 2)
+    for i in range(72, 100):
+        rows[i]["delta"] = 0
+    scene = {"duration": 4, "style": "whiteboard", "motion_expectation": "motion_required"}
+    assert scene_signals(rows, scene, 0, 1)["findings"] == []
+    assert (
+        scene_signals(rows, {**scene, "draw_fraction": 0.9}, 0, 1)["findings"][0]["kind"]
+        == "possible_freeze"
+    )
+
+
 def test_flash_has_timestamp_and_cuts_are_not_joined_into_fake_flicker():
     values = [100] * 60
     values[30] = 200

@@ -154,9 +154,9 @@ def import_asset(
                 target.update(style="motion", duration=max(1, duration))
                 if target.get("audio_id"):
                     existing_audio = store.get("assets", target["audio_id"], conn)
-                    target["duration"] = max(target["duration"], existing_audio["duration"] + 0.35)
+                    target["duration"] = max(target["duration"], existing_audio["duration"] + 0.12)
             if kind == "audio":
-                target.update(duration=max(1, duration + 0.35), audio_stale=False)
+                target.update(duration=max(1, duration + 0.12), audio_stale=False)
             current["revision"] += 1
             from .store import now
 

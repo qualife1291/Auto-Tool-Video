@@ -67,6 +67,12 @@ class Scene(StrictModel):
     caption_style: Literal["card", "contrast", "accent"] = "card"
     caption_emphasis: str = Field(default="", max_length=70)
     motion_expectation: Literal["allow_static", "motion_required"] = "allow_static"
+    layout: Literal["board", "full_frame"] = "full_frame"
+    visual_fit: Literal["contain", "cover"] = "cover"
+    focal_x: float = Field(default=0.5, ge=0, le=1, allow_inf_nan=False)
+    focal_y: float = Field(default=0.5, ge=0, le=1, allow_inf_nan=False)
+    transition: Literal["cut", "dissolve"] = "dissolve"
+    draw_fraction: float = Field(default=0.78, ge=0.3, le=0.9, allow_inf_nan=False)
     visual_description: str = Field(default="", max_length=1000)
     role: Literal["hook", "context", "explain", "example", "payoff"] = "explain"
     reveal_order: list[str] = Field(default_factory=list, max_length=10)
@@ -91,6 +97,11 @@ class ProjectUpdate(ProjectInput):
 class SplitInput(StrictModel):
     revision: int = Field(ge=0)
     replace_existing: bool = False
+
+
+class FitAudioInput(StrictModel):
+    revision: int = Field(ge=0)
+    pause_after: float = Field(default=0.12, ge=0, le=1, allow_inf_nan=False)
 
 
 class ExportInput(StrictModel):
@@ -142,7 +153,7 @@ class QualityReviewInput(StrictModel):
     content_origin: Literal["unknown", "ai_assisted", "no_ai"] = "unknown"
     disclosure_note: str = Field(default="", max_length=500)
     acknowledged_findings: list[Annotated[str, Field(max_length=100)]] = Field(
-        default_factory=list, max_length=400
+        default_factory=list, max_length=500
     )
 
 

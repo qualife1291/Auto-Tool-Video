@@ -180,19 +180,36 @@ def main():
                 flush=True,
             )
             continue
-        np.random.seed(20261030 + index)
         started = time.monotonic()
-        waveform = engine.infer(
-            text=scene["narration"],
-            speaker_emb=np.asarray(preset["speaker_emb"], dtype=np.float32),
-            ref_codes=strip_encoder_pad_frame(
-                np.asarray(preset["codes"], dtype=np.int64)
-            ),
-            temperature=0.7,
-            top_k=25,
-            top_p=0.95,
-            max_new_frames=300,
-        )
+        attempts = []
+        for attempt in range(3):
+            effective_seed = 20261030 + index + attempt * 100
+            np.random.seed(effective_seed)
+            waveform = engine.infer(
+                text=scene["narration"],
+                speaker_emb=np.asarray(preset["speaker_emb"], dtype=np.float32),
+                ref_codes=strip_encoder_pad_frame(
+                    np.asarray(preset["codes"], dtype=np.int64)
+                ),
+                temperature=0.7,
+                top_k=25,
+                top_p=0.95,
+                max_new_frames=300,
+            )
+            finite = bool(waveform.size and np.isfinite(waveform).all())
+            peak = float(np.max(np.abs(waveform))) if finite else None
+            attempts.append(
+                {"seed": effective_seed, "peak": peak, "accepted": finite and peak <= 1}
+            )
+            if finite and peak <= 1:
+                break
+        else:
+            (root / "tts-failed-attempts.json").write_text(
+                json.dumps({"scene": index + 1, "attempts": attempts}, indent=2) + "\n"
+            )
+            raise RuntimeError(
+                "Invalid or clipping TTS waveform after three bounded attempts."
+            )
         if (
             not waveform.size
             or not np.isfinite(waveform).all()
@@ -213,7 +230,8 @@ def main():
             "narration": scene["narration"],
             "duration": duration,
             "synthesis_seconds": time.monotonic() - started,
-            "seed": 20261030 + index,
+            "seed": effective_seed,
+            "attempts": attempts,
             "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
         }
         records.append(record)
