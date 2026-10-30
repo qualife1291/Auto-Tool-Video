@@ -18,14 +18,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
 
-from PIL import Image, ImageDraw
-
 from auto_tool_video.domain import ExportInput, Scene
 from auto_tool_video.jobs import enqueue
 from auto_tool_video.media import import_asset, probe
 from auto_tool_video.render import render_job
 from auto_tool_video.store import Store
 from auto_tool_video.timing import frames_for
+from PIL import Image, ImageDraw
 
 
 @dataclass(frozen=True)
