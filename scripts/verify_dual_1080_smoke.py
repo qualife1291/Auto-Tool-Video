@@ -29,7 +29,9 @@ class IntegrityError(ValueError):
 
 
 def command(args: list[str], timeout: int = 180) -> str:
-    result = subprocess.run(args, capture_output=True, text=True, timeout=timeout, check=False)
+    result = subprocess.run(
+        args, capture_output=True, text=True, timeout=timeout, check=False
+    )
     if result.returncode:
         raise IntegrityError(
             f"Command exited {result.returncode}: {args[0]}: {result.stderr[-1500:]}"
@@ -50,7 +52,11 @@ def locate_mp4s(root: Path) -> dict[str, Path]:
     for aspect in ASPECTS:
         folder = root / aspect / "exports"
         matches = sorted(folder.glob("*.mp4")) if folder.is_dir() else []
-        if len(matches) != 1 or not matches[0].is_file() or matches[0].stat().st_size <= 0:
+        if (
+            len(matches) != 1
+            or not matches[0].is_file()
+            or matches[0].stat().st_size <= 0
+        ):
             raise IntegrityError(
                 f"{aspect}: expected exactly one nonempty MP4 in {folder}, got {len(matches)}"
             )
@@ -60,7 +66,9 @@ def locate_mp4s(root: Path) -> dict[str, Path]:
     return paths
 
 
-def validate_streams(info: dict[str, Any], aspect: str, seconds: float) -> dict[str, Any]:
+def validate_streams(
+    info: dict[str, Any], aspect: str, seconds: float
+) -> dict[str, Any]:
     if aspect not in ASPECTS:
         raise IntegrityError(f"Unsupported aspect: {aspect}")
     streams = info.get("streams") or []
@@ -110,7 +118,9 @@ def validate_streams(info: dict[str, Any], aspect: str, seconds: float) -> dict[
 def validate_frame_pts(frames: list[dict[str, Any]], seconds: float) -> dict[str, Any]:
     expected = round(seconds * 30)
     if len(frames) != expected:
-        raise IntegrityError(f"Wrong decoded frame count: {len(frames)} versus {expected}")
+        raise IntegrityError(
+            f"Wrong decoded frame count: {len(frames)} versus {expected}"
+        )
     pts = []
     for frame in frames:
         try:
@@ -159,8 +169,10 @@ def verify_video(path: Path, aspect: str, seconds: float) -> dict[str, Any]:
                 "-v",
                 "error",
                 "-show_entries",
-                ("format=duration:stream=codec_type,codec_name,width,height,pix_fmt,"
-                "r_frame_rate,avg_frame_rate,sample_rate,duration"),
+                (
+                    "format=duration:stream=codec_type,codec_name,width,height,pix_fmt,"
+                    "r_frame_rate,avg_frame_rate,sample_rate,duration"
+                ),
                 "-of",
                 "json",
                 str(path),
@@ -250,13 +262,19 @@ def run(root: Path, output: Path, seconds: float) -> int:
         for aspect, path in paths.items():
             try:
                 report["verified_aspects"][aspect] = verify_video(path, aspect, seconds)
-            except (IntegrityError, subprocess.TimeoutExpired, json.JSONDecodeError) as exc:
+            except (
+                IntegrityError,
+                subprocess.TimeoutExpired,
+                json.JSONDecodeError,
+            ) as exc:
                 report["errors"][aspect] = str(exc)
     except IntegrityError as exc:
         report["errors"]["preflight"] = str(exc)
     report["status"] = "failed" if report["errors"] else "technical_pass_only"
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + "\n")
+    output.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+    )
     print(json.dumps(report, ensure_ascii=False))
     return 1 if report["errors"] else 0
 
