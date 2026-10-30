@@ -375,7 +375,7 @@ class Art:
                 (round(source.width * fraction), round(source.height * fraction)),
                 Image.Resampling.LANCZOS,
             )
-            start_x, final_x = (500, 1460) if self.landscape else (260, 780)
+            start_x, final_x = (500, 1460) if self.landscape else (260, 680)
             center_x = start_x + (final_x - start_x) * progress
             center_y = 540 if self.landscape else 910
             x = center_x - source.width / (2 * self.unit)
@@ -599,7 +599,7 @@ class Art:
             self.text(d, (start_x, start_y + 210), "Gấp lại", 42, anchor="mt")
             self.text(
                 d,
-                (1460, 770) if self.landscape else (780, 1220),
+                (1460, 770) if self.landscape else (680, 1220),
                 "Trải rộng",
                 42,
                 anchor="mt",
