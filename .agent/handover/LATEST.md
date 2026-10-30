@@ -6,6 +6,18 @@ updated: 2026-10-30
 
 # Handover — Whiteboard Studio
 
+## Latest PR audit and future-feature context — 2026-10-30
+
+**READ FIRST:** [2026-10-30 PR audit and next-feature context](2026-10-30-pr-audit-and-next-features.md). **Canonical source still only contains already-merged work.** On audit base `58a93950`, **10 PRs (#4, #7, #8, #10, #12, #14, #16, #18, #20, #21) remained OPEN, each individually mergeable but NOT MERGED.** The old milestone descriptions below are *historical canonical-branch context*, not a current inventory of completed PR work.
+
+- A04 #8 **PR-CI-VERIFIED only**: 12 Vietnamese eSpeak *synthetic* spoken WAVs, 0.92x tempo and two 1080p 31.4s MP4s pass technical QC. Approved original VieNeu audio and creator signoff **NOT RUN**.
+- A02 #12, caption QA #10, dual1080 #16 and frame-integrity #20 have successful PR CI but remain unmerged. A05 gate docs #14, HF research #7, NIM research #4 and future 15-format/G0–G6 plan #21 remain pending review/integration, **not runtime shipping features**.
+- The pinned multi-PR simulation #18 [run 41071418459](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41071418459) passed **311 pytest, 10 Vitest, 15 Playwright** and real dual-aspect technical media. Its separate standard run #41071418465 is marked failure/queued-job anomaly and needs verification. Simulation is not an actual merge.
+- Next priority is **review and integrate P0 without conflicts, regenerate exact-SHA CI after each merge, human video QC**, then research/benchmark A12 + Vietnamese alignment A15 and propose Scene IR/Animate/engine adapters. A11–A33 in #21 are **research backlog only**, not permission to start code.
+
+### Previous handover snapshot (retained)
+
+
 **Repository branch:** `feat/short-video-studio` is the canonical shared development branch. Current tracking: [workboard](../../docs/agent-workboard.md) A01–A10, [active tasks](../memory/short-term/TASKS.md), [roadmap](../../docs/development-plan.md), and [approved spec](../../specs/whiteboard-video-tool.md). This handover is a technical snapshot; do not confuse merged WIP with completed release.
 
 ## What is in source
