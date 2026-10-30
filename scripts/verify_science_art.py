@@ -9,13 +9,12 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import itertools
 import json
-import sys
 from pathlib import Path
 
 import numpy as np
 from PIL import Image
-
 from science_story import Art
 
 
@@ -72,7 +71,7 @@ def contact_sheet(root: Path, output_dir: Path, width: int, height: int) -> dict
             sheet.paste(frame, (col * width, row * height))
         changes = [
             float(np.mean(np.abs(np.asarray(a, dtype=np.int16) - np.asarray(b, dtype=np.int16))))
-            for a, b in zip(frames, frames[1:], strict=True)
+            for a, b in itertools.pairwise(frames)
         ]
         if any(change <= 0.02 for change in changes):
             raise AssertionError(f"{kind} appears frozen at {width}x{height}: {changes}")
