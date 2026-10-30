@@ -1,5 +1,5 @@
 name: QA Exact-SHA Multi-PR Integration
-# Snapshot v2: 8 independent PRs, including the verified A05 frame-integrity fix.
+# Snapshot v3: PR #20 is merged into canonical; recheck the seven remaining exact heads.
 
 on:
   pull_request:
@@ -27,13 +27,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base=58a939503f0ef5eb80ebec261bfe798928d3ee7b
+          base=4db4dac1dea57426c2ac53bca11f9ac5220052fa
           git fetch --no-tags origin refs/heads/feat/short-video-studio:refs/remotes/origin/feat/short-video-studio
           if [ "$(git rev-parse refs/remotes/origin/feat/short-video-studio)" != "$base" ]; then
             echo "::error::Canonical base moved; refresh integration snapshot"
             exit 1
           fi
-          git merge-base --is-ancestor "$base" HEAD
+          git merge-base --is-ancestor "$base" HEAD || { echo "::error::Checkout does not contain reviewed canonical base"; exit 1; }
+          git merge-base --is-ancestor b2257cf8f4f8c3271fe2952c2beae64e903647b7 HEAD || { echo "::error::A05 frame-integrity fix missing in merged baseline"; exit 1; }
           git config user.name "Studio QA Integration (ephemeral)"
           git config user.email "studio-qa-integration@users.noreply.github.com"
           mkdir -p .data/integration-evidence
@@ -57,7 +58,6 @@ jobs:
           agent/A02-real-art-motion-qa|dcf4e017f2fceaeb7362f71e3b0ec655a028ef47
           agent/QA-caption-beat-regressions|b5678295bcdfef115c86e727bca146b9a428ea34
           agent/QA-dual1080-export-gate|f2b4b7eb4e0bc7cc8aaa60ecbffe22bd1296a17d
-          agent/A05-qc-frame-integrity|b2257cf8f4f8c3271fe2952c2beae64e903647b7
           agent/A05-evidence-gates|ad719972d7a879a9ef0076d306a1f0fa81d2dc35
           agent/A06-hf-gradio-evaluation|cec3af1b91fe6bcbb5671cc20f69685858bc212d
           agent/A07-nim-provider-evaluation|67ab4337c00869d0e661c41a664a42d5f7cd9de5
