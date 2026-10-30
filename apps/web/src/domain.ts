@@ -109,6 +109,55 @@ export function captionParts(text: string, phrase: string) {
   ];
 }
 
+/** Browser-only, character-budget preview; PIL/FreeType export remains authoritative. */
+export function estimateCaptionPages(text: string, aspect: 'portrait' | 'landscape'): string[] {
+  const words = text.trim().split(/\s+/u).filter(Boolean);
+  if (!words.length) return [];
+
+  // Conservative approximate line budgets, not pixel measurements of the backend font.
+  const limit = aspect === 'portrait' ? 28 : 48;
+  const linesFor = (items: string[]): string[] => {
+    const lines: string[] = [];
+    let line = '';
+    for (const word of items) {
+      const candidate = line ? `${line} ${word}` : word;
+      if (line && Array.from(candidate).length > limit) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = candidate;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  };
+
+  const lines = linesFor(words);
+  const pages: string[] = [];
+  for (let i = 0; i < lines.length; i += 2) pages.push(lines.slice(i, i + 2).join('\n'));
+
+  // Rebalance just the final two pages when a greedy wrap leaves a one-word orphan.
+  if (pages.length > 1 && pages[pages.length - 1].split(/\s+/u).length < 3) {
+    const index = pages.length - 2;
+    const tail = `${pages[index]} ${pages[index + 1]}`.trim().split(/\s+/u);
+    let best: { first: string; last: string; score: number } | null = null;
+    for (let split = 3; split <= tail.length - 3; split++) {
+      const first = linesFor(tail.slice(0, split));
+      const last = linesFor(tail.slice(split));
+      if (first.length > 2 || last.length > 2) continue;
+      const score = Math.abs(split - (tail.length - split));
+      if (!best || score < best.score) {
+        best = { first: first.join('\n'), last: last.join('\n'), score };
+      }
+    }
+    if (best) {
+      pages[index] = best.first;
+      pages[index + 1] = best.last;
+    }
+  }
+  return pages;
+}
+
 export type Project = {
   id: string;
   title: string;
