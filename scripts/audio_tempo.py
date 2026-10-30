@@ -8,8 +8,10 @@ from __future__ import annotations
 import hashlib
 import math
 import os
+import shutil
 import subprocess
 import wave
+from tempfile import TemporaryDirectory
 from pathlib import Path
 from uuid import uuid4
 
@@ -117,7 +119,9 @@ def stretch_narration(source: Path, output: Path, expected_sha256: str) -> dict:
         temporary.unlink(missing_ok=True)
 
 
-def tight_audio(root: Path, record: dict, index: int) -> dict:
+def tight_audio(
+    root: Path, record: dict, index: int, *, output: Path | None = None
+) -> dict:
     """Keep source speech and small lead/tail margins before WSOLA retiming."""
     import numpy as np
 
@@ -141,7 +145,7 @@ def tight_audio(root: Path, record: dict, index: int) -> dict:
         raise ValueError("Narration contains no measurable speech.")
     start = max(0, int(active[0]) * window - round(rate * 0.06))
     end = min(len(samples), (int(active[-1]) + 1) * window + round(rate * 0.10))
-    target = root / "audio-tight" / f"scene-{index + 1:02}.wav"
+    target = output or root / "audio-tight" / f"scene-{index + 1:02}.wav"
     target.parent.mkdir(parents=True, exist_ok=True)
     with wave.open(str(target), "wb") as output:
         output.setnchannels(1)
@@ -184,58 +188,85 @@ def prepare_timeline(root: Path) -> dict:
             raise ValueError("Narration source SHA256 mismatch or unsafe path.")
     records = []
     duration_total = 0.0
-    for i, (scene, record) in enumerate(zip(scenes, source_records, strict=True)):
-        trimmed = tight_audio(root, record, i)
-        target = root / "audio-tempo" / f"scene-{i + 1:02}.wav"
-        stretched = stretch_narration(root / trimmed["file"], target, trimmed["sha256"])
-        measured = stretched["duration"]
-        frame_count = max(30, math.ceil((measured + 0.10) * 30 - 0.0001))
-        duration = frame_count / 30
-        if measured > 19.65 or duration > 20 or duration_total + duration > 60:
-            raise ValueError(
-                "Retimed narration exceeds the importer scene limit or 60-second preset."
+    # Do not overwrite previous approved outputs until ALL scenes have passed.
+    with TemporaryDirectory(prefix=".audio-stage-", dir=root) as temp_dir:
+        stage = Path(temp_dir)
+        changes = []
+        for i, (scene, record) in enumerate(zip(scenes, source_records, strict=True)):
+            tight_output = stage / "audio-tight" / f"scene-{i + 1:02}.wav"
+            trimmed = tight_audio(root, record, i, output=tight_output)
+            tempo_output = stage / "audio-tempo" / f"scene-{i + 1:02}.wav"
+            stretched = stretch_narration(tight_output, tempo_output, trimmed["sha256"])
+            measured = stretched["duration"]
+            frame_count = max(30, math.ceil((measured + 0.10) * 30 - 0.0001))
+            duration = frame_count / 30
+            if measured > 19.65 or duration > 20 or duration_total + duration > 60:
+                raise ValueError(
+                    "Retimed narration exceeds the importer scene limit or 60-second preset."
+                )
+            old_duration = scene.get("duration")
+            final_tight = root / "audio-tight" / tight_output.name
+            final_tempo = root / "audio-tempo" / tempo_output.name
+            scene["audio"] = str(final_tempo.relative_to(root))
+            scene["duration"] = duration
+            if scene.get("second_by_second") and old_duration != duration:
+                scene["beat_plan_status"] = "needs_review"
+            duration_total += duration
+            records.append(
+                {
+                    **trimmed,
+                    **stretched,
+                    "file": str(final_tempo.relative_to(root)),
+                    "trimmed_file": str(final_tight.relative_to(root)),
+                    "original_source_sha256": trimmed["source_sha256"],
+                    "trimmed_sha256": trimmed["sha256"],
+                    "tempo_input_sha256": stretched["source_sha256"],
+                    "source_sha256": trimmed["source_sha256"],
+                    "trimmed_duration": trimmed["duration"],
+                    "scene_duration": duration,
+                    "scene_frames": frame_count,
+                }
             )
-        old_duration = scene.get("duration")
-        scene["audio"] = str(target.relative_to(root))
-        scene["duration"] = duration
-        if scene.get("second_by_second") and old_duration != duration:
-            # Retimed by actual voice; never rewrite authored visual beats silently.
-            scene["beat_plan_status"] = "needs_review"
-        duration_total += duration
-        records.append(
-            {
-                **trimmed,
-                **stretched,
-                "file": str(target.relative_to(root)),
-                "original_source_sha256": trimmed["source_sha256"],
-                "trimmed_sha256": trimmed["sha256"],
-                "tempo_input_sha256": stretched["source_sha256"],
-                "source_sha256": trimmed["source_sha256"],
-                "trimmed_duration": trimmed["duration"],
-                "scene_duration": duration,
-                "scene_frames": frame_count,
-            }
-        )
-    # Only publish timeline metadata after every sound file has passed verification.
-    story_path = root / "story.json"
-    timing_path = root / "audio-timing.json"
-    marker = uuid4().hex
-    story_tmp = root / f".story-{marker}.json"
-    timing_tmp = root / f".audio-timing-{marker}.json"
-    try:
-        story_tmp.write_text(
+            changes.extend(((tight_output, final_tight), (tempo_output, final_tempo)))
+
+        staged_story = stage / "story.json"
+        staged_timing = stage / "audio-timing.json"
+        staged_story.write_text(
             json.dumps(story, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
-        timing_tmp.write_text(
+        staged_timing.write_text(
             json.dumps(records, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
-        os.replace(timing_tmp, timing_path)
-        os.replace(story_tmp, story_path)
-    finally:
-        timing_tmp.unlink(missing_ok=True)
-        story_tmp.unlink(missing_ok=True)
+        changes.extend(
+            (
+                (staged_timing, root / "audio-timing.json"),
+                (staged_story, root / "story.json"),
+            )
+        )
+        # Save all previous destinations before publishing any new files.
+        # Restore the previous media and metadata if publication fails midway.
+        backups = {}
+        for index, (_, destination) in enumerate(changes):
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            if destination.exists():
+                backup = stage / f"backup-{index:03}"
+                shutil.copy2(destination, backup)
+                backups[destination] = backup
+        changed = []
+        try:
+            for staged, destination in changes:
+                os.replace(staged, destination)
+                changed.append(destination)
+        except BaseException:
+            for destination in reversed(changed):
+                backup = backups.get(destination)
+                if backup is None:
+                    destination.unlink(missing_ok=True)
+                else:
+                    os.replace(backup, destination)
+            raise
     print(
         "Timeline",
         round(duration_total, 3),
