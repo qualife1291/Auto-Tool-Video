@@ -170,7 +170,6 @@ def fullhd_spread_evidence(root: Path, output_dir: Path) -> dict:
     return result
 
 
-
 def temporal_window(
     center_frame: int = 60,
     radius_frames: int = 3,
@@ -270,7 +269,11 @@ def record_temporal_sequence(
     resolution = None
     stored_bytes = 0
     for index, frame, isolated in samples:
-        if frame.mode != "RGB" or isolated.mode != "RGBA" or frame.size != isolated.size:
+        if (
+            frame.mode != "RGB"
+            or isolated.mode != "RGBA"
+            or frame.size != isolated.size
+        ):
             raise ValueError("RGB/isolated RGBA frames must share dimensions")
         if resolution is not None and frame.size != resolution:
             raise ValueError("temporal frame dimensions changed")
@@ -288,12 +291,14 @@ def record_temporal_sequence(
             delta = None
         else:
             union = int(np.count_nonzero(mask | previous_mask))
-            alpha_iou = round(
-                float(np.count_nonzero(mask & previous_mask) / union), 6
-            )
+            alpha_iou = round(float(np.count_nonzero(mask & previous_mask) / union), 6)
             delta = round(
                 float(
-                    sum(ImageStat.Stat(ImageChops.difference(frame, previous_frame)).mean)
+                    sum(
+                        ImageStat.Stat(
+                            ImageChops.difference(frame, previous_frame)
+                        ).mean
+                    )
                     / 3
                 ),
                 6,
@@ -405,7 +410,9 @@ def temporal_evidence(
                 _garment_samples(art, indices, "spread"),
                 strict_safe_zone=True,
                 output_dir=output_dir,
-                sample_indices=frozenset((indices[0], indices[len(indices) // 2], indices[-1])),
+                sample_indices=frozenset(
+                    (indices[0], indices[len(indices) // 2], indices[-1])
+                ),
                 sample_prefix=f"a02-{label}-spread-temporal",
             )
     return {
