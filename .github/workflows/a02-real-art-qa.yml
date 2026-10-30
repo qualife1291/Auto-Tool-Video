@@ -1,0 +1,65 @@
+name: A02 Real Blender Art QA
+
+on:
+  pull_request:
+    branches:
+      - feat/short-video-studio
+    paths:
+      - scripts/science_story.py
+      - scripts/blender_review_art.py
+      - scripts/verify_science_art.py
+      - backend/tests/test_science_story_motion.py
+      - .github/workflows/a02-real-art-qa.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-art:
+    name: Blender Cycles RGBA and two-aspect motion
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender
+          blender --version | head -1
+      - name: Install Python dependencies
+        run: uv sync --project backend --frozen --group dev
+      - name: Lint and format new QA files
+        run: |
+          uv run --project backend ruff check scripts/verify_science_art.py backend/tests/test_science_story_motion.py
+          uv run --project backend ruff format --check scripts/verify_science_art.py backend/tests/test_science_story_motion.py
+      - name: Render real wet and dry transparent Blender cutouts
+        run: |
+          mkdir -p "$RUNNER_TEMP/a02-real-art"
+          for state in wet dry; do
+            blender -b --threads 2 --python scripts/blender_review_art.py -- \
+              --output-dir "$RUNNER_TEMP/a02-real-art" \
+              --width 320 --height 320 --samples 8 \
+              --cpu-threads 2 --transparent --only "$state"
+          done
+      - name: Validate alpha and render 3-frame contact sheets at two aspects
+        run: |
+          uv run --project backend python scripts/verify_science_art.py \
+            --art-dir "$RUNNER_TEMP/a02-real-art" \
+            --output-dir "$RUNNER_TEMP/a02-qa-output"
+      - name: Retain sampled render evidence for human review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a02-real-art-contact-sheets
+          path: |
+            ${{ runner.temp }}/a02-qa-output/
+            ${{ runner.temp }}/a02-real-art/provenance-*.json
+          if-no-files-found: warn
+          retention-days: 7
