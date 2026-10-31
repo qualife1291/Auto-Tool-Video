@@ -370,7 +370,16 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
         "title": scenario.title,
         "scenes": len(scenario.cues),
         "target_seconds": scenario.seconds,
-        "cues": [{"title": t, "narration": c} for t, c in scenario.cues],
+        "cues": [
+            {
+                "title": title,
+                "narration": narration,
+                "expected_objects": list(EXPECTED_OBJECTS[scenario.key][title]),
+                "visual_sha256": hashlib.sha256(visual(i, scenario)).hexdigest(),
+                "semantic_review": "NOT RUN",
+            }
+            for i, (title, narration) in enumerate(scenario.cues)
+        ],
         "source": f"Cue-specific offline Pillow pictograms + local eSpeak vi, {speech_rate} wpm",
         "visual_gate": "engineering illustration only; semantic/creator video review NOT RUN",
         "audio_mastering": "synthetic-fixture compressor only",
