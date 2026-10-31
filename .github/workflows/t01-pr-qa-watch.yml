@@ -48,6 +48,18 @@ jobs:
             let writeDenied = false;
             let writeDeniedReason = '';
 
+            function getUnverifiedCoderHint(pr) {
+              const b = /^agent\/(C0[1-5])(?:[-/]|$)/i.exec(pr.head.ref || '');
+              const t = /^\[(C0[1-5])(?:\s|#|\/|\])/i.exec(pr.title || '');
+              const branchCoder = b ? b[1].toUpperCase() : null;
+              const titleCoder = t ? t[1].toUpperCase() : null;
+              if (branchCoder && titleCoder && branchCoder !== titleCoder)
+                return 'CONFLICTING Coder hints (UNVERIFIED; BA triage required)';
+              const coder = branchCoder || titleCoder;
+              return coder ? coder + ' (UNVERIFIED PR metadata; BA must verify task CLAIM)'
+                : 'unknown (UNVERIFIED; BA triage required)';
+            }
+
             for (const pr of prs) {
               // Query only runs attached to this exact HEAD, never reuse older SHA evidence.
               const response = await github.rest.actions.listWorkflowRunsForRepo({
@@ -67,18 +79,17 @@ jobs:
                 const marker = '<!-- T01-CI-WATCH ' + pr.number + ' ' +
                   pr.head.sha + ' ' + name.replace(/[^a-zA-Z0-9]+/g, '-') + ' -->';
                 const commentBody = (candidate) => {
-                  const lane = /^agent\/C03[-/]/i.test(pr.head.ref) ||
-                    /^\[C03\]/i.test(pr.title) ? 'C03 / A02 issue #24' :
-                    /^agent\/C04[-/]/i.test(pr.head.ref) ||
-                    /^\[C04\]/i.test(pr.title) ? 'C04 / A03 issue #25' :
-                    'BA01 / Epic #26: ownership needs triage';
+                  // Untrusted PR metadata supplies only bounded/unverified hints.
+                  // BA must verify actual CLAIM; no static coder-to-issue mapping.
+                  const lane = 'BA01 + BA02 task triage (no issue auto-assigned)';
+                  const hint = getUnverifiedCoderHint(pr);
                   return marker + '\n' +
                     '**T01 automated CI gate: ' + (candidate ? 'BLOCKED' : 'CI RECHECK PASSED') + '**\n\n' +
                     '- PR: #' + pr.number + ', exact head SHA: `' + pr.head.sha + '`\n' +
                     '- Workflow: **' + name + '**\n' +
                     '- GitHub run: ' + run.html_url + '\n' +
                     '- Result: `' + (run.conclusion || run.status) + '`\n' +
-                    '- Initial routing: **' + lane + '**. Confirm actual claim/file ownership with BA01.\n' +
+                    '- Initial routing: **' + lane + '**. Coder hint: **' + hint + '**. Confirm task CLAIM with BA01+BA02.\n' +
                     '- Action: ' + (candidate ?
                       'review failing job logs, reproduce, add RED→GREEN regression, rerun exact SHA; QA approval blocked.' :
                       'failure previously reported at this SHA is cleared by rerun; other QA/creator gates remain independent.') +
@@ -120,11 +131,16 @@ jobs:
               if (!latest.has('Whiteboard Studio CI') ||
                   !latest.has('QA Dual FullHD MP4 Integrity')) notRun += 1;
               const running = [...latest.values()].some(run => run.status !== 'completed');
+              const main = latest.get('Whiteboard Studio CI');
+              const dual = latest.get('QA Dual FullHD MP4 Integrity');
+              const corePassed = [main, dual].every(
+                run => run && run.status === 'completed' && run.conclusion === 'success'
+              );
               const state = failed.length ? 'BLOCKED' :
                 running ? 'RUNNING' :
-                (!latest.has('Whiteboard Studio CI') ||
-                !latest.has('QA Dual FullHD MP4 Integrity')) ? 'NOT RUN / INCOMPLETE' :
-                'CI PASSED (not feature-DONE)';
+                (!main || !dual) ? 'NOT RUN / INCOMPLETE' :
+                corePassed ? 'Core head checks PASS — other applicable gates NOT VERIFIED' :
+                'Core head checks NOT VERIFIED';
               summary.push([
                 '#' + pr.number + (pr.draft ? ' (draft)' : ''),
                 pr.head.sha.slice(0, 12),
