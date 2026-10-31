@@ -5,7 +5,6 @@ import os
 import time
 from uuid import uuid4
 
-import pytest
 from conftest import attach, create_story
 
 from auto_tool_video.assets_gc import collect_garbage, project_import_usage
@@ -91,12 +90,12 @@ def test_gc_does_not_touch_video_or_escape_asset_directory(client, tmp_path):
     store = client.app.state.store
     scene = project["scenes"][0]
     exported = add_fake_asset(store, project["id"], scene["id"], "video", 100, ".mp4")
-    outside = tmp_path / "keep.txt"
+    outside = tmp_path.parent / "keep-gc-outside.txt"
     outside.write_text("intact")
     hostile = add_fake_asset(store, project["id"], scene["id"], "image")
     with store.connect() as conn:
         asset = store.get("assets", hostile["id"], conn)
-        asset["path"] = "../keep.txt"
+        asset["path"] = "../keep-gc-outside.txt"
         conn.execute("UPDATE assets SET data=? WHERE id=?", (json.dumps(asset), hostile["id"]))
     collect_garbage(store, project["id"], min_age_seconds=0)
     assert outside.read_text() == "intact"
