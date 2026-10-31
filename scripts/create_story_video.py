@@ -95,9 +95,12 @@ def _proposed_science_beats(scenes: list[dict], sources: list[dict]) -> list[dic
             not isinstance(source.get(field), str) for field in required
         ):
             raise ValueError(f"Science scene {index} is missing required source text.")
+        # Template is source-only Art input, not a persisted Scene field.
         if (
             scene.get("title") != source["title"]
             or scene.get("narration") != source["narration"]
+            or scene.get("visual_description") != source["visual_description"]
+            or scene.get("caption_emphasis") != source["caption_emphasis"]
         ):
             raise ValueError(f"Science scene {index} no longer matches its source.")
         if scene.get("second_by_second") or scene.get("beat_plan_status") == "authored":

@@ -172,6 +172,7 @@ def test_fractional_and_twenty_second_beats_validate_and_roundtrip(tmp_path, dur
         style="motion",
         layout="full_frame",
         visual_description=source["visual_description"],
+        caption_emphasis=source["caption_emphasis"],
     ).model_dump()
     project = store.save(project["id"], {**project, "scenes": [scene]})
     old_id = scene["id"]
@@ -203,6 +204,8 @@ def test_invalid_science_source_fails_without_mutating_existing_scene(invalid):
         title=scene_source["title"],
         narration=scene_source["narration"],
         duration=scene_source["duration"],
+        visual_description=scene_source["visual_description"],
+        caption_emphasis=scene_source["caption_emphasis"],
     ).model_dump()
     before = json.dumps(scene, sort_keys=True)
     if invalid == "missing-template":
@@ -222,6 +225,42 @@ def test_invalid_science_source_fails_without_mutating_existing_scene(invalid):
     assert json.dumps(scene, sort_keys=True) == before
 
 
+@pytest.mark.parametrize("field", ["visual_description", "caption_emphasis"])
+def test_changed_visual_or_caption_fails_without_mutating_inputs(field):
+    """Same title/narration does not authorize contradictory source beat text."""
+    source = science_source(91 / 30)
+    scene = Scene(
+        title=source["title"],
+        narration=source["narration"],
+        duration=source["duration"],
+        visual_description=source["visual_description"],
+        caption_emphasis=source["caption_emphasis"],
+    ).model_dump()
+    scene[field] += " (manual edit)"
+    saved_before = json.dumps(scene, ensure_ascii=False, sort_keys=True)
+    source_before = json.dumps(source, ensure_ascii=False, sort_keys=True)
+
+    with pytest.raises(ValueError, match="no longer matches its source"):
+        review._proposed_science_beats([scene], [source])
+
+    assert json.dumps(scene, ensure_ascii=False, sort_keys=True) == saved_before
+    assert json.dumps(source, ensure_ascii=False, sort_keys=True) == source_before
+
+
+@pytest.mark.parametrize("duration", [29 / 30, 601 / 30])
+def test_out_of_range_scene_duration_is_rejected_by_existing_domain(duration):
+    """The domain Scene contract rejects sub-1s and >20s scenes."""
+    source = science_source(duration)
+    with pytest.raises(ValueError):
+        Scene(
+            title=source["title"],
+            narration=source["narration"],
+            duration=duration,
+            visual_description=source["visual_description"],
+            caption_emphasis=source["caption_emphasis"],
+        )
+
+
 def test_source_count_mismatch_fails_before_writing_any_plan():
     source = science_source(2.0)
     first = Scene(title=source["title"], narration=source["narration"]).model_dump()
@@ -237,7 +276,11 @@ def test_synthetic_multiscene_timing_stays_under_sixty_seconds():
     sources = [science_source(599 / 30), science_source(20), science_source(3)]
     scenes = [
         Scene(
-            title=source["title"], narration=source["narration"], duration=source["duration"]
+            title=source["title"],
+            narration=source["narration"],
+            duration=source["duration"],
+            visual_description=source["visual_description"],
+            caption_emphasis=source["caption_emphasis"],
         ).model_dump()
         for source in sources
     ]
