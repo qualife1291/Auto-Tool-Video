@@ -210,10 +210,7 @@ def render_aspect(root: Path, aspect: str) -> dict:
             "narration": " ".join(s["narration"] for s in story["scenes"]),
         }
     )
-    project["scenes"] = [
-        make_review_scene(s).model_dump()
-        for s in story["scenes"]
-    ]
+    project["scenes"] = [make_review_scene(s).model_dump() for s in story["scenes"]]
     project = store.save(project["id"], project)
     illustration_records: list[dict] = []
     for i, scene in enumerate(project["scenes"]):
