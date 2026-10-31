@@ -73,9 +73,8 @@ def test_a04_portrait_fit_preserves_full_subject_and_context():
     # cropping half the shirt and eliminating distinct context in the export.
     source = inspect.getsource(render_aspect)
     assert "make_review_scene(s).model_dump()" in source
-    assert make_review_scene(
-        {"title": "Áo ướt", "narration": "Nước bay hơi.", "duration": 2}
-    ).visual_fit == "contain"
+    sample = {"title": "Áo ướt", "narration": "Nước bay hơi.", "duration": 2}
+    assert make_review_scene(sample).visual_fit == "contain"
     assert "render_portrait_cue_art(title)" in source
     assert 'if aspect == "portrait"' in source
     portrait_hashes = set()
