@@ -151,9 +151,7 @@ class Store:
             raise DomainError("INVALID_ASSET", "Tệp tài nguyên bị thiếu hoặc không hợp lệ.")
         return path
 
-    def transition(
-        self, identifier: str, from_states: set[str], **changes: Any
-    ) -> dict[str, Any]:
+    def transition(self, identifier: str, from_states: set[str], **changes: Any) -> dict[str, Any]:
         """Atomically perform a compare-and-set state transition."""
         with self.connect() as conn:
             conn.execute("BEGIN IMMEDIATE")

@@ -80,6 +80,7 @@ class BodyLimit:
 
         return await self.app(scope, replay_receive, send)
 
+
 def create_app(data_dir: Path | None = None) -> FastAPI:
     app = FastAPI(title="Whiteboard Studio", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(BodyLimit)
@@ -128,8 +129,16 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
     async def http_error(request, exc: HTTPException):
         message = str(exc.detail) if exc.detail else "Yêu cầu không hợp lệ."
         return JSONResponse(
-            {"code": "INVALID_ASSET" if exc.status_code == 413 else "HTTP_ERROR",
-             "message": message},
+            {
+                "code": (
+                    "INVALID_ASSET"
+                    if exc.status_code == 413
+                    else "NOT_FOUND"
+                    if exc.status_code == 404
+                    else "HTTP_ERROR"
+                ),
+                "message": message,
+            },
             status_code=exc.status_code,
         )
 
@@ -318,9 +327,7 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
 
     @app.post("/api/jobs/{identifier}/cancel")
     def cancel(identifier: str):
-        return public_job(
-            store.transition(identifier, {"queued", "running"}, state="cancelled")
-        )
+        return public_job(store.transition(identifier, {"queued", "running"}, state="cancelled"))
 
     @app.get("/api/projects/{identifier}/exports/{job_id}/quality")
     def export_quality(identifier: str, job_id: str):

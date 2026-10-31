@@ -38,9 +38,7 @@ def test_atomic_cancel_has_one_winner(client, image_bytes):
 
     def cancel(_):
         try:
-            return store.transition(job["id"], {"queued", "running"}, state="cancelled")[
-                "state"
-            ]
+            return store.transition(job["id"], {"queued", "running"}, state="cancelled")["state"]
         except DomainError as exc:
             return exc.status
 
@@ -72,3 +70,10 @@ def test_terminal_state_does_not_reopen_when_worker_returns_late(client, image_b
     after = store.update_job(job["id"], state="running")
     assert after["state"] == "failed"
     assert after["error"] == "decode failure"
+
+
+def test_unknown_api_route_uses_not_found_contract(client):
+    response = client.get("/api/does-not-exist")
+    assert response.status_code == 404
+    assert response.json()["code"] == "NOT_FOUND"
+    assert isinstance(response.json()["message"], str)
