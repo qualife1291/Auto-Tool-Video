@@ -113,7 +113,6 @@ def test_transient_claim_lock_has_bounded_backoff(monkeypatch, tmp_path):
     assert sleeps == [0.5, 1.0, 2.0, 0.5]
 
 
-
 @pytest.mark.parametrize("error", [KeyError("bad shape"), sqlite3.OperationalError("db write")])
 def test_real_sqlite_queue_survives_two_sequential_jobs(tmp_path, monkeypatch, error):
     store = Store(tmp_path)
