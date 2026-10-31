@@ -713,7 +713,7 @@ def render_job(store: Store, job: dict[str, Any]) -> None:
                 error="Xuất video thất bại. Kiểm tra tệp đầu vào, dung lượng và FFmpeg rồi thử lại.",
             )
         except Exception:
-            logging.exception("Could not persist render failure for job %s", job["id"])
+            logging.getLogger(__name__).exception("Could not persist render failure for job %s", job["id"])
         raise
     finally:
         shutil.rmtree(root)
