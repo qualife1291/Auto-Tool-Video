@@ -317,9 +317,17 @@ def _draw_traffic(d: ImageDraw.ImageDraw, title: str) -> None:
                 width=11,
             )
     if title == "Đèn đường":
+        # Pedestrian-specific WALK signal; a vehicle R/Y/G light is misleading.
         d.rounded_rectangle((960, 175, 1145, 620), 30, fill=INK)
-        for i, color in enumerate((RED, YELLOW, GREEN)):
-            d.ellipse((1000, 207 + 132 * i, 1105, 312 + 132 * i), fill=color)
+        d.rounded_rectangle((995, 338, 1110, 550), 12, fill="#247D58")
+        # High-contrast walking human: head, torso, arms and separated legs.
+        white = "#FFFFFF"
+        d.ellipse((1037, 366, 1067, 396), fill=white)
+        d.line((1052, 400, 1052, 465), fill=white, width=13)
+        d.line((1050, 421, 1018, 448), fill=white, width=12)
+        d.line((1053, 421, 1086, 444), fill=white, width=12)
+        d.line((1052, 463, 1023, 507), fill=white, width=13)
+        d.line((1052, 463, 1085, 506), fill=white, width=13)
     if title == "An toàn":
         _check(d, 1050, 255)
 
