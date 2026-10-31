@@ -172,7 +172,11 @@ def render_aspect(root: Path, aspect: str) -> dict:
     from auto_tool_video.media import import_asset, probe
     from auto_tool_video.render import render_job
     from auto_tool_video.store import Store
-    from qa_voice_review_art import VISUAL_INTENTS, render_cue_art, render_portrait_cue_art
+    from qa_voice_review_art import (
+        VISUAL_INTENTS,
+        render_cue_art,
+        render_portrait_cue_art,
+    )
 
     width, height = (1080, 1920) if aspect == "portrait" else (1920, 1080)
     story = json.loads((root / "story.json").read_text())
