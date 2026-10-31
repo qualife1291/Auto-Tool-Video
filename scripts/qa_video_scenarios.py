@@ -172,7 +172,15 @@ def voice(text: str, path: Path, speech_rate: int) -> dict:
         duration = wav.getnframes() / wav.getframerate()
         if wav.getnchannels() != 1 or wav.getsampwidth() != 2:
             raise ValueError("Source voice not mono PCM16")
-    return {"duration": duration, "narration": text, "sha256": digest(path)}
+    words = len(text.split())
+    return {
+        "duration": duration,
+        "narration": text,
+        "sha256": digest(path),
+        "words": words,
+        "effective_wpm": round(60 * words / duration, 1) if duration > 0 else None,
+        "voice_review": "NOT RUN",
+    }
 
 
 def beats(seconds: int, narration: str) -> list[dict]:
@@ -386,6 +394,7 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
         "release_approved": False,
         "human_review": "NOT RUN",
         "voice_approval": "NOT APPROVED",
+        "voice_pacing": "MEASURED_ONLY; native-speaker intelligibility NOT REVIEWED",
         "outputs": [],
     }
     try:
