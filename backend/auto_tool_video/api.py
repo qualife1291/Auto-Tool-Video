@@ -214,6 +214,14 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
                 )
             asset = store.get("assets", scene["audio_id"])
             scene["duration"] = max(1, math.ceil((asset["duration"] + data.pause_after) * 30) / 30)
+        # All audio references must be checked before duration limits (MISSING_AUDIO
+        # keeps its existing priority). These values are already aligned to 30 FPS.
+        # Store.save accepts raw project dicts and cannot enforce Scene's 20s field.
+        if any(scene["duration"] > 20 for scene in project["scenes"]):
+            raise DomainError(
+                "DURATION_LIMIT",
+                "Giọng và khoảng nghỉ vượt 20 giây mỗi cảnh; rút gọn lời trước.",
+            )
         if sum(s["duration"] for s in project["scenes"]) > 60:
             raise DomainError(
                 "DURATION_LIMIT", "Giọng và khoảng nghỉ vượt 60 giây; rút gọn lời trước."
