@@ -1,0 +1,84 @@
+name: A04 full regression
+
+on:
+  push:
+    branches:
+      - agent/A04-pitch-preserving-tempo
+  pull_request:
+    branches:
+      - feat/short-video-studio
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: astral-sh/setup-uv@v6
+      - name: Install Python and Web dependencies
+        run: |
+          uv sync --project backend --frozen --group dev
+          npm --prefix apps/web ci
+      - name: Install and verify FFmpeg, FFprobe and Blender
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg blender espeak
+          ffmpeg -hide_banner -version | head -1
+          ffprobe -hide_banner -version | head -1
+          blender --version | head -1
+      - name: Python lint, changed-file format and types
+        run: |
+          uv run --project backend ruff check backend scripts
+          uv run --project backend ruff format --check scripts/audio_tempo.py scripts/create_story_video.py backend/tests/test_audio_tempo.py
+          uv run --project backend mypy backend/auto_tool_video
+      - name: Baseline formatting audit (nonowned A01/A02/A03 files)
+        continue-on-error: true
+        run: uv run --project backend ruff format --check backend scripts
+      - name: Python full regression (includes real FFmpeg WAV tests)
+        run: uv run --project backend pytest backend/tests -q
+      - name: Frontend typecheck, Vitest and build
+        run: |
+          npm --prefix apps/web run check
+          npm --prefix apps/web run build
+      - name: Baseline Prettier audit (nonowned frontend main.tsx)
+        continue-on-error: true
+        run: npm --prefix apps/web run format:check
+      - name: Install Chromium for browser integration
+        run: |
+          npx --prefix apps/web playwright install --with-deps chromium
+          # Match the repository's canonical playwright.config.ts default /usr/bin/chromium.
+          test -x /usr/bin/chromium
+      - name: Browser E2E with local server and independent test data
+        run: npm --prefix apps/web run test:e2e
+      - name: Real 1080p portrait export smoke
+        run: uv run --project backend python scripts/smoke_export.py --portrait1080
+      - name: Create 12 voiced Vietnamese WAVs and render both 1080p videos
+        run: |
+          uv run --project backend python scripts/voice_wav_acceptance.py --output-dir .data/voice-acceptance --render
+      - name: Upload 12-scene source, retimed WAVs and technical MP4 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a04-vietnamese-espeak-12scenes
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            .data/voice-acceptance/raw-wav/*.wav
+            .data/voice-acceptance/audio-tempo/*.wav
+            .data/voice-acceptance/story.json
+            .data/voice-acceptance/tts-provenance.json
+            .data/voice-acceptance/audio-timing.json
+            .data/voice-acceptance/voice-source-manifest.json
+            .data/voice-acceptance/voice-report-*.json
+            .data/voice-acceptance/voice-qc-failure-*.json
+            .data/voice-acceptance/voice-review-*.mp4

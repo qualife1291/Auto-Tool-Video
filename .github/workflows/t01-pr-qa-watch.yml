@@ -1,0 +1,164 @@
+# T01 infrastructure QA watcher. This is NOT a release-approval workflow.
+# Runtime code is the trusted default-branch workflow only; never checkout a PR head.
+name: T01 PR QA Watch
+
+on:
+  schedule:
+    # UTC, every 15 minutes. Offset from top-of-hour to reduce GitHub queue delays.
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: t01-pr-qa-watch
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    name: Check exact-SHA PR CI and route verified failures
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Inspect open PRs without executing PR code
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const base = 'feat/short-video-studio';
+            const monitored = new Set([
+              'Whiteboard Studio CI',
+              'QA Dual FullHD MP4 Integrity',
+              'QA Exact-SHA Multi-PR Integration',
+              'A04 full regression',
+              'A02 Real Blender Art QA'
+            ]);
+            const failures = new Set(['failure', 'timed_out', 'cancelled', 'action_required']);
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner, repo, base, state: 'open', per_page: 100
+            });
+            const summary = [['PR', 'SHA', 'CI state', 'Failed workflows']];
+            let blocked = 0;
+            let notRun = 0;
+            let writeDenied = false;
+            let writeDeniedReason = '';
+
+            function getUnverifiedCoderHint(pr) {
+              const b = /^agent\/(C0[1-5])(?:[-/]|$)/i.exec(pr.head.ref || '');
+              const t = /^\[(C0[1-5])(?:\s|#|\/|\])/i.exec(pr.title || '');
+              const branchCoder = b ? b[1].toUpperCase() : null;
+              const titleCoder = t ? t[1].toUpperCase() : null;
+              if (branchCoder && titleCoder && branchCoder !== titleCoder)
+                return 'CONFLICTING Coder hints (UNVERIFIED; BA triage required)';
+              const coder = branchCoder || titleCoder;
+              return coder ? coder + ' (UNVERIFIED PR metadata; BA must verify task CLAIM)'
+                : 'unknown (UNVERIFIED; BA triage required)';
+            }
+
+            for (const pr of prs) {
+              // Query only runs attached to this exact HEAD, never reuse older SHA evidence.
+              const response = await github.rest.actions.listWorkflowRunsForRepo({
+                owner, repo, head_sha: pr.head.sha, per_page: 100
+              });
+              const latest = new Map();
+              for (const run of response.data.workflow_runs) {
+                if (run.head_sha !== pr.head.sha || !monitored.has(run.name)) continue;
+                if (run.event !== 'pull_request') continue;
+                if (!latest.has(run.name)) latest.set(run.name, run);
+              }
+
+              const failed = [];
+              for (const [name, run] of latest.entries()) {
+                const failedNow = run.status === 'completed' && failures.has(run.conclusion);
+                if (failedNow) failed.push({name, run});
+                const marker = '<!-- T01-CI-WATCH ' + pr.number + ' ' +
+                  pr.head.sha + ' ' + name.replace(/[^a-zA-Z0-9]+/g, '-') + ' -->';
+                const commentBody = (candidate) => {
+                  // Untrusted PR metadata supplies only bounded/unverified hints.
+                  // BA must verify actual CLAIM; no static coder-to-issue mapping.
+                  const lane = 'BA01 + BA02 task triage (no issue auto-assigned)';
+                  const hint = getUnverifiedCoderHint(pr);
+                  return marker + '\n' +
+                    '**T01 automated CI gate: ' + (candidate ? 'BLOCKED' : 'CI RECHECK PASSED') + '**\n\n' +
+                    '- PR: #' + pr.number + ', exact head SHA: `' + pr.head.sha + '`\n' +
+                    '- Workflow: **' + name + '**\n' +
+                    '- GitHub run: ' + run.html_url + '\n' +
+                    '- Result: `' + (run.conclusion || run.status) + '`\n' +
+                    '- Initial routing: **' + lane + '**. Coder hint: **' + hint + '**. Confirm task CLAIM with BA01+BA02.\n' +
+                    '- Action: ' + (candidate ?
+                      'review failing job logs, reproduce, add RED→GREEN regression, rerun exact SHA; QA approval blocked.' :
+                      'failure previously reported at this SHA is cleared by rerun; other QA/creator gates remain independent.') +
+                    '\n\nThis is automated CI triage, **not** a human T01 code review or feature-DONE approval.';
+                };
+
+                // Do not create boilerplate comments for green CI.
+                // Resolve only our previous failure notice if a rerun fixed it.
+                if (!writeDenied && (failedNow || run.conclusion === 'success')) {
+                  try {
+                    const comments = await github.paginate(github.rest.issues.listComments, {
+                      owner, repo, issue_number: pr.number, per_page: 100
+                    });
+                    const existing = comments.find(c => c.body && c.body.includes(marker));
+                    if (failedNow && !existing) {
+                      await github.rest.issues.createComment({
+                        owner, repo, issue_number: pr.number, body: commentBody(true)
+                      });
+                    } else if (existing && existing.body !== commentBody(failedNow)) {
+                      await github.rest.issues.updateComment({
+                        owner, repo, comment_id: existing.id, body: commentBody(failedNow)
+                      });
+                    }
+                  } catch (error) {
+                    // Permission policy can deny issue comments even when the workflow
+                    // requests issues:write. Continue read-only scanning; never mask
+                    // missing notifications as a successful watcher run.
+                    if (error.status !== 401 && error.status !== 403) throw error;
+                    writeDenied = true;
+                    writeDeniedReason = 'GitHub token cannot write PR comments (HTTP ' +
+                      error.status + '). Check repository/org Actions permissions; ' +
+                      'no PAT or broader permissions are installed automatically.';
+                    core.warning(writeDeniedReason);
+                  }
+                }
+              }
+
+              if (failed.length) blocked += 1;
+              if (!latest.has('Whiteboard Studio CI') ||
+                  !latest.has('QA Dual FullHD MP4 Integrity')) notRun += 1;
+              const running = [...latest.values()].some(run => run.status !== 'completed');
+              const main = latest.get('Whiteboard Studio CI');
+              const dual = latest.get('QA Dual FullHD MP4 Integrity');
+              const corePassed = [main, dual].every(
+                run => run && run.status === 'completed' && run.conclusion === 'success'
+              );
+              const state = failed.length ? 'BLOCKED' :
+                running ? 'RUNNING' :
+                (!main || !dual) ? 'NOT RUN / INCOMPLETE' :
+                corePassed ? 'Core head checks PASS — other applicable gates NOT VERIFIED' :
+                'Core head checks NOT VERIFIED';
+              summary.push([
+                '#' + pr.number + (pr.draft ? ' (draft)' : ''),
+                pr.head.sha.slice(0, 12),
+                state,
+                failed.map(x => x.name).join(', ') || '—'
+              ]);
+            }
+
+            await core.summary
+              .addHeading('T01 PR QA Watch — automated technical checks', 2)
+              .addRaw('Default branch: ' + base +
+                '. Failed runs are linked to exact PR HEAD SHA. No creator sign-off inferred.\n')
+              .addRaw(writeDenied ? '**DEGRADED: ' + writeDeniedReason + '**\n' : '')
+              .addTable(summary)
+              .addRaw('\nOpen PRs: ' + prs.length + ', blocked: ' + blocked +
+                ', missing CI: ' + notRun + '.\n')
+              .write();
+            core.info('T01 scan complete: ' + prs.length + ' open PRs; ' +
+              blocked + ' with confirmed failed checks; ' + notRun + ' missing mandatory checks.');
+            if (writeDenied) core.setFailed(writeDeniedReason);
+            // Do NOT automatically merge, approve, or close PRs.

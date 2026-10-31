@@ -131,3 +131,36 @@ def test_alpha_fixture_fails_closed_when_one_blender_asset_loses_transparency(sh
     Image.new("RGB", (320, 320), "blue").save(shirts / "dry.png")
     with pytest.raises(ValueError, match="transparent Blender renders"):
         Art(270, 480, shirts, "wind", supersample=1)
+
+
+@pytest.mark.parametrize("size", [(270, 480), (480, 270)])
+def test_spread_follows_one_garment_from_folded_position_to_open_position(shirts, size):
+    """A02 AC: the folded garment is the *same* Blender cutout as the open shirt."""
+    art = Art(*size, shirts, "spread", supersample=1)
+    centers, widths = [], []
+    for seconds in np.linspace(0, 4, 9):
+        alpha = rendered_shirt(art, float(seconds), mini=True)[:, :, 3]
+        _, xs = np.where(alpha > 180)
+        assert len(xs) > 100, seconds
+        centers.append(float(xs.mean()))
+        widths.append(int(xs.max() - xs.min() + 1))
+
+    start, end = (500, 1460) if art.landscape else (260, 680)
+    assert abs(centers[0] - start * art.unit) < 15, (size, centers[0])
+    assert abs(centers[-1] - end * art.unit) < 15, (size, centers[-1])
+    assert all(right > left for left, right in itertools.pairwise(centers))
+    assert all(right >= left for left, right in itertools.pairwise(widths))
+    assert widths[-1] > 1.8 * widths[0]
+    # Smoothstep derivative peaks at 1.5: maximum 0.5-second travel is
+    # 1.5 * total displacement / 8, plus raster centroid rounding.
+    max_step = abs(end - start) * art.unit * 1.5 / (len(centers) - 1)
+    assert max(right - left for left, right in itertools.pairwise(centers)) <= (max_step + 3)
+
+    # A separate blue, shrinking rectangular pile is not the same shirt.
+    # The original implementation rendered one such pile next to the cutout.
+    frame = np.asarray(art.frame(0, 4), dtype=np.int16)
+    px = round(start * art.unit)
+    py = round((540 if art.landscape else 910) * art.unit)
+    patch = frame[py - 10 : py + 10, px - 10 : px + 10]
+    fake_fold_color = np.array((101, 179, 195))
+    assert np.count_nonzero(np.all(abs(patch - fake_fold_color) <= 1, axis=2)) < 4

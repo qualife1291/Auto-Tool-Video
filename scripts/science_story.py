@@ -366,22 +366,32 @@ class Art:
         source = Image.blend(self.shirts[0], self.shirts[1], dryness)
         x, y = (-80, -25) if self.landscape else (-260, 170)
         if mini:
-            # Unfold gradually into a clearly larger, open shirt at the right.
-            fraction = 0.49 * (0.52 + 0.48 * (p * p * (3 - 2 * p)))
+            # A02: the *same* Blender shirt moves from its folded station to
+            # its open station. Avoid painting an unrelated "folded" rectangle
+            # pile, which looked like a second garment disappearing.
+            progress = p * p * (3 - 2 * p)
+            fraction = 0.24 + 0.25 * progress
             source = source.resize(
                 (round(source.width * fraction), round(source.height * fraction)),
                 Image.Resampling.LANCZOS,
             )
-            x, y = (1040, 150) if self.landscape else (400, 610)
+            start_x, final_x = (500, 1460) if self.landscape else (260, 680)
+            center_x = start_x + (final_x - start_x) * progress
+            center_y = 540 if self.landscape else 910
+            x = center_x - source.width / (2 * self.unit)
+            y = center_y - source.height / (2 * self.unit)
         elif self.template in {"shirt", "warm", "wind", "dry", "room"}:
             # A shear about the TOP of the garment holds the peg/shoulders steady.
             # Lower cloth sways by a few source pixels, with no framewise zoom steps.
             amplitude = 0.008 if self.template == "wind" else 0.0035
             shear = amplitude * math.sin(t * (2.4 if self.template == "wind" else 1.7))
+            # The cutout's hanger row is about 68/320 of its source height.
+            # Pillow samples output->input; pivoting here keeps the peg fixed.
+            peg_y = source.height * 68 / 320
             source = source.transform(
                 source.size,
                 Image.Transform.AFFINE,
-                (1.0, -shear, 0.0, 0.0, 1.0, 0.0),
+                (1.0, -shear, shear * peg_y, 0.0, 1.0, 0.0),
                 resample=Image.Resampling.BICUBIC,
                 fillcolor=(0, 0, 0, 0),
             )
@@ -588,31 +598,22 @@ class Art:
             )
         if kind == "spread":
             self.shirt(frame, t, duration, dry=True, mini=True)
-            x, y = (500, 540) if self.landscape else (260, 910)
-            for j in range(4):
-                # Folded stack shrinks as the open shirt expands.
-                fold = max(0.12, 1 - p * 0.88)
-                d.rounded_rectangle(
-                    self.box(
-                        x - 175 * fold + j * 6,
-                        y - 80 * fold + j * 20,
-                        x + 175 * fold - j * 6,
-                        y + 80 * fold + j * 20,
-                    ),
-                    radius=round(18 * self.unit),
-                    fill="#65B3C3",
-                    outline="#348398",
-                    width=round(4 * self.unit),
-                )
-            self.text(d, (x, y + 210), "Gấp lại", 42, anchor="mt")
+            start_x, start_y = (500, 540) if self.landscape else (260, 910)
+            self.text(d, (start_x, start_y + 210), "Gấp lại", 42, anchor="mt")
             self.text(
                 d,
-                (1460, 770) if self.landscape else (780, 1220),
+                (1460, 770) if self.landscape else (680, 1220),
                 "Trải rộng",
                 42,
                 anchor="mt",
             )
-            self.arrow(d, (x + 190, y - 130), (x + 300, y - 150), CORAL, 7)
+            self.arrow(
+                d,
+                (start_x + 190, start_y - 130),
+                (start_x + 300, start_y - 150),
+                CORAL,
+                7,
+            )
         image = frame.convert("RGB").resize(
             (self.width, self.height), Image.Resampling.LANCZOS
         )
