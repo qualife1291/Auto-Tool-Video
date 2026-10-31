@@ -112,3 +112,134 @@ def test_changed_scene_visual_rebuilds_same_size_same_frame_cached_clip(cache_en
     assert len(clip.read_bytes()) == len(first_bytes) == 128
     assert len(renders) == 2, "stale visual reuse with identical resolution/FPS/frames must rebuild"
     assert clip.read_bytes() != first_bytes
+
+
+@pytest.mark.parametrize("aspect", ["portrait", "landscape"])
+def test_unchanged_science_source_reuses_validated_cache(cache_environment, aspect):
+    _root, renders, run = cache_environment
+    scene = story_scene()
+    clip = run(scene, aspect=aspect)
+    before = clip.read_bytes()
+    run(scene, aspect=aspect, reuse=True)
+    assert len(renders) == 1, "matching provenance must avoid another render"
+    assert clip.read_bytes() == before
+
+
+@pytest.mark.parametrize("changed", ["wet_art", "dry_art", "template", "caption", "narration"])
+def test_changed_source_material_invalidates_cache(cache_environment, changed):
+    root, renders, run = cache_environment
+    scene = story_scene()
+    clip = run(scene)
+    before_size = clip.stat().st_size
+    if changed in {"wet_art", "dry_art"}:
+        file_name = "wet.png" if changed == "wet_art" else "dry.png"
+        Image.new("RGBA", (12, 12), "#a84e5b").save(root / "art" / file_name)
+    elif changed == "template":
+        scene = story_scene(template="warm")
+    elif changed == "caption":
+        scene = story_scene(caption_emphasis="Hơi nước")
+    else:
+        scene = story_scene(narration="Giọt nước thoát ra khỏi áo.")
+    run(scene, reuse=True)
+    assert len(renders) == 2
+    assert clip.stat().st_size == before_size
+
+
+@pytest.mark.parametrize("tamper", ["missing_manifest", "corrupt_manifest", "changed_clip"])
+def test_missing_corrupt_or_tampered_cache_rebuilds(cache_environment, tamper):
+    _root, renders, run = cache_environment
+    scene = story_scene()
+    clip = run(scene)
+    manifest = clip.with_name(clip.name + ".provenance.json")
+    assert manifest.exists()
+    if tamper == "missing_manifest":
+        manifest.unlink()
+    elif tamper == "corrupt_manifest":
+        manifest.write_text("{not-json", encoding="utf-8")
+    else:
+        clip.write_bytes(b"X" * 128)
+    run(scene, reuse=True)
+    assert len(renders) == 2
+    assert manifest.is_file()
+
+
+def test_untrusted_probe_on_cached_clip_rebuilds(cache_environment, monkeypatch):
+    _root, renders, run = cache_environment
+    scene = story_scene()
+    run(scene)
+    valid_probe = video.probe
+
+    def changed_probe(path):
+        data = valid_probe(path)
+        if len(renders) == 1:
+            data["streams"][0]["avg_frame_rate"] = "29/1"
+        return data
+
+    monkeypatch.setattr(video, "probe", changed_probe)
+    run(scene, reuse=True)
+    assert len(renders) == 2
+
+
+def test_explicit_rebuild_template_bypasses_valid_cache(cache_environment):
+    _root, renders, run = cache_environment
+    scene = story_scene()
+    run(scene)
+    run(scene, reuse=True, rebuild=("shirt",))
+    assert len(renders) == 2
+
+
+def test_changed_audio_content_does_not_invalidate_visual_clip(cache_environment):
+    root, renders, run = cache_environment
+    scene = story_scene()
+    run(scene)
+    audio = root / scene["audio"]
+    audio.write_bytes(b"changed narration wave without video-frame edits")
+    run(scene, reuse=True)
+    assert len(renders) == 1, "voice asset is imported independently after source selection"
+
+
+def test_unsafe_output_symlink_is_rejected(cache_environment, tmp_path):
+    _root, _renders, run = cache_environment
+    scene = story_scene()
+    clip = run(scene)
+    outside = tmp_path / "outside.mp4"
+    outside.write_bytes(b"trusted outside")
+    original = outside.read_bytes()
+    clip.unlink()
+    try:
+        clip.symlink_to(outside)
+    except (NotImplementedError, OSError):
+        pytest.skip("Symlinks are unavailable on this filesystem.")
+    with pytest.raises(ValueError, match="symlink"):
+        run(scene, reuse=True)
+    assert outside.read_bytes() == original
+
+
+def test_too_large_cached_clip_rebuilds_without_hashing_it(cache_environment):
+    _root, renders, run = cache_environment
+    scene = story_scene()
+    clip = run(scene)
+    with clip.open("r+b") as stream:
+        stream.truncate(20 * 1024**2 + 1)
+    run(scene, reuse=True)
+    assert len(renders) == 2
+    assert clip.stat().st_size == 128
+
+
+@pytest.mark.parametrize("duration", [3.01, 3.0])
+def test_same_rounded_frame_count_but_changed_duration_rebuilds(cache_environment, duration):
+    _root, renders, run = cache_environment
+    run(story_scene())
+    run(story_scene(duration=duration), reuse=True)
+    assert len(renders) == (1 if duration == 3.0 else 2)
+
+
+def test_missing_artwork_never_authorizes_cache_reuse(cache_environment):
+    root, renders, run = cache_environment
+    scene = story_scene()
+    clip = run(scene)
+    assert clip.is_file()
+    (root / "art" / "wet.png").unlink()
+    run(scene, reuse=True)
+    assert len(renders) == 2
+    assert not clip.with_name(clip.name + ".provenance.json").exists()
