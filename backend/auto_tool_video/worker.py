@@ -5,6 +5,7 @@ import logging
 import sqlite3
 import time
 
+from .assets_gc import collect_garbage
 from .generation import run_generation
 from .render import render_job
 from .store import Store
@@ -55,6 +56,11 @@ def main() -> None:
         except BlockingIOError:
             raise SystemExit("Worker khác đang chạy cho data directory này.") from None
         store.interrupt_running()
+        try:
+            collect_garbage(store)
+        except Exception:
+            # A cleanup failure is not a reason to stop rendering.
+            logger.exception("Could not sweep old imported assets on startup")
         backoff = 0.5
         while True:
             try:
