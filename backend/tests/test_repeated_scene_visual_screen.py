@@ -75,3 +75,9 @@ def test_small_two_pixel_reframing_still_warns_on_four_distinct_cues():
     frames = [_frame("same", shift=i % 2 * 2) for i in range(4)]
     findings = repeated_visual_findings(frames, _scenes(4))
     assert [(item["scene"], item["end_scene"]) for item in findings] == [(1, 4)]
+
+
+def test_small_three_pixel_reframing_still_warns_on_four_distinct_cues():
+    frames = [_frame("same", shift=i % 2 * 3) for i in range(4)]
+    findings = repeated_visual_findings(frames, _scenes(4))
+    assert [(item["scene"], item["end_scene"]) for item in findings] == [(1, 4)]
