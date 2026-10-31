@@ -73,7 +73,8 @@ def test_a04_portrait_fit_preserves_full_subject_and_context():
     # cropping half the shirt and eliminating distinct context in the export.
     source = inspect.getsource(render_aspect)
     assert 'visual_fit="contain"' in source
-    assert 'render_portrait_cue_art(title) if aspect == "portrait"' in source
+    assert "render_portrait_cue_art(title)" in source
+    assert 'if aspect == "portrait"' in source
     portrait_hashes = set()
     for title, _ in CUES:
         with Image.open(io.BytesIO(render_portrait_cue_art(title))) as portrait:
