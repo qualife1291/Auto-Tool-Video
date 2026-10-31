@@ -36,25 +36,49 @@ from .timing import frames_for
 
 
 class BodyLimit:
-    """Count the stream too: Content-Length alone is insufficient for chunked uploads."""
+    """Bound bytes received, even if Content-Length lies or is absent.
+
+    Consume at most MAX_UPLOAD + framing allowance before invoking the app.
+    This guarantees a structured 413 for chunked uploads without raising from
+    an ASGI receive callback outside FastAPI's exception-handler boundary.
+    """
 
     def __init__(self, app):
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        total = 0
+        if scope["type"] != "http" or scope.get("method") in {"GET", "HEAD", "OPTIONS"}:
+            return await self.app(scope, receive, send)
 
-        async def limited_receive():
-            nonlocal total
+        maximum = MAX_UPLOAD + 1_048_576
+        messages = []
+        size = 0
+        while True:
             message = await receive()
-            if message["type"] == "http.request":
-                total += len(message.get("body", b""))
-                if total > MAX_UPLOAD + 1_048_576:
-                    raise HTTPException(413, "Yêu cầu quá lớn.")
-            return message
+            if message["type"] != "http.request":
+                return
+            size += len(message.get("body", b""))
+            if size > maximum:
+                response = JSONResponse(
+                    {"code": "INVALID_ASSET", "message": "Yêu cầu quá lớn."},
+                    status_code=413,
+                )
+                return await response(scope, receive, send)
+            messages.append(message)
+            if not message.get("more_body", False):
+                break
 
-        await self.app(scope, limited_receive, send)
+        cursor = 0
 
+        async def replay_receive():
+            nonlocal cursor
+            if cursor < len(messages):
+                message = messages[cursor]
+                cursor += 1
+                return message
+            return {"type": "http.request", "body": b"", "more_body": False}
+
+        return await self.app(scope, replay_receive, send)
 
 def create_app(data_dir: Path | None = None) -> FastAPI:
     app = FastAPI(title="Whiteboard Studio", docs_url=None, redoc_url=None, openapi_url=None)
@@ -99,6 +123,15 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
     @app.exception_handler(DomainError)
     async def domain_error(request, exc: DomainError):
         return JSONResponse({"code": exc.code, "message": exc.message}, status_code=exc.status)
+
+    @app.exception_handler(HTTPException)
+    async def http_error(request, exc: HTTPException):
+        message = str(exc.detail) if exc.detail else "Yêu cầu không hợp lệ."
+        return JSONResponse(
+            {"code": "INVALID_ASSET" if exc.status_code == 413 else "HTTP_ERROR",
+             "message": message},
+            status_code=exc.status_code,
+        )
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request, exc):
@@ -285,10 +318,9 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
 
     @app.post("/api/jobs/{identifier}/cancel")
     def cancel(identifier: str):
-        job = store.get("jobs", identifier)
-        if job["state"] not in {"queued", "running"}:
-            raise DomainError("REVISION_CONFLICT", "Tác vụ đã kết thúc.", 409)
-        return public_job(store.update_job(identifier, state="cancelled"))
+        return public_job(
+            store.transition(identifier, {"queued", "running"}, state="cancelled")
+        )
 
     @app.get("/api/projects/{identifier}/exports/{job_id}/quality")
     def export_quality(identifier: str, job_id: str):
