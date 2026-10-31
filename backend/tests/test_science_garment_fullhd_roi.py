@@ -118,10 +118,7 @@ def test_record_stream_keeps_held_frame_and_strict_sequential_indices(roi):
     )
     assert result["resolution"] == [1080, 1920]
     assert result["frames"][1]["composite_alpha_iou_from_previous"] == 1
-    assert (
-        result["frames"][0]["sha256_rgb_pixels"]
-        == result["frames"][1]["sha256_rgb_pixels"]
-    )
+    assert result["frames"][0]["sha256_rgb_pixels"] == result["frames"][1]["sha256_rgb_pixels"]
     with pytest.raises(ValueError, match="consecutive"):
         roi.record_frames([(59, isolated, frame), (61, isolated, frame)], size=size)
     with pytest.raises(ValueError, match="RGBA"):

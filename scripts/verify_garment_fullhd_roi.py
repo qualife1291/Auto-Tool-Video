@@ -77,9 +77,7 @@ def geometry(mask: np.ndarray, margin_fraction: float = 0.05) -> dict:
     }
 
 
-def analyze_isolated(
-    isolated: Image.Image, *, margin_fraction: float = 0.05
-) -> dict:
+def analyze_isolated(isolated: Image.Image, *, margin_fraction: float = 0.05) -> dict:
     """Compare complete alpha to probable blue cloth; never issue a cloth PASS.
 
     The original Blender render uses blue cotton and brown line/wooden pegs.
@@ -241,7 +239,7 @@ def native_evidence(
                     size,
                     origin,
                     tile,
-                    "#e45243"
+                    "#e45243",
                 )
                 _draw_box(
                     draw,
@@ -249,7 +247,7 @@ def native_evidence(
                     size,
                     origin,
                     tile,
-                    "#1683d4"
+                    "#1683d4",
                 )
                 if write_native_png and index == indices[len(indices) // 2]:
                     dest = output_dir / f"c01-{aspect}-{kind}-f{index:03d}-fullhd.png"
