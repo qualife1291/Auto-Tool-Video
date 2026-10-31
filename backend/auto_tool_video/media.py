@@ -152,15 +152,35 @@ def import_asset(
             target = next(item for item in current["scenes"] if item["id"] == scene_id)
             previous_duration = target["duration"]
             target[f"{'image' if kind == 'clip' else kind}_id"] = identifier
+            clip_attached = kind == "clip"
             if kind == "clip":
-                target.update(style="motion", duration=max(1, frames_for(duration) / 30))
+                # Use the new measured clip, not a stale prior scene duration.
+                frames = max(30, frames_for(duration))
                 if target.get("audio_id"):
                     existing_audio = store.get("assets", target["audio_id"], conn)
-                    target["duration"] = max(
-                        target["duration"], frames_for(existing_audio["duration"] + 0.12) / 30
-                    )
+                    frames = max(frames, frames_for(existing_audio["duration"] + 0.12))
+                target.update(style="motion", duration=frames / 30)
             if kind == "audio":
-                target.update(duration=max(1, frames_for(duration + 0.12) / 30), audio_stale=False)
+                frames = max(30, frames_for(duration + 0.12))
+                if target.get("image_id"):
+                    visual = store.get("assets", target["image_id"], conn)
+                    if visual["kind"] == "clip":
+                        clip_attached = True
+                        frames = max(frames, frames_for(visual["duration"]))
+                target.update(duration=frames / 30, audio_stale=False)
+            if kind in {"clip", "audio"}:
+                # Reject before inserting asset/project rows; the staged upload
+                # file is removed by the existing rollback handler on errors.
+                if frames_for(target["duration"]) > 600:
+                    raise DomainError("DURATION_LIMIT", "Clip và giọng vượt 20 giây mỗi cảnh.")
+                # Preserve legacy audio-only staging: Fit Audio/export enforce 1800
+                # frames when the creator finishes arranging the narration.
+                # Motion imports/retimes must reject oversized projects now.
+                if (
+                    clip_attached
+                    and sum(frames_for(s["duration"]) for s in current["scenes"]) > 1800
+                ):
+                    raise DomainError("DURATION_LIMIT", "Tổng thời lượng vượt 60 giây.")
             # This direct SQL path bypasses Store.save's duration-change invalidation.
             # Keep authored beat text intact, but require re-review after any retime.
             if target["duration"] != previous_duration:
