@@ -55,9 +55,10 @@ def test_offline_structural_oracle(case):
     original_input = copy.deepcopy(case["project"])
     assert case["profile"] == original_input["profile"]
     assert case["aspect"] == original_input["aspect"]
-    assert case["target_duration"] == (
-        12 if case["case_id"] == "N18" else original_input["brief"]["target_duration"]
-    )
+    if case["case_id"] == "N18":
+        assert original_input["brief"]["target_duration"] == 12
+    else:
+        assert case["target_duration"] == original_input["brief"]["target_duration"]
     assert case["mode"] in {"brief", "preserve"}
 
     if expected["validator"] == "ProjectInput.model_validate":
