@@ -2,6 +2,7 @@
 
 Engineering pictograms only: never claim human approval or final AI art quality.
 """
+
 from __future__ import annotations
 
 import io
@@ -61,61 +62,112 @@ EXPECTED_OBJECTS: dict[str, dict[str, tuple[str, ...]]] = {
 
 def _drop(d: ImageDraw.ImageDraw, x: int, y: int, size: int = 90) -> None:
     d.polygon(
-        [(x, y - size), (x - size * 2 // 3, y + size // 3),
-         (x - size // 3, y + size), (x + size // 3, y + size),
-         (x + size * 2 // 3, y + size // 3)],
-        fill=BLUE, outline=INK, width=7,
+        [
+            (x, y - size),
+            (x - size * 2 // 3, y + size // 3),
+            (x - size // 3, y + size),
+            (x + size // 3, y + size),
+            (x + size * 2 // 3, y + size // 3),
+        ],
+        fill=BLUE,
+        outline=INK,
+        width=7,
     )
     d.ellipse(
         (x - size * 2 // 3, y, x + size * 2 // 3, y + size * 4 // 3),
-        fill=BLUE, outline=INK, width=7,
+        fill=BLUE,
+        outline=INK,
+        width=7,
     )
 
 
-def _arrow(d: ImageDraw.ImageDraw, x: int, y: int, dx: int, dy: int, color: str = BLUE) -> None:
+def _arrow(
+    d: ImageDraw.ImageDraw, x: int, y: int, dx: int, dy: int, color: str = BLUE
+) -> None:
     d.line((x, y, x + dx, y + dy), fill=color, width=17, joint="curve")
     if abs(dx) > abs(dy):
         side = -1 if dx > 0 else 1
-        d.polygon([(x + dx, y + dy), (x + dx + side * 40, y + dy - 23),
-                   (x + dx + side * 40, y + dy + 23)], fill=color)
+        d.polygon(
+            [
+                (x + dx, y + dy),
+                (x + dx + side * 40, y + dy - 23),
+                (x + dx + side * 40, y + dy + 23),
+            ],
+            fill=color,
+        )
     else:
         side = -1 if dy > 0 else 1
-        d.polygon([(x + dx, y + dy), (x + dx - 23, y + dy + side * 40),
-                   (x + dx + 23, y + dy + side * 40)], fill=color)
+        d.polygon(
+            [
+                (x + dx, y + dy),
+                (x + dx - 23, y + dy + side * 40),
+                (x + dx + 23, y + dy + side * 40),
+            ],
+            fill=color,
+        )
 
 
 def _sun(d: ImageDraw.ImageDraw, x: int, y: int, r: int = 100) -> None:
     d.ellipse((x - r, y - r, x + r, y + r), fill=YELLOW, outline=INK, width=8)
     for dx, dy in [
-        (0, -1), (0, 1), (-1, 0), (1, 0),
-        (-1, -1), (1, 1), (-1, 1), (1, -1),
+        (0, -1),
+        (0, 1),
+        (-1, 0),
+        (1, 0),
+        (-1, -1),
+        (1, 1),
+        (-1, 1),
+        (1, -1),
     ]:
         d.line(
-            (x + dx * (r + 17), y + dy * (r + 17),
-             x + dx * (r + 55), y + dy * (r + 55)),
-            fill=YELLOW, width=17,
+            (
+                x + dx * (r + 17),
+                y + dy * (r + 17),
+                x + dx * (r + 55),
+                y + dy * (r + 55),
+            ),
+            fill=YELLOW,
+            width=17,
         )
 
 
 def _cloud(d: ImageDraw.ImageDraw, x: int = 690, y: int = 390) -> None:
     for bx, by, radius in [
-        (x - 170, y + 20, 98), (x - 70, y - 55, 130),
-        (x + 90, y - 50, 118), (x + 185, y + 23, 92),
+        (x - 170, y + 20, 98),
+        (x - 70, y - 55, 130),
+        (x + 90, y - 50, 118),
+        (x + 185, y + 23, 92),
     ]:
-        d.ellipse((bx - radius, by - radius, bx + radius, by + radius),
-                  fill=PALE, outline=INK, width=8)
+        d.ellipse(
+            (bx - radius, by - radius, bx + radius, by + radius),
+            fill=PALE,
+            outline=INK,
+            width=8,
+        )
     d.rounded_rectangle(
         (x - 245, y + 10, x + 258, y + 117),
-        radius=50, fill=PALE, outline=INK, width=8,
+        radius=50,
+        fill=PALE,
+        outline=INK,
+        width=8,
     )
 
 
 def _shirt(d: ImageDraw.ImageDraw, wet: int = 0, spread: bool = False) -> None:
     left, right = (270, 1110) if spread else (350, 1030)
     shape = [
-        (500, 260), (590, 228), (640, 297), (740, 297), (800, 228), (890, 260),
-        (right, 480), (right - 155, 550), (right - 155, 788),
-        (left + 155, 788), (left + 155, 550), (left, 480),
+        (500, 260),
+        (590, 228),
+        (640, 297),
+        (740, 297),
+        (800, 228),
+        (890, 260),
+        (right, 480),
+        (right - 155, 550),
+        (right - 155, 788),
+        (left + 155, 788),
+        (left + 155, 550),
+        (left, 480),
     ]
     d.polygon(shape, fill="#A7D6BF" if wet else "#F2CF94", outline=INK, width=15)
     d.arc((598, 226, 776, 360), 0, 180, fill=INK, width=12)
@@ -125,8 +177,9 @@ def _shirt(d: ImageDraw.ImageDraw, wet: int = 0, spread: bool = False) -> None:
 
 def _person(d: ImageDraw.ImageDraw, x: int, y: int, adult: bool = True) -> None:
     h = 105 if adult else 72
-    d.ellipse((x - 46, y - h - 95, x + 46, y - h - 3),
-              fill="#F2C5A0", outline=INK, width=9)
+    d.ellipse(
+        (x - 46, y - h - 95, x + 46, y - h - 3), fill="#F2C5A0", outline=INK, width=9
+    )
     d.line((x, y - h + 4, x, y + 100), fill=INK, width=22)
     d.line((x, y - 20, x - 88, y + 50), fill=INK, width=19)
     d.line((x, y - 20, x + 88, y + 50), fill=INK, width=19)
@@ -141,19 +194,24 @@ def _crossing(d: ImageDraw.ImageDraw) -> None:
 
 
 def _car(d: ImageDraw.ImageDraw, x: int = 870, y: int = 430) -> None:
-    d.rounded_rectangle((x - 190, y, x + 190, y + 130),
-                        35, fill="#E7A668", outline=INK, width=10)
-    d.polygon([(x - 120, y), (x - 70, y - 95),
-               (x + 110, y - 95), (x + 145, y)], fill=PALE)
+    d.rounded_rectangle(
+        (x - 190, y, x + 190, y + 130), 35, fill="#E7A668", outline=INK, width=10
+    )
+    d.polygon(
+        [(x - 120, y), (x - 70, y - 95), (x + 110, y - 95), (x + 145, y)], fill=PALE
+    )
     for px in (x - 115, x + 120):
         d.ellipse((px - 40, y + 85, px + 40, y + 165), fill=INK)
 
 
 def _lamp(d: ImageDraw.ImageDraw, x: int, y: int, on: bool = False) -> None:
     d.line((x, y - 210, x, y - 110), fill=INK, width=14)
-    d.polygon([(x - 130, y + 50), (x - 80, y - 110),
-               (x + 80, y - 110), (x + 130, y + 50)],
-              fill=YELLOW, outline=INK, width=12)
+    d.polygon(
+        [(x - 130, y + 50), (x - 80, y - 110), (x + 80, y - 110), (x + 130, y + 50)],
+        fill=YELLOW,
+        outline=INK,
+        width=12,
+    )
     if on:
         for delta in (-1, 0, 1):
             _arrow(d, x + delta * 120, y + 85, delta * 45, 85, YELLOW)
@@ -163,31 +221,35 @@ def _fan(d: ImageDraw.ImageDraw, x: int, y: int) -> None:
     d.line((x, y + 50, x, y + 285), fill=INK, width=20)
     d.line((x - 120, y + 285, x + 120, y + 285), fill=INK, width=22)
     for dx, dy in [(-160, -80), (160, -80), (-40, 165)]:
-        d.ellipse((x + dx - 70, y + dy - 55, x + dx + 70, y + dy + 55),
-                  fill=PALE, outline=INK, width=7)
-    d.ellipse((x - 55, y - 55, x + 55, y + 55),
-              fill=YELLOW, outline=INK, width=8)
+        d.ellipse(
+            (x + dx - 70, y + dy - 55, x + dx + 70, y + dy + 55),
+            fill=PALE,
+            outline=INK,
+            width=7,
+        )
+    d.ellipse((x - 55, y - 55, x + 55, y + 55), fill=YELLOW, outline=INK, width=8)
     d.ellipse((x - 220, y - 220, x + 220, y + 220), outline=INK, width=10)
 
 
 def _fridge(d: ImageDraw.ImageDraw, x: int, y: int) -> None:
-    d.rounded_rectangle((x - 160, y - 295, x + 160, y + 320),
-                        25, fill="#C0DBE1", outline=INK, width=13)
+    d.rounded_rectangle(
+        (x - 160, y - 295, x + 160, y + 320), 25, fill="#C0DBE1", outline=INK, width=13
+    )
     d.line((x - 155, y - 20, x + 155, y - 20), fill=INK, width=10)
     for py in (-130, 80):
         d.line((x + 94, y + py, x + 94, y + py + 84), fill=INK, width=15)
 
 
 def _check(d: ImageDraw.ImageDraw, x: int = 1085, y: int = 330) -> None:
-    d.ellipse((x - 85, y - 85, x + 85, y + 85),
-              fill="#D8F1DA", outline=GREEN, width=14)
+    d.ellipse((x - 85, y - 85, x + 85, y + 85), fill="#D8F1DA", outline=GREEN, width=14)
     d.line((x - 52, y, x - 8, y + 45), fill=GREEN, width=20)
     d.line((x - 8, y + 45, x + 68, y - 46), fill=GREEN, width=20)
 
 
 def _phone(d: ImageDraw.ImageDraw, x: int, y: int) -> None:
-    d.rounded_rectangle((x - 135, y - 210, x + 135, y + 260),
-                        30, fill="#C3E3DD", outline=INK, width=16)
+    d.rounded_rectangle(
+        (x - 135, y - 210, x + 135, y + 260), 30, fill="#C3E3DD", outline=INK, width=16
+    )
     d.line((x - 60, y + 200, x + 60, y + 200), fill=INK, width=11)
     d.rectangle((x - 65, y - 60, x + 65, y + 80), outline=GREEN, width=10)
 
@@ -210,8 +272,12 @@ def _draw_water(d: ImageDraw.ImageDraw, title: str) -> None:
 
 def _draw_shirt(d: ImageDraw.ImageDraw, title: str) -> None:
     wet = {
-        "Áo ướt": 5, "Ánh nắng": 3, "Gió thổi": 3,
-        "Bay hơi": 2, "Trải rộng": 1, "Áo khô": 0,
+        "Áo ướt": 5,
+        "Ánh nắng": 3,
+        "Gió thổi": 3,
+        "Bay hơi": 2,
+        "Trải rộng": 1,
+        "Áo khô": 0,
     }[title]
     _shirt(d, wet=wet, spread=title == "Trải rộng")
     if title == "Ánh nắng":
@@ -243,8 +309,13 @@ def _draw_traffic(d: ImageDraw.ImageDraw, title: str) -> None:
         _car(d, 1010, 570)
     if title == "Lắng nghe":
         for radius in (60, 120, 180):
-            d.arc((450 - radius, 150 - radius, 450 + radius, 150 + radius),
-                  -60, 65, fill=YELLOW, width=11)
+            d.arc(
+                (450 - radius, 150 - radius, 450 + radius, 150 + radius),
+                -60,
+                65,
+                fill=YELLOW,
+                width=11,
+            )
     if title == "Đèn đường":
         d.rounded_rectangle((960, 175, 1145, 620), 30, fill=INK)
         for i, color in enumerate((RED, YELLOW, GREEN)):
@@ -271,8 +342,7 @@ def _draw_energy(d: ImageDraw.ImageDraw, title: str) -> None:
         _fan(d, 700, 470)
         _check(d, 1100, 330)
     elif title == "Máy lạnh":
-        d.rounded_rectangle((355, 220, 1045, 445), 30,
-                            fill=PALE, outline=INK, width=14)
+        d.rounded_rectangle((355, 220, 1045, 445), 30, fill=PALE, outline=INK, width=14)
         d.line((400, 350, 1000, 350), fill=INK, width=12)
         for x in (500, 700, 900):
             _arrow(d, x, 470, 0, 125)
@@ -282,8 +352,9 @@ def _draw_energy(d: ImageDraw.ImageDraw, title: str) -> None:
         d.line((790, 690, 970, 690, 970, 510), fill=INK, width=18)
         _check(d, 1070, 330)
     elif title == "Nấu ăn":
-        d.rounded_rectangle((430, 395, 1000, 740), 40,
-                            fill="#BFD5D9", outline=INK, width=17)
+        d.rounded_rectangle(
+            (430, 395, 1000, 740), 40, fill="#BFD5D9", outline=INK, width=17
+        )
         d.line((380, 470, 1040, 470), fill=INK, width=20)
         d.arc((540, 230, 890, 470), 180, 360, fill=INK, width=15)
         for x in (560, 700, 840):
@@ -296,8 +367,7 @@ def _draw_energy(d: ImageDraw.ImageDraw, title: str) -> None:
         _person(d, 850, 430, adult=False)
         _lamp(d, 1100, 430, on=True)
     elif title == "Việc nhỏ":
-        d.rounded_rectangle((450, 270, 880, 680), 40,
-                            fill=PALE, outline=INK, width=13)
+        d.rounded_rectangle((450, 270, 880, 680), 40, fill=PALE, outline=INK, width=13)
         d.ellipse((570, 385, 760, 575), fill=GREEN, outline=INK, width=13)
         _check(d, 1050, 355)
     if title == "Tổng kết":
@@ -311,8 +381,11 @@ def semantic_visual(scenario_key: str, title: str) -> bytes:
     image = Image.new("RGB", (1400, 1000), "#FFF8EB")
     d = ImageDraw.Draw(image)
     d.rounded_rectangle(
-        (100, 95, 1300, 880), 60,
-        fill="#F8F5E9", outline="#DDE2D6", width=10,
+        (100, 95, 1300, 880),
+        60,
+        fill="#F8F5E9",
+        outline="#DDE2D6",
+        width=10,
     )
     d.line((175, 855, 1225, 855), fill=INK, width=12)
     if scenario_key == "water-12s":
