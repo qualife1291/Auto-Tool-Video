@@ -127,7 +127,7 @@ def collect_garbage(
         directory = store.root / "assets"
         for path in directory.iterdir():
             if (
-                not re.fullmatch(r"[0-9a-fA-F-]{36}\\.(?:png|jpg|jpeg|mp4|wav|mp3)", path.name)
+                not re.fullmatch(r"[0-9a-fA-F-]{36}\.(?:png|jpg|jpeg|mp4|wav|mp3)", path.name)
                 or path.is_symlink()
                 or not path.is_file()
                 or str(path.relative_to(store.root)) in known
