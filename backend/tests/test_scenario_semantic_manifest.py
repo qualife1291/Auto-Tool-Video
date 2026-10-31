@@ -38,13 +38,11 @@ def test_semantic_manifest(monkeypatch, tmp_path):
     hashes = set()
     for i, cue in enumerate(report["cues"]):
         title = cue["title"]
-        assert cue["expected_objects"] == list(
-            scenarios.EXPECTED_OBJECTS["water-12s"][title]
-        )
+        expected_objects = scenarios.EXPECTED_OBJECTS["water-12s"][title]
+        assert cue["expected_objects"] == list(expected_objects)
         assert cue["semantic_review"] == "NOT RUN"
-        expected_hash = hashlib.sha256(
-            scenarios.visual(i, scenarios.SCENARIOS["water-12s"])
-        ).hexdigest()
+        expected_art = scenarios.visual(i, scenarios.SCENARIOS["water-12s"])
+        expected_hash = hashlib.sha256(expected_art).hexdigest()
         assert cue["visual_sha256"] == expected_hash
         hashes.add(expected_hash)
 
