@@ -14,7 +14,7 @@ from PIL import Image, ImageChops, ImageFilter, ImageStat
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
-from qa_voice_review_art import VISUAL_INTENTS, render_cue_art
+from qa_voice_review_art import VISUAL_INTENTS, render_cue_art, render_portrait_cue_art
 from voice_wav_acceptance import CUES, render_aspect
 
 
@@ -66,3 +66,22 @@ def test_intentional_shirt_continuity_with_distinct_wet_dry_stages():
 def test_unknown_story_cue_fails_closed():
     with pytest.raises(ValueError, match="No authored visual semantics"):
         render_cue_art("Không có trong kịch bản")
+
+
+def test_a04_portrait_fit_preserves_full_subject_and_context():
+    # RED from actual PR #115 MP4: source landscape art covered 9:16,
+    # cropping half the shirt and eliminating distinct context in the export.
+    source = inspect.getsource(render_aspect)
+    assert 'visual_fit="contain"' in source
+    assert 'render_portrait_cue_art(title) if aspect == "portrait"' in source
+    portrait_hashes = set()
+    for title, _ in CUES:
+        with Image.open(io.BytesIO(render_portrait_cue_art(title))) as portrait:
+            assert portrait.size == (1000, 1600)
+            assert portrait.format == "PNG"
+            portrait_hashes.add(hashlib.sha256(portrait.tobytes()).hexdigest())
+            # Both cards retain drawn pixels and remain inside the final 9:16
+            # safe region, leaving Studio heading and caption locations free.
+            assert ImageStat.Stat(portrait.crop((170, 275, 830, 745))).stddev[0] > 15
+            assert ImageStat.Stat(portrait.crop((175, 800, 825, 1110))).stddev[0] > 7
+    assert len(portrait_hashes) == len(CUES)

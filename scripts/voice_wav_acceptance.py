@@ -172,7 +172,7 @@ def render_aspect(root: Path, aspect: str) -> dict:
     from auto_tool_video.media import import_asset, probe
     from auto_tool_video.render import render_job
     from auto_tool_video.store import Store
-    from qa_voice_review_art import VISUAL_INTENTS, render_cue_art
+    from qa_voice_review_art import VISUAL_INTENTS, render_cue_art, render_portrait_cue_art
 
     width, height = (1080, 1920) if aspect == "portrait" else (1920, 1080)
     story = json.loads((root / "story.json").read_text())
@@ -188,7 +188,10 @@ def render_aspect(root: Path, aspect: str) -> dict:
     )
     project["scenes"] = [
         Scene(
-            title=s["title"], narration=s["narration"], duration=s["duration"]
+            title=s["title"],
+            narration=s["narration"],
+            duration=s["duration"],
+            visual_fit="contain",
         ).model_dump()
         for s in story["scenes"]
     ]
@@ -197,7 +200,7 @@ def render_aspect(root: Path, aspect: str) -> dict:
     for i, scene in enumerate(project["scenes"]):
         # Real authored objects/actions, not the same rectangle + oval tinted 12 times.
         title = story["scenes"][i]["title"]
-        art = render_cue_art(title)
+        art = render_portrait_cue_art(title) if aspect == "portrait" else render_cue_art(title)
         illustration_records.append(
             {
                 "title": title,

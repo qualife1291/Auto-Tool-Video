@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import io
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps
 
 # fmt: off
 # Coordinate-rich source illustration is kept stable for pixel/edge regressions.
@@ -167,4 +167,72 @@ def render_cue_art(title: str) -> bytes:
     _draw_context(draw,title)
     buffer = io.BytesIO()
     image.save(buffer,format='PNG')
+    return buffer.getvalue()
+
+# Portrait A04 test media must not use the landscape illustration through
+# Scene.visual_fit='cover': it hid the shirt and most of the narrated objects.
+# Separate, reproducible vertical composition retains both subject and action.
+_PORTRAIT_CONTEXT_CROPS = {
+    "Câu hỏi": (935, 290, 1210, 750),
+    "Nước bay hơi": (920, 340, 1290, 750),
+    "Không khí": (880, 240, 1290, 830),
+    "Gió": (880, 290, 1280, 820),
+    "Ánh nắng": (880, 225, 1290, 720),
+    "Nhiệt độ": (910, 280, 1210, 780),
+    "Trải áo": (910, 370, 1190, 740),
+    "Đừng gấp": (880, 330, 1290, 780),
+    "Bóng râm": (895, 210, 1290, 840),
+    "Không cần sôi": (890, 280, 1290, 790),
+    "Quan sát": (910, 320, 1250, 790),
+    "Tổng kết": (900, 330, 1260, 700),
+}
+_WET_STAGE = {
+    "Câu hỏi": 5,
+    "Nước bay hơi": 4,
+    "Không khí": 4,
+    "Gió": 3,
+    "Ánh nắng": 2,
+    "Nhiệt độ": 2,
+    "Trải áo": 2,
+    "Đừng gấp": 3,
+    "Bóng râm": 1,
+    "Không cần sôi": 1,
+    "Quan sát": 1,
+    "Tổng kết": 0,
+}
+
+
+def render_portrait_cue_art(title: str) -> bytes:
+    """Two readable stacked panels for the actual 9:16 rendered MP4.
+
+    Top: complete shirt/wetness/line state. Bottom: scene-specific action.
+    Captions and heading are rendered by Studio outside the illustration panels.
+    No external media, TTS, licensed sources or creator quality claims.
+    """
+    if title not in VISUAL_INTENTS:
+        raise ValueError(f"No authored visual semantics for cue: {title!r}")
+    original = Image.open(io.BytesIO(render_cue_art(title))).convert("RGB")
+    output = Image.new("RGB", (1000, 1600), BG)
+    draw = ImageDraw.Draw(output)
+    draw.rounded_rectangle(
+        (95, 225, 905, 775), radius=48, fill="#f9f6ec", outline="#deded0", width=9
+    )
+    _shirt(
+        draw, wet=_WET_STAGE[title], origin=(260, 260), scale=0.9,
+        spread=title == "Trải áo"
+    )
+    if title == "Trải áo":
+        draw.line((180, 245, 820, 245), fill=INK, width=12)
+        for x in (400, 670):
+            draw.rounded_rectangle(
+                (x, 235, x + 33, 275), 7, fill=YELLOW, outline=INK, width=5
+            )
+    draw.rounded_rectangle(
+        (145, 785, 855, 1125), radius=42, fill="#f9f6ec", outline="#deded0", width=9
+    )
+    detail = original.crop(_PORTRAIT_CONTEXT_CROPS[title])
+    detail = ImageOps.contain(detail, (660, 300), Image.Resampling.LANCZOS)
+    output.paste(detail, ((1000 - detail.width) // 2, 802 + (300 - detail.height) // 2))
+    buffer = io.BytesIO()
+    output.save(buffer, "PNG")
     return buffer.getvalue()
