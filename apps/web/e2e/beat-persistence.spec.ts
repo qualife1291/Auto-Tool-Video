@@ -88,7 +88,7 @@ for (const width of [390, 1366]) {
     await firstBeat.locator('summary').click();
     const changed = 'Áo khô từ từ và liên tục, không nhảy trạng thái';
     await firstBeat.getByRole('textbox', { name: 'Hành động và diễn biến' }).fill(changed);
-    lastRevision = (await saveAndRead(page, project.id, lastRevision, 'authored')).revision;
+    lastRevision = (await saveAndRead(page, project.id, lastRevision, 'needs_review')).revision;
 
     await page.reload();
     await page.getByRole('button', { name }).click();
@@ -101,7 +101,7 @@ for (const width of [390, 1366]) {
     );
     const persisted = await page.request.get(`/api/projects/${project.id}`, { headers });
     expect(persisted.ok()).toBeTruthy();
-    expect((await persisted.json()).scenes[0].beat_plan_status).toBe('authored');
+    expect((await persisted.json()).scenes[0].beat_plan_status).toBe('needs_review');
 
     // Changing 3.0 to 2.9 keeps all three beats but invalidates their timing.
     await page.getByLabel('Thời lượng cảnh (giây)').fill('2.9');

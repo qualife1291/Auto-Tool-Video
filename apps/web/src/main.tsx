@@ -1022,7 +1022,10 @@ function App() {
                                         [field]: event.target.value,
                                       };
                                       // Editing one cue does not approve the whole draft.
-                                      updateScene({ second_by_second: updated });
+                                      updateScene({
+                                        second_by_second: updated,
+                                        beat_plan_status: 'needs_review',
+                                      });
                                     }}
                                   />
                                 </label>
