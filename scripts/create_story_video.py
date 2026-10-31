@@ -113,14 +113,18 @@ def _source_clip_fingerprint(
     for path in artwork:
         if path.is_symlink():
             raise ValueError("Unsafe science source artwork symlink.")
-        visual_hashes.append(_file_sha256(path, _MAX_INPUT_BYTES) if path.exists() else None)
+        visual_hashes.append(
+            _file_sha256(path, _MAX_INPUT_BYTES) if path.exists() else None
+        )
     sources = {
         "scene": hashlib.sha256(scene_bytes).hexdigest(),
         "wet_art": visual_hashes[0],
         "dry_art": visual_hashes[1],
         "preview_still": _file_sha256(still_path, _MAX_INPUT_BYTES),
         "font": visual_hashes[2],
-        "art_source": _file_sha256(Path(__file__).with_name("science_story.py"), _MAX_INPUT_BYTES),
+        "art_source": _file_sha256(
+            Path(__file__).with_name("science_story.py"), _MAX_INPUT_BYTES
+        ),
         "encoder_source": _file_sha256(Path(__file__), _MAX_INPUT_BYTES),
     }
     contract = {
@@ -136,13 +140,17 @@ def _source_clip_fingerprint(
     return fingerprint, all(value is not None for value in visual_hashes)
 
 
-def _source_clip_format_ok(clip: Path, width: int, height: int, duration: float) -> bool:
+def _source_clip_format_ok(
+    clip: Path, width: int, height: int, duration: float
+) -> bool:
     if clip.is_symlink():
         raise ValueError(f"Unsafe source clip symlink: {clip.name}")
     if not clip.is_file() or not 0 < clip.stat().st_size <= _MAX_CLIP_BYTES:
         return False
     metadata = probe(clip)
-    video = next(stream for stream in metadata["streams"] if stream["codec_type"] == "video")
+    video = next(
+        stream for stream in metadata["streams"] if stream["codec_type"] == "video"
+    )
     return (
         (video["width"], video["height"]) == (width, height)
         and video["avg_frame_rate"] == "30/1"
@@ -313,7 +321,9 @@ def build(
                 reuse_clips
                 and cacheable
                 and scene["template"] not in rebuild_templates
-                and _valid_source_clip_cache(clip, fingerprint, width, height, scene["duration"])
+                and _valid_source_clip_cache(
+                    clip, fingerprint, width, height, scene["duration"]
+                )
             ):
                 continue
             # A crash or failed render cannot leave an apparently valid old record.
@@ -324,11 +334,17 @@ def build(
             )
             source_clip(clip, art, scene["duration"])
             try:
-                rendered_ok = _source_clip_format_ok(clip, width, height, scene["duration"])
+                rendered_ok = _source_clip_format_ok(
+                    clip, width, height, scene["duration"]
+                )
             except (OSError, TypeError, ValueError, KeyError, StopIteration) as exc:
-                raise ValueError("Fresh science source clip could not be verified.") from exc
+                raise ValueError(
+                    "Fresh science source clip could not be verified."
+                ) from exc
             if not rendered_ok:
-                raise ValueError("Fresh science source clip has invalid frame or codec metadata.")
+                raise ValueError(
+                    "Fresh science source clip has invalid frame or codec metadata."
+                )
             if cacheable:
                 _save_clip_manifest(clip, fingerprint)
     sheet.save(root / f"art-contact-{aspect}.jpg", quality=95)
