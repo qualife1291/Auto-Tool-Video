@@ -20,9 +20,7 @@ def test_full_frame_motion_preserves_contain_edges_but_keeps_cover_zoom(
     width, height = size
     border = (5, 15, 25)
     source = Image.new("RGB", size, "#CC9933")
-    ImageDraw.Draw(source).rectangle(
-        (0, 0, width - 1, height - 1), outline=border, width=4
-    )
+    ImageDraw.Draw(source).rectangle((0, 0, width - 1, height - 1), outline=border, width=4)
     path = tmp_path / "edge-markers.png"
     source.save(path)
     scene = {
