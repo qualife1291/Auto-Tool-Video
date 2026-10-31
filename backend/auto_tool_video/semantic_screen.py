@@ -25,7 +25,7 @@ def _edge_similarity(left: np.ndarray, right: np.ndarray) -> float | None:
     b = cv2.Canny(right.astype(np.uint8), 40, 100) > 0
     if min(int(a.sum()), int(b.sum())) < MIN_EDGE_PIXELS:
         return None
-    kernel = np.ones((3, 3), np.uint8)
+    kernel = np.ones((5, 5), np.uint8)
     a_near = cv2.dilate(a.astype(np.uint8), kernel) > 0
     b_near = cv2.dilate(b.astype(np.uint8), kernel) > 0
     return float(((a & b_near).sum() + (b & a_near).sum()) / (a.sum() + b.sum()))
