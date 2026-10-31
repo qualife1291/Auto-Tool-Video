@@ -20,6 +20,8 @@
 
 **Mandatory workflow:** issue/AC and exclusive path claim → Draft → real RED/GREEN or justified coverage scope → author marks Ready → assigned independent QA_OWNER checks exact current SHA, current-base merged tree/CI and evidence → QA PASS/CHANGES REQUESTED → only QA_OWNER may merge (never self-merge) → postmerge CI → human creator audiovisual G10 if applicable. Research-only docs and synthetic eSpeak engineering clips **never** equal implemented tooling, activated personnel or creator release approval. On each actual work session/authorized schedule, everyone proactively follows their own task/CI/feedback, checks official skills and trustworthy sources, and proposes concrete measurable FREE-first quality improvements via BA coordination.
 
+**Later merge checkpoint — 2026-10-31:** C01 A02 continuous 30fps evidence [PR #76](https://github.com/qualife1291/Auto-Tool-Video/pull/76) **T01 QA-PASS-CODE / MERGED** at `107ac95b54bdfff79085cd8f6d3f41b132787347`; its strict four integrated PR-head runs were all SUCCESS, but new merged-SHA Main/FullHD were still in progress at check. Do not treat this as G10 visual acceptance: existing shirt/warm/wind/dry garment safe-zone diagnostics remain open. Previous #76 Ready row is an earlier timestamped record, not live status.
+
 ### Archived status notes below (historical evidence only)
 
 
