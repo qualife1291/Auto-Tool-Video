@@ -204,7 +204,11 @@ def render_aspect(root: Path, aspect: str) -> dict:
     for i, scene in enumerate(project["scenes"]):
         # Real authored objects/actions, not the same rectangle + oval tinted 12 times.
         title = story["scenes"][i]["title"]
-        art = render_portrait_cue_art(title) if aspect == "portrait" else render_cue_art(title)
+        art = (
+            render_portrait_cue_art(title)
+            if aspect == "portrait"
+            else render_cue_art(title)
+        )
         illustration_records.append(
             {
                 "title": title,
