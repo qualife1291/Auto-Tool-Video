@@ -172,13 +172,16 @@ def voice(text: str, path: Path, speech_rate: int) -> dict:
         duration = wav.getnframes() / wav.getframerate()
         if wav.getnchannels() != 1 or wav.getsampwidth() != 2:
             raise ValueError("Source voice not mono PCM16")
-    words = len(text.split())
+    if not math.isfinite(duration) or duration <= 0:
+        raise ValueError("Source voice has no playable samples")
+    # Vietnamese spaces separate syllable-like units, not necessarily lexical words.
+    space_delimited_units = len(text.split())
     return {
         "duration": duration,
         "narration": text,
         "sha256": digest(path),
-        "words": words,
-        "effective_wpm": round(60 * words / duration, 1) if duration > 0 else None,
+        "space_delimited_units": space_delimited_units,
+        "units_per_minute": round(60 * space_delimited_units / duration, 1),
         "voice_review": "NOT RUN",
     }
 
@@ -394,7 +397,10 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
         "release_approved": False,
         "human_review": "NOT RUN",
         "voice_approval": "NOT APPROVED",
-        "voice_pacing": "MEASURED_ONLY; native-speaker intelligibility NOT REVIEWED",
+        "voice_pacing": (
+            "MEASURED_ONLY: whitespace-delimited Vietnamese units/minute, "
+            "NOT lexical WPM; native-speaker intelligibility NOT REVIEWED"
+        ),
         "outputs": [],
     }
     try:
