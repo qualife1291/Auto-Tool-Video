@@ -21,7 +21,11 @@ NEAR_FULL_SCALE = 32760
 def measure_voice_wav(path: Path, narration: str) -> dict:
     """Measure decoded mono PCM16 waveform without inferring intelligibility."""
     with wave.open(str(path), "rb") as wav:
-        if wav.getnchannels() != 1 or wav.getsampwidth() != 2 or wav.getcomptype() != "NONE":
+        if (
+            wav.getnchannels() != 1
+            or wav.getsampwidth() != 2
+            or wav.getcomptype() != "NONE"
+        ):
             raise ValueError("Source voice not uncompressed mono PCM16")
         rate = wav.getframerate()
         count = wav.getnframes()
