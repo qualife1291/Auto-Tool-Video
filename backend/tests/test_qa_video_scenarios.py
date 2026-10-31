@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import importlib.util
 import io
-from itertools import pairwise
 import sys
+from itertools import pairwise
 from pathlib import Path
 
 import pytest
