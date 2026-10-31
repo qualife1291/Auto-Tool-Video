@@ -19,9 +19,5 @@ def test_pedestrian_signal_has_white_walking_figure():
         "RGB"
     )
     # White walking pictogram in the signal panel, not generic R/Y/G car lights.
-    pixels = [
-        image.getpixel((x, y))
-        for x in range(1010, 1100, 5)
-        for y in range(365, 520, 5)
-    ]
+    pixels = [image.getpixel((x, y)) for x in range(1010, 1100, 5) for y in range(365, 520, 5)]
     assert sum(min(rgb) >= 230 for rgb in pixels) >= 8
