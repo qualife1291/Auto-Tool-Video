@@ -57,8 +57,10 @@ function App() {
   const [dirty, setDirty] = useState(false);
   const [guides, setGuides] = useState(true);
   const [captionPageIndex, setCaptionPageIndex] = useState(0);
-  const [visualKinds, setVisualKinds] = useState<Record<string, string>>({});
-  const [sourceWarnings, setSourceWarnings] = useState<Record<string, boolean>>({});
+  const [assetInfo, setAssetInfo] = useState<
+    Record<string, { kind: string; width: number; height: number }>
+  >({});
+  const pendingAssetInfo = useRef(new Set<string>());
   const [hub, setHub] = useState<{
     note: string;
     providers: Record<string, { label: string; upload_url: string; account_note: string }>;
@@ -75,6 +77,26 @@ function App() {
   } | null>(null);
   const generation = useRef(0);
   const exportKey = useRef<string | null>(null);
+  const visualKinds = Object.fromEntries(
+    Object.entries(assetInfo).map(([id, info]) => [id, info.kind]),
+  );
+  const sourceWarnings = Object.fromEntries(
+    (project?.scenes ?? [])
+      .filter((item) => item.image_id && assetInfo[item.image_id])
+      .map((item) => {
+        const info = assetInfo[item.image_id!];
+        return [
+          item.image_id!,
+          sourceNeedsUpscale(
+            info.width,
+            info.height,
+            project!.aspect,
+            item.layout,
+            item.visual_fit,
+          ),
+        ];
+      }),
+  );
   const scene = project?.scenes[sceneIndex];
   const estimatedCaptionPages = scene
     ? estimateCaptionPages(scene.narration, project?.aspect ?? 'portrait')
@@ -107,25 +129,16 @@ function App() {
       .catch(() => {});
   }, []);
   useEffect(() => {
-    project?.scenes.forEach((s) => {
-      if (s.image_id)
-        api<{ kind: string; width: number; height: number }>(`/assets/${s.image_id}/info`)
-          .then((a) => {
-            setVisualKinds((v) => ({ ...v, [s.image_id!]: a.kind }));
-            setSourceWarnings((v) => ({
-              ...v,
-              [s.image_id!]: sourceNeedsUpscale(
-                a.width,
-                a.height,
-                project.aspect,
-                s.layout,
-                s.visual_fit,
-              ),
-            }));
-          })
-          .catch(() => {});
+    project?.scenes.forEach((scene) => {
+      const id = scene.image_id;
+      if (!id || assetInfo[id] || pendingAssetInfo.current.has(id)) return;
+      pendingAssetInfo.current.add(id);
+      api<{ kind: string; width: number; height: number }>(`/assets/${id}/info`)
+        .then((info) => setAssetInfo((current) => ({ ...current, [id]: info })))
+        .catch(() => {})
+        .finally(() => pendingAssetInfo.current.delete(id));
     });
-  }, [project?.id, project?.revision, project?.aspect]);
+  }, [project?.id, project?.revision, assetInfo]);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
       if (dirty) {
@@ -139,12 +152,34 @@ function App() {
   useEffect(() => {
     if (!running || !job) return;
     const id = job.id;
+    let failures = 0;
+    let inFlight = false;
+    let disposed = false;
     const timer = setInterval(() => {
+      if (inFlight) return;
+      inFlight = true;
       api<Job>(`/jobs/${id}`)
-        .then((j) => setJob((current) => (current?.id === id ? j : current)))
-        .catch((e) => setError(e.message));
+        .then((next) => {
+          if (disposed) return;
+          failures = 0;
+          setJob((current) => (current?.id === id ? next : current));
+        })
+        .catch(() => {
+          if (disposed) return;
+          failures += 1;
+          if (failures >= 3) {
+            clearInterval(timer);
+            setError('Mất kết nối khi kiểm tra tiến độ. Tải lại trang để kiểm tra tác vụ.');
+          }
+        })
+        .finally(() => {
+          inFlight = false;
+        });
     }, 1000);
-    return () => clearInterval(timer);
+    return () => {
+      disposed = true;
+      clearInterval(timer);
+    };
   }, [job?.id, running]);
   useEffect(() => {
     if (!project) return;
@@ -325,7 +360,7 @@ function App() {
     link.href = url;
     link.download = 'publish-metadata.json';
     link.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 10_000);
   }
   async function appliedAi(saved: Project) {
     setProject((current) => (current?.id === saved.id ? saved : current));
