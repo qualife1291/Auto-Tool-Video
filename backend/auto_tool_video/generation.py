@@ -11,6 +11,7 @@ from uuid import uuid4
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
+from .assets_gc import MAX_PROJECT_IMPORT_BYTES, gc_after_mutation, project_import_usage
 from .domain import ApplyInput, ImageInput, PlanInput
 from .planning import planner_data, prompt_messages, validate_proposal
 from .providers import Comfy, Ollama, load_workflow
@@ -132,12 +133,8 @@ def candidate_asset(store: Store, job: dict, content: bytes, provenance: dict) -
         state = store.get("jobs", job["id"], conn)
         if state["state"] == "cancelled":
             raise Cancelled()
-        used = sum(
-            item.get("size", 0)
-            for row in conn.execute("SELECT data FROM assets")
-            if (item := json.loads(row[0])).get("project_id") == job["project_id"]
-        )
-        if used + len(payload) > 500 * 1024**2:
+        used = project_import_usage(conn, job["project_id"])
+        if used + len(payload) > MAX_PROJECT_IMPORT_BYTES:
             raise DomainError("DISK_LOW", "Kho tài nguyên dự án đạt 500 MiB.")
         path.write_bytes(payload)
         try:
@@ -312,4 +309,5 @@ def apply_generation(
         job["applied_revision"] = project["revision"]
         conn.execute("UPDATE projects SET data=? WHERE id=?", (json.dumps(project), project_id))
         conn.execute("UPDATE jobs SET data=? WHERE id=?", (json.dumps(job), job_id))
-        return project
+    gc_after_mutation(store, project_id)
+    return project
