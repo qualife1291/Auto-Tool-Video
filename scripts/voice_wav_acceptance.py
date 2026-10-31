@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import io
 import json
 import shutil
 import subprocess
@@ -173,7 +172,7 @@ def render_aspect(root: Path, aspect: str) -> dict:
     from auto_tool_video.media import import_asset, probe
     from auto_tool_video.render import render_job
     from auto_tool_video.store import Store
-    from PIL import Image, ImageDraw
+    from qa_voice_review_art import VISUAL_INTENTS, render_cue_art
 
     width, height = (1080, 1920) if aspect == "portrait" else (1920, 1080)
     story = json.loads((root / "story.json").read_text())
@@ -194,26 +193,18 @@ def render_aspect(root: Path, aspect: str) -> dict:
         for s in story["scenes"]
     ]
     project = store.save(project["id"], project)
+    illustration_records: list[dict] = []
     for i, scene in enumerate(project["scenes"]):
-        # Unique original art per scene, no third-party media or downloaded assets.
-        image_width, image_height = (960, 1706) if aspect == "portrait" else (1280, 720)
-        canvas = Image.new("RGB", (image_width, image_height), "#f8faf8")
-        draw = ImageDraw.Draw(canvas)
-        w, h = canvas.size
-        draw.rectangle(
-            (w // 8, h // 3, w * 7 // 8, h * 2 // 3),
-            fill=(115 + i * 7, 170 - i * 5, 195 + i * 3),
-        )
-        draw.ellipse((w // 3, h // 5, w * 2 // 3, h // 2), fill="#ecce76")
-        draw.line(
-            (w // 8, h * 3 // 4, w * 7 // 8, h * 3 // 4),
-            fill="#254d3d",
-            width=10,
-        )
-        data = io.BytesIO()
-        canvas.save(data, "PNG")
+        # Real authored objects/actions, not the same rectangle + oval tinted 12 times.
+        title = story["scenes"][i]["title"]
+        art = render_cue_art(title)
+        illustration_records.append({
+            "title": title,
+            "objects": list(VISUAL_INTENTS[title]),
+            "sha256": hashlib.sha256(art).hexdigest(),
+        })
         project = import_asset(
-            store, project["id"], scene["id"], project["revision"], data.getvalue()
+            store, project["id"], scene["id"], project["revision"], art
         )
         voice = root / story["scenes"][i]["audio"]
         project = import_asset(
@@ -292,6 +283,8 @@ def render_aspect(root: Path, aspect: str) -> dict:
         "full_decode": "PASS",
         "technical_quality": done.get("quality_report"),
         "narration_approval": "NOT APPROVED — eSpeak engineering voice",
+        "illustration_records": illustration_records,
+        "visual_approval": "NOT RUN — original engineering pictograms only",
     }
     (root / f"voice-report-{aspect}.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
