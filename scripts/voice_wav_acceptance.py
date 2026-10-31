@@ -165,7 +165,6 @@ def verify_tempo(root: Path) -> dict:
     return {"total_seconds": total, "files": len(timed), "tempo": 0.92}
 
 
-
 # A04 short engineering samples should show the *completed* illustration long
 # enough to inspect at 1x. This does not change production Scene defaults.
 A04_REVIEW_DRAW_FRACTION = 0.50
