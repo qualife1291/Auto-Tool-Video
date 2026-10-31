@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import math
 import time
 from pathlib import Path
 
@@ -29,10 +28,17 @@ MAX_RADIUS = 2
 
 def frame_window(center: int = 60, radius: int = 1, *, fps: int = FPS) -> list[int]:
     """Bound the native 30 FPS interval to <= 5 consecutive frames per scene."""
-    if fps != FPS or not 0 <= radius <= MAX_RADIUS or not 0 <= center < FPS * DURATION_SECONDS:
+    if (
+        fps != FPS
+        or not 0 <= radius <= MAX_RADIUS
+        or not 0 <= center < FPS * DURATION_SECONDS
+    ):
         raise ValueError("native ROI window must be bounded within 4 seconds at 30 fps")
     return list(
-        range(max(0, center - radius), min(FPS * DURATION_SECONDS - 1, center + radius) + 1)
+        range(
+            max(0, center - radius),
+            min(FPS * DURATION_SECONDS - 1, center + radius) + 1,
+        )
     )
 
 
@@ -55,7 +61,12 @@ def geometry(mask: np.ndarray, margin_fraction: float = 0.05) -> dict:
             "touches_frame_edge": None,
             "outside_safe_zone": None,
         }
-    left, right, top, bottom = int(xs.min()), int(xs.max()), int(ys.min()), int(ys.max())
+    left, right, top, bottom = (
+        int(xs.min()),
+        int(xs.max()),
+        int(ys.min()),
+        int(ys.max()),
+    )
     edge = left == 0 or right == width - 1 or top == 0 or bottom == height - 1
     mx, my = round(width * margin_fraction), round(height * margin_fraction)
     margin = left <= mx or right >= width - mx or top <= my or bottom >= height - my
@@ -94,7 +105,9 @@ def analyze_isolated(
         "composite_alpha": full,
         "blue_cloth_candidate": cloth,
         "candidate_fraction_of_composite": fraction,
-        "candidate_method": "Blender blue-cotton RGB heuristic; NOT object-ID segmentation",
+        "candidate_method": (
+            "Blender blue-cotton RGB heuristic; NOT object-ID segmentation"
+        ),
         "verdict": "INCONCLUSIVE_SEMANTIC_CLOTH_CROP",
         "reason": (
             "Color and alpha cannot prove the garment-only silhouette; "
@@ -208,11 +221,15 @@ def native_evidence(
                 overlap = None
                 if previous is not None:
                     union = int(np.count_nonzero(alpha | previous))
-                    overlap = round(float(np.count_nonzero(alpha & previous) / union), 6)
+                    overlap = round(
+                        float(np.count_nonzero(alpha & previous) / union), 6
+                    )
                 record = {
                     "frame_index": index,
                     "seconds": round(index / FPS, 6),
-                    "sha256_rgba_pixels": hashlib.sha256(isolated.tobytes()).hexdigest(),
+                    "sha256_rgba_pixels": hashlib.sha256(
+                        isolated.tobytes()
+                    ).hexdigest(),
                     "sha256_rgb_pixels": hashlib.sha256(frame.tobytes()).hexdigest(),
                     "composite_alpha_iou_from_previous": overlap,
                     **metrics,
@@ -220,16 +237,28 @@ def native_evidence(
                 origin = (column * tile[0], row * tile[1])
                 sheet.paste(frame.resize(tile, Image.Resampling.LANCZOS), origin)
                 _draw_box(
-                    draw, metrics["composite_alpha"]["bbox"], size, origin, tile, "#e45243"
+                    draw,
+                    metrics["composite_alpha"]["bbox"],
+                    size,
+                    origin,
+                    tile,
+                    "#e45243"
                 )
                 _draw_box(
-                    draw, metrics["blue_cloth_candidate"]["bbox"], size, origin, tile, "#1683d4"
+                    draw,
+                    metrics["blue_cloth_candidate"]["bbox"],
+                    size,
+                    origin,
+                    tile,
+                    "#1683d4"
                 )
                 if write_native_png and index == indices[len(indices) // 2]:
                     dest = output_dir / f"c01-{aspect}-{kind}-f{index:03d}-fullhd.png"
                     frame.save(dest)
                     record["native_sample_file"] = dest.name
-                    record["native_sample_sha256"] = hashlib.sha256(dest.read_bytes()).hexdigest()
+                    record["native_sample_sha256"] = hashlib.sha256(
+                        dest.read_bytes()
+                    ).hexdigest()
                     storage += dest.stat().st_size
                 records.append(record)
                 previous = alpha
