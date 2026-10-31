@@ -19,6 +19,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from .layout import boxes, fitted_image
 from .media import probe
+from .paper import normalize_paper
 from .quality import inspect_video, provenance_for
 from .store import Store
 from .timing import frames_for
@@ -190,7 +191,7 @@ class ScenePainter:
             self.source_image = Image.fromarray(cv2.cvtColor(first, cv2.COLOR_BGR2RGB))
         else:
             with Image.open(image_path) as source:
-                self.source_image = source.convert("RGB")
+                self.source_image = normalize_paper(source.convert("RGB"))
         x, y, box_width, box_height = [round(v * self.scale) for v in self.image_box]
         self.image = (
             fitted_image(self.source_image, (box_width, box_height), self.fit, self.focal)
