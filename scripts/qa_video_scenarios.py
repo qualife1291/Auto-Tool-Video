@@ -168,10 +168,13 @@ def voice(text: str, path: Path, speech_rate: int) -> dict:
         )
     finally:
         raw.unlink(missing_ok=True)
+    metrics = measure_voice_wav(path, text)
+    if "ALL_WINDOWS_QUIET" in metrics["audio_warnings"]:
+        raise ValueError("Source voice is silent")
     return {
         "narration": text,
         "sha256": digest(path),
-        **measure_voice_wav(path, text),
+        **metrics,
     }
 
 
