@@ -414,7 +414,7 @@ function App() {
           <Plus size={18} /> Dự án mới
         </button>
         <div className="eyebrow">KHÔNG GIAN CỦA BẠN</div>
-        <nav className="project-list" aria-label="Dự án đã lưu">
+        <nav className="project-list" aria-label="Dự án đã lưu" tabIndex={0}>
           {projects.map((p) => (
             <button
               disabled={busy}
