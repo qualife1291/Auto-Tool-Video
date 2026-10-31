@@ -568,6 +568,35 @@ textarea {
   font-size: 12px;
   max-height: 9%;
   overflow: hidden;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+  padding: 5px 6px;
+}
+.caption-preview-controls {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11px;
+  text-align: center;
+}
+.caption-preview-controls small {
+  color: #526347;
+  flex-basis: 100%;
+}
+.caption-preview-navigation {
+  display: flex;
+  gap: 8px;
+}
+.caption-preview-navigation button {
+  min-height: 32px;
+  border: 1px solid #849a84;
+  border-radius: 5px;
+  background: #fff;
+  padding: 4px 10px;
 }
 .safe-guide {
   position: absolute;
@@ -1208,8 +1237,9 @@ hr {
   left: 12.5%;
   width: 75%;
   max-height: 14%;
-  font-size: 9px;
-  padding: 4px;
+  font-size: 8px;
+  line-height: 1.15;
+  padding: 2px 4px;
 }
 .portrait.landscape .safe-guide {
   top: 7%;

@@ -1,4 +1,39 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+// Synchronize each Save with its exact project PUT response, not the click.
+// An immediate independent GET can otherwise race the pending save request.
+// Assertions on BOTH the PUT result and stored GET must still reject stale
+// revisions, missing beat edits, and wrong authored/needs_review transitions.
+async function saveAndRead(
+  page: Page,
+  projectId: string,
+  previousRevision: number,
+  expectedStatus: 'authored' | 'needs_review',
+) {
+  const projectPath = `/api/projects/${projectId}`;
+  const [response] = await Promise.all([
+    page.waitForResponse((candidate) => {
+      const { pathname } = new URL(candidate.url());
+      return candidate.request().method() === 'PUT' && pathname === projectPath;
+    }),
+    page.getByRole('button', { name: 'Lưu thay đổi' }).click(),
+  ]);
+  expect(response.ok()).toBeTruthy();
+  const result = await response.json();
+  expect(result.revision).toBeGreaterThan(previousRevision);
+  expect(result.scenes[0].beat_plan_status).toBe(expectedStatus);
+  await expect(page.getByRole('button', { name: 'Đã lưu', exact: true })).toBeDisabled();
+  await expect(page.getByText('Đã lưu trên máy.', { exact: true })).toBeVisible();
+
+  const persisted = await page.request.get(projectPath, {
+    headers: { 'X-Studio-Client': 'local' },
+  });
+  expect(persisted.ok()).toBeTruthy();
+  const stored = await persisted.json();
+  expect(stored.revision).toBe(result.revision);
+  expect(stored.scenes[0].beat_plan_status).toBe(expectedStatus);
+  return stored;
+}
 
 for (const width of [390, 1366]) {
   test(`edited second-by-second beat persists after save and reload at ${width}px`, async ({
@@ -43,6 +78,7 @@ for (const width of [390, 1366]) {
       },
     });
     expect(updated.ok()).toBeTruthy();
+    let lastRevision = (await updated.json()).revision as number;
 
     await page.goto('/');
     await page.getByRole('button', { name }).click();
@@ -52,8 +88,7 @@ for (const width of [390, 1366]) {
     await firstBeat.locator('summary').click();
     const changed = 'Áo khô từ từ và liên tục, không nhảy trạng thái';
     await firstBeat.getByRole('textbox', { name: 'Hành động và diễn biến' }).fill(changed);
-    await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
-    await expect(page.getByText('Đã lưu trên máy.', { exact: true })).toBeVisible();
+    lastRevision = (await saveAndRead(page, project.id, lastRevision, 'authored')).revision;
 
     await page.reload();
     await page.getByRole('button', { name }).click();
@@ -73,10 +108,9 @@ for (const width of [390, 1366]) {
     await expect(page.locator('.beat-editor > summary')).toContainText('(3/3)');
     const reviewNotice = page.getByText('Kế hoạch từng giây cần rà soát và xác nhận lại.');
     await expect(reviewNotice).toBeVisible();
-    await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
-    const stale = await page.request.get(`/api/projects/${project.id}`, { headers });
-    expect(stale.ok()).toBeTruthy();
-    const staleScene = (await stale.json()).scenes[0];
+    const staleProject = await saveAndRead(page, project.id, lastRevision, 'needs_review');
+    lastRevision = staleProject.revision;
+    const staleScene = staleProject.scenes[0];
     expect(staleScene.beat_plan_status).toBe('needs_review');
     expect(staleScene.second_by_second).toHaveLength(3);
     expect(staleScene.second_by_second[0].action).toBe(changed);
@@ -85,17 +119,16 @@ for (const width of [390, 1366]) {
     const revised = 'Áo khô rất từ từ, không nhảy trạng thái và vẫn giữ dấu tiếng Việt';
     await savedBeat.getByRole('textbox', { name: 'Hành động và diễn biến' }).fill(revised);
     await expect(reviewNotice).toBeVisible();
-    await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
-    const partial = await page.request.get(`/api/projects/${project.id}`, { headers });
-    expect((await partial.json()).scenes[0].beat_plan_status).toBe('needs_review');
+    const partial = await saveAndRead(page, project.id, lastRevision, 'needs_review');
+    lastRevision = partial.revision;
+    expect(partial.scenes[0].second_by_second[0].action).toBe(revised);
 
     // The author confirms the complete, unchanged beat set explicitly.
     await page.getByRole('button', { name: 'Xác nhận đã rà soát từng giây' }).click();
     await expect(reviewNotice).toHaveCount(0);
-    await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
-    const accepted = await page.request.get(`/api/projects/${project.id}`, { headers });
-    expect(accepted.ok()).toBeTruthy();
-    const acceptedScene = (await accepted.json()).scenes[0];
+    const accepted = await saveAndRead(page, project.id, lastRevision, 'authored');
+    lastRevision = accepted.revision;
+    const acceptedScene = accepted.scenes[0];
     expect(acceptedScene.beat_plan_status).toBe('authored');
     expect(acceptedScene.second_by_second[0].action).toBe(revised);
     expect(acceptedScene.second_by_second).toHaveLength(3);
@@ -103,9 +136,8 @@ for (const width of [390, 1366]) {
     // Narration changes invalidate the previous second-by-second voice cues too.
     await page.getByLabel('Lời thoại của cảnh').fill('Áo ướt đang khô chậm hơn trước.');
     await expect(reviewNotice).toBeVisible();
-    await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
-    const narrationUpdated = await page.request.get(`/api/projects/${project.id}`, { headers });
-    const updatedScene = (await narrationUpdated.json()).scenes[0];
+    const narrationUpdated = await saveAndRead(page, project.id, lastRevision, 'needs_review');
+    const updatedScene = narrationUpdated.scenes[0];
     expect(updatedScene.beat_plan_status).toBe('needs_review');
     expect(updatedScene.second_by_second[0].action).toBe(revised);
   });
