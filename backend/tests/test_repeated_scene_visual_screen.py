@@ -69,3 +69,9 @@ def test_blank_art_and_same_narration_do_not_generate_false_semantic_claims():
 def test_invalid_sample_count_is_explicitly_rejected():
     with pytest.raises(ValueError, match="scene count"):
         repeated_visual_findings([_frame("same")], _scenes(2))
+
+
+def test_small_two_pixel_reframing_still_warns_on_four_distinct_cues():
+    frames = [_frame("same", shift=i % 2 * 2) for i in range(4)]
+    findings = repeated_visual_findings(frames, _scenes(4))
+    assert [(item["scene"], item["end_scene"]) for item in findings] == [(1, 4)]
