@@ -1,10 +1,22 @@
 # Kế hoạch phát triển
 
+## Quy tắc bắt buộc trước khi triển khai tính năng mới
+
+**Research-first gate G0–G6:** [Quy trình nghiên cứu, đo lường và nghiệm thu](research-first-quality-gates.md). Mọi AI agent phải khảo sát source và phương án thay thế, xác minh version/license/chi phí/rủi ro, lập test matrix và quyết định GO trước khi code. Không có evidence thực tế thì ghi NOT RUN; không merge chỉ vì unit test pass. Mọi tính năng mới phải được đăng ký task ID và phân quyền file trên [workboard](agent-workboard.md). Không thay đổi phạm vi spec chưa duyệt.
+
+**Danh mục video tương lai:** [Hồ sơ nghiên cứu 15 định dạng, kiến trúc Scene IR, test matrix và backlog A20–A33](future-video-formats-research.md). Đây là đề xuất nghiên cứu, không phải cam kết đã hỗ trợ hoặc quyền tự triển khai. Mỗi agent phải cập nhật nguồn, giấy phép và thử nghiệm theo G0–G6 trước khi code.
+
+**Nâng FPS, độ nét, hiệu năng và QC:** [Hồ sơ nghiên cứu 30→60fps native, interpolation, 1080p/4K, benchmark, encoder, luồng và backlog A34–A42](high-fps-performance-qc-research.md). **Giữ 30fps tương thích ngược**, không nâng FPS bằng nhân đôi frame hoặc mặc định AI upscale. A34–A42 chỉ là đề xuất sau khi A02–A05/A12 có bằng chứng.
+
+**Nghiên cứu tối ưu độ trễ, bộ nhớ, thời gian và chi phí:** [Performance/Cost Research](performance-cost-optimization-research.md) + [kiểm toán độ chi tiết của toàn bộ kế hoạch](research-plan-audit-2026-10-30.md). Đề xuất A43–A48 về profiling, cache, UX lag, chi phí AI, CI và lựa chọn cấu hình theo máy; tất cả ở trạng thái **RESEARCH-ONLY/UNCLAIMED**. Agent phải dùng [skill đo hiệu năng/chi phí](../.agents/skills/performance-cost-review/SKILL.md), đo cold/warm và giữ nguyên QC. A49 là đề xuất nghiên cứu timecode/kịch bản điện ảnh theo frame/audio sample, đồng thiết kế với A20/A34, chưa có spec cho code.
+
+**Lộ trình mở rộng sau baseline:** A11 quy trình nghiên cứu/QC → A12 benchmark và CI render thật → A13 Animate POC độc lập, A15 alignment tiếng Việt → A14 renderer adapter → A16 orchestration, A17 learned QC, A18 AI video consistency, A19 UX. Đây là backlog đề xuất, chưa được triển khai; A02–A05 vẫn là P0 chặn phát triển engine mới.
+
 ## Ưu tiên hiện tại: Hoàn thiện video 2D
 
 **Một môi trường tài liệu và một branch chung:** `feat/short-video-studio`. Trạng thái từng task A01–A10, phạm vi file, điều kiện nghiệm thu và phối hợp AI agent nằm tại [AI Agent Workboard](agent-workboard.md). [TASKS](../.agent/memory/short-term/TASKS.md) chỉ tóm tắt task đang mở; [LATEST](../.agent/handover/LATEST.md) là tình trạng kiểm chứng.
 
-- **P0 (A01–A03, WIP-UNTESTED):** chuẩn kịch bản mô tả từng giây, hình chiếc áo chuyển trạng thái, chữ nảy nhẹ, giao diện sửa từng beat. Cần test schema, UI, crop, tương thích cảnh cũ và tính nhất quán chuyển động.
+- **P0 (A01 DONE-VERIFIED trên CI đã ghi; A02–A03 WIP-UNTESTED trên canonical):** chuẩn kịch bản mô tả từng giây, hình chiếc áo chuyển trạng thái, chữ nảy nhẹ, giao diện sửa từng beat. Cần test schema, UI, crop, tương thích cảnh cũ và tính nhất quán chuyển động.
 - **P0 (A04–A05, TODO/BLOCKED):** giọng chậm 0,92× không đổi cao độ, tính lại thời lượng theo âm thanh thật, render hai tỷ lệ và chạy đầy đủ QC. Chưa có bản MP4 41,9 giây được xác minh.
 - **P1 (A06–A08, TODO):** đánh giá Hugging Face/Gradio, NVIDIA NIM và provider online dạng opt-in; kiểm hạn mức, giấy phép, điều kiện sử dụng. Ollama/ComfyUI local vẫn là nền tảng, không mặc nhiên trả phí.
 - **P2–P3 (A09–A10, TODO):** TTS UI/phrase alignment/SRT và OAuth upload sau khi hoàn thiện 2D.
