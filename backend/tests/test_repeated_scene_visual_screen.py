@@ -61,7 +61,10 @@ def test_legitimate_two_scene_continuity_is_not_flagged():
 
 def test_blank_art_and_same_narration_do_not_generate_false_semantic_claims():
     blank = np.full((160, 160), 250, dtype=np.uint8)
-    assert repeated_visual_findings([blank] * 6, _scenes(6)) == []
+    findings = repeated_visual_findings([blank] * 6, _scenes(6))
+    assert [(item["kind"], item["scene"], item["end_scene"]) for item in findings] == [
+        ("possible_low_detail_illustration", 1, 6)
+    ]
     scenes = [{"title": "same", "narration": "same", "duration": 3}] * 6
     assert repeated_visual_findings([_frame("same")] * 6, scenes) == []
 
@@ -81,3 +84,43 @@ def test_small_three_pixel_reframing_still_warns_on_four_distinct_cues():
     frames = [_frame("same", shift=i % 2 * 3) for i in range(4)]
     findings = repeated_visual_findings(frames, _scenes(4))
     assert [(item["scene"], item["end_scene"]) for item in findings] == [(1, 4)]
+
+
+def test_three_blank_scenes_do_not_warn():
+    blank = np.full((160, 160), 250, dtype=np.uint8)
+    assert repeated_visual_findings([blank] * 3, _scenes(3)) == []
+
+
+def test_detailed_scene_breaks_two_short_blank_runs():
+    blank = np.full((160, 160), 250, dtype=np.uint8)
+    detailed = _frame("sun")
+    samples = [blank] * 3 + [detailed] + [blank] * 3
+    assert repeated_visual_findings(samples, _scenes(7)) == []
+
+
+def test_low_contrast_nearly_empty_art_requests_review():
+    frames = []
+    for index in range(4):
+        image = np.full((160, 160), 245, dtype=np.uint8)
+        image[:, :80] = 242 + index
+        frames.append(image)
+    findings = repeated_visual_findings(frames, _scenes(4))
+    assert [(item["kind"], item["scene"], item["end_scene"]) for item in findings] == [
+        ("possible_low_detail_illustration", 1, 4)
+    ]
+    assert findings[0]["severity"] == "manual_review"
+    assert "G10" in findings[0]["message"]
+
+
+def test_low_detail_run_respects_narration_boundaries():
+    blank = np.full((160, 160), 250, dtype=np.uint8)
+    scenes = _scenes(6)
+    for index in (1, 3, 5):
+        scenes[index]["narration"] = scenes[index - 1]["narration"]
+    assert repeated_visual_findings([blank] * 6, scenes) == []
+
+
+def test_detailed_art_is_not_a_low_detail_warning():
+    frames = [_frame(kind) for kind in ("same", "sun", "road", "drop")]
+    findings = repeated_visual_findings(frames, _scenes(4))
+    assert not any(item["kind"] == "possible_low_detail_illustration" for item in findings)
