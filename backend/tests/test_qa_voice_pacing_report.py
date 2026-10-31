@@ -11,7 +11,6 @@ import wave
 
 import pytest
 
-
 SOURCE = pathlib.Path(__file__).resolve().parents[2] / "scripts" / "qa_video_scenarios.py"
 
 
