@@ -2,7 +2,7 @@
 
 import ast
 import hashlib
-import math
+import importlib.util
 import shutil
 import subprocess
 import wave
@@ -19,12 +19,16 @@ def _voice_function():
     function = next(
         node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "voice"
     )
+    spec = importlib.util.spec_from_file_location("qa_voice_metrics", SOURCE.with_name("qa_voice_metrics.py"))
+    assert spec is not None and spec.loader is not None
+    metrics = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(metrics)
     namespace = {
         "Path": Path,
         "shutil": shutil,
         "subprocess": subprocess,
         "wave": wave,
-        "math": math,
+        "measure_voice_wav": metrics.measure_voice_wav,
         "COMPRESSOR": "acompressor=threshold=-25dB:ratio=3:attack=20:release=200",
         "digest": lambda path: hashlib.sha256(path.read_bytes()).hexdigest(),
     }
@@ -58,11 +62,12 @@ def test_voice_reports_whitespace_units_not_vietnamese_lexical_words(monkeypatch
     assert result["space_delimited_units"] == 4
     assert result["units_per_minute"] == 120.0
     assert result["voice_review"] == "NOT RUN"
+    assert result["audio_warnings"] == ["ALL_WINDOWS_QUIET"]
     assert result["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
     assert '"voice_approval": "NOT APPROVED"' in SOURCE.read_text(encoding="utf-8")
 
 
 def test_voice_rejects_empty_wav_even_if_pcm_header_is_valid(monkeypatch, tmp_path):
     _stub_voice_tools(monkeypatch, frames=0)
-    with pytest.raises(ValueError, match="no playable samples"):
+    with pytest.raises(ValueError, match="no audio frames"):
         _voice_function()("Chờ đèn đi bộ", tmp_path / "empty.wav", 95)
