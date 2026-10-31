@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import math
 import re
 import shutil
@@ -705,11 +706,14 @@ def render_job(store: Store, job: dict[str, Any]) -> None:
     except Cancelled:
         store.update_job(job["id"], state="cancelled")
     except Exception:
-        store.update_job(
-            job["id"],
-            state="failed",
-            error="Xuất video thất bại. Kiểm tra tệp đầu vào, dung lượng và FFmpeg rồi thử lại.",
-        )
+        try:
+            store.update_job(
+                job["id"],
+                state="failed",
+                error="Xuất video thất bại. Kiểm tra tệp đầu vào, dung lượng và FFmpeg rồi thử lại.",
+            )
+        except Exception:
+            logging.exception("Could not persist render failure for job %s", job["id"])
         raise
     finally:
         shutil.rmtree(root)
