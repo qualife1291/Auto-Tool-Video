@@ -111,3 +111,30 @@ def test_gc_failure_does_not_fail_successful_import(client, image_bytes, monkeyp
     monkeypatch.setattr(assets_gc, "collect_garbage", broken)
     project = create_story(client, "Một cảnh.")
     assert attach(client, project, project["scenes"][0], image_bytes)["revision"] > 0
+
+
+def test_abandoned_ai_image_candidate_expires_after_grace(client):
+    from datetime import UTC, datetime, timedelta
+
+    project = create_story(client, "Một cảnh.")
+    store = client.app.state.store
+    scene = project["scenes"][0]
+    candidate = add_fake_asset(store, project["id"], scene["id"], "image")
+    path = store.root / candidate["path"]
+    os.utime(path, (time.time() - 90000, time.time() - 90000))
+    job_id = str(uuid4())
+    job = {
+        "id": job_id,
+        "project_id": project["id"],
+        "state": "succeeded",
+        "options": {"kind": "image"},
+        "result": {"candidate_id": candidate["id"]},
+        "heartbeat": (datetime.now(UTC) - timedelta(days=2)).isoformat(),
+    }
+    with store.connect() as conn:
+        conn.execute(
+            "INSERT INTO jobs VALUES(?,?,?,?,?,?)",
+            (job_id, project["id"], job_id, "digest", "succeeded", json.dumps(job)),
+        )
+    assert collect_garbage(store, project["id"])["deleted"] == 1
+    assert not path.exists()

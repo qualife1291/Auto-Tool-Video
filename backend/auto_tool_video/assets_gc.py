@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -45,6 +46,8 @@ def _eligible_file(store: Store, asset: dict[str, Any], cutoff: float) -> Path |
             not raw.is_relative_to(directory)
             or not path.is_relative_to(directory)
             or raw.is_symlink()
+            or path != raw
+            or not path.name.startswith(asset["id"] + ".")
             or not path.is_file()
             or path.stat().st_mtime > cutoff
         ):
@@ -81,7 +84,13 @@ def collect_garbage(
                 and job.get("options", {}).get("kind") == "image"
             ):
                 candidate = (job.get("result") or {}).get("candidate_id")
-                if candidate:
+                # Successful-but-unapplied candidates receive the same grace
+                # period. They must not be retained indefinitely.
+                try:
+                    recent = datetime.fromisoformat(job["heartbeat"]).timestamp() > cutoff
+                except (KeyError, TypeError, ValueError):
+                    recent = False
+                if candidate and recent:
                     protected.add(candidate)
         for row in conn.execute("SELECT data FROM assets"):
             asset = json.loads(row[0])

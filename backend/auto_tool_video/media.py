@@ -144,6 +144,9 @@ def import_asset(
         with store.connect() as conn:
             conn.execute("BEGIN IMMEDIATE")
             current = store.get("projects", project_id, conn)
+            # Recheck inside the write transaction to close concurrent upload races.
+            if project_import_usage(conn, project_id) + len(payload) > MAX_PROJECT_IMPORT_BYTES:
+                raise DomainError("DISK_LOW", "Kho tài nguyên đạt giới hạn 500 MiB.")
             if current["revision"] != revision:
                 raise DomainError("REVISION_CONFLICT", "Dự án vừa đổi; hãy thử nhập lại.", 409)
             target = next(item for item in current["scenes"] if item["id"] == scene_id)
