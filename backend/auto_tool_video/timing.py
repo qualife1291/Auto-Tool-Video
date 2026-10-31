@@ -3,6 +3,8 @@
 import math
 import re
 
+DURATION_EPS = 0.01
+
 
 def frames_for(duration: float) -> int:
     if not math.isfinite(duration) or duration <= 0:

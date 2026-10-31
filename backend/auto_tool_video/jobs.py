@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from .domain import ExportInput
 from .store import DomainError, Store, now
-from .timing import frames_for
+from .timing import DURATION_EPS, frames_for
 
 
 def enqueue(store: Store, project_id: str, options: ExportInput) -> dict[str, Any]:
@@ -58,7 +58,7 @@ def enqueue(store: Store, project_id: str, options: ExportInput) -> dict[str, An
                         "AUDIO_STALE",
                         f"{scene['title']}: lời thoại đã đổi, cần thu/nhập lại giọng.",
                     )
-                if audio["duration"] > scene["duration"]:
+                if audio["duration"] > scene["duration"] + DURATION_EPS:
                     raise DomainError("DURATION_LIMIT", "Âm thanh dài hơn cảnh.")
         if shutil.disk_usage(store.root).free < 2 * 1024**3:
             raise DomainError("DISK_LOW", "Cần ít nhất 2 GiB đĩa trống để xuất.")

@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from .timing import DURATION_EPS
+
 
 def now() -> str:
     return datetime.now(UTC).isoformat()
@@ -135,7 +137,7 @@ class Store:
                 if scene.get("audio_id"):
                     audio = self.get("assets", scene["audio_id"], conn)
                     scene["audio_stale"] = audio.get("narration") != scene["narration"]
-                    if scene["duration"] + 0.01 < audio["duration"]:
+                    if scene["duration"] + DURATION_EPS < audio["duration"]:
                         raise DomainError(
                             "DURATION_LIMIT", "Thời lượng cảnh không được cắt ngắn âm thanh."
                         )
@@ -146,8 +148,9 @@ class Store:
         return project
 
     def asset_path(self, asset: dict[str, Any]) -> Path:
-        path = (self.root / asset["path"]).resolve()
-        if not path.is_relative_to(self.root) or not path.is_file() or path.is_symlink():
+        raw = self.root / asset["path"]
+        path = raw.resolve()
+        if raw.is_symlink() or not path.is_relative_to(self.root) or not path.is_file():
             raise DomainError("INVALID_ASSET", "Tệp tài nguyên bị thiếu hoặc không hợp lệ.")
         return path
 
