@@ -15,7 +15,6 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageDraw
-
 from science_story import Art
 from verify_science_art import validate_assets
 
