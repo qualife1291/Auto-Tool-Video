@@ -1,4 +1,5 @@
 """Check offline QA voice evidence is measurable but not human-approved."""
+
 import ast
 from pathlib import Path
 
