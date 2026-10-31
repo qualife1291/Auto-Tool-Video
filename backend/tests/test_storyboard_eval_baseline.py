@@ -32,9 +32,7 @@ def test_frozen_fixture_metadata_and_pairwise_coverage():
     assert len({case["case_id"] for case in cases}) == 40
     assert len([c for c in cases if c["category"] == "positive"]) == 20
     assert len([c for c in cases if c["category"] == "negative"]) == 20
-    assert {c["profile"] for c in cases} == {
-        "preschool", "kids", "older_kids", "family", "general"
-    }
+    assert {c["profile"] for c in cases} == {"preschool", "kids", "older_kids", "family", "general"}
     assert {c["aspect"] for c in cases} == {"portrait", "landscape"}
     assert {c["mode"] for c in cases} == {"brief", "preserve"}
     assert {c["target_duration"] for c in cases} == {30, 45, 60}
@@ -90,12 +88,8 @@ def test_offline_structural_oracle(case):
             expected["scene_durations"]
         )
         assert [s["narration"] for s in result["scenes"]] == expected["scene_narrations"]
-        assert [len(s["second_by_second"]) for s in result["scenes"]] == (
-            expected["beat_counts"]
-        )
-        assert [s["beat_plan_status"] for s in result["scenes"]] == (
-            expected["beat_status"]
-        )
+        assert [len(s["second_by_second"]) for s in result["scenes"]] == (expected["beat_counts"])
+        assert [s["beat_plan_status"] for s in result["scenes"]] == (expected["beat_status"])
         for scene, duration in zip(result["scenes"], expected["scene_durations"], strict=True):
             assert [b["second"] for b in scene["second_by_second"]] == list(
                 range(len(scene["second_by_second"]))
