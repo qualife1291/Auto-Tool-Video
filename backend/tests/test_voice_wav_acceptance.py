@@ -36,3 +36,17 @@ def test_twelve_vietnamese_wavs_and_stretched_timeline(tmp_path):
     story = json.loads((tmp_path / "story.json").read_text())
     assert len(story["scenes"]) == 12
     assert all((tmp_path / scene["audio"]).is_file() for scene in story["scenes"])
+
+
+def test_a04_short_scene_reveal_has_readable_full_color_hold():
+    """Regression: 0.78 draw + 0.12 blend left ~0.24s color in 2.37s A04 cue."""
+    from voice_wav_acceptance import make_review_scene
+
+    scene = make_review_scene({"title": "Áo ướt", "narration": "Vì sao áo ướt?", "duration": 2.0})
+    assert scene.style == "whiteboard"
+    assert scene.visual_fit == "contain"
+    # Renderer blends the complete illustration over 0.12 of normalized scene time.
+    # A 2-second cue must retain >=0.75s fully colored, without changing product defaults.
+    full_color_hold = scene.duration * (1 - scene.draw_fraction - 0.12)
+    assert full_color_hold >= 0.75
+    assert scene.draw_fraction == 0.50
