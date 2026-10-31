@@ -45,6 +45,8 @@ jobs:
             const summary = [['PR', 'SHA', 'CI state', 'Failed workflows']];
             let blocked = 0;
             let notRun = 0;
+            let writeDenied = false;
+            let writeDeniedReason = '';
 
             for (const pr of prs) {
               // Query only runs attached to this exact HEAD, never reuse older SHA evidence.
@@ -85,19 +87,31 @@ jobs:
 
                 // Do not create boilerplate comments for green CI.
                 // Resolve only our previous failure notice if a rerun fixed it.
-                if (failedNow || run.conclusion === 'success') {
-                  const comments = await github.paginate(github.rest.issues.listComments, {
-                    owner, repo, issue_number: pr.number, per_page: 100
-                  });
-                  const existing = comments.find(c => c.body && c.body.includes(marker));
-                  if (failedNow && !existing) {
-                    await github.rest.issues.createComment({
-                      owner, repo, issue_number: pr.number, body: commentBody(true)
+                if (!writeDenied && (failedNow || run.conclusion === 'success')) {
+                  try {
+                    const comments = await github.paginate(github.rest.issues.listComments, {
+                      owner, repo, issue_number: pr.number, per_page: 100
                     });
-                  } else if (existing && existing.body !== commentBody(failedNow)) {
-                    await github.rest.issues.updateComment({
-                      owner, repo, comment_id: existing.id, body: commentBody(failedNow)
-                    });
+                    const existing = comments.find(c => c.body && c.body.includes(marker));
+                    if (failedNow && !existing) {
+                      await github.rest.issues.createComment({
+                        owner, repo, issue_number: pr.number, body: commentBody(true)
+                      });
+                    } else if (existing && existing.body !== commentBody(failedNow)) {
+                      await github.rest.issues.updateComment({
+                        owner, repo, comment_id: existing.id, body: commentBody(failedNow)
+                      });
+                    }
+                  } catch (error) {
+                    // Permission policy can deny issue comments even when the workflow
+                    // requests issues:write. Continue read-only scanning; never mask
+                    // missing notifications as a successful watcher run.
+                    if (error.status !== 401 && error.status !== 403) throw error;
+                    writeDenied = true;
+                    writeDeniedReason = 'GitHub token cannot write PR comments (HTTP ' +
+                      error.status + '). Check repository/org Actions permissions; ' +
+                      'no PAT or broader permissions are installed automatically.';
+                    core.warning(writeDeniedReason);
                   }
                 }
               }
@@ -123,10 +137,12 @@ jobs:
               .addHeading('T01 PR QA Watch — automated technical checks', 2)
               .addRaw('Default branch: ' + base +
                 '. Failed runs are linked to exact PR HEAD SHA. No creator sign-off inferred.\n')
+              .addRaw(writeDenied ? '**DEGRADED: ' + writeDeniedReason + '**\n' : '')
               .addTable(summary)
               .addRaw('\nOpen PRs: ' + prs.length + ', blocked: ' + blocked +
                 ', missing CI: ' + notRun + '.\n')
               .write();
             core.info('T01 scan complete: ' + prs.length + ' open PRs; ' +
               blocked + ' with confirmed failed checks; ' + notRun + ' missing mandatory checks.');
+            if (writeDenied) core.setFailed(writeDeniedReason);
             // Do NOT automatically merge, approve, or close PRs.
