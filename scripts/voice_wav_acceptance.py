@@ -171,7 +171,7 @@ def verify_tempo(root: Path) -> dict:
 A04_REVIEW_DRAW_FRACTION = 0.50
 
 
-def make_review_scene(spec: dict) -> "Scene":
+def make_review_scene(spec: dict):
     """Make a short whiteboard QA cue with a readable final-color hold."""
     from auto_tool_video.domain import Scene
 
