@@ -295,7 +295,7 @@ class ScenePainter:
             # Ease from a slightly inset image to exactly 1x; keep the subtle
             # push-in beyond 1x only for explicitly cropped "cover" visuals.
             if self.capture:
-                zoom = 1
+                zoom = 1.0
             elif self.layout != "full_frame":
                 zoom = 0.94 + 0.06 * eased
             elif self.fit == "contain":
