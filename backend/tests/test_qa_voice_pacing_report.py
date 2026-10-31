@@ -41,7 +41,7 @@ def _stub_voice_tools(monkeypatch, frames):
                 wav.setnchannels(1)
                 wav.setsampwidth(2)
                 wav.setframerate(16000)
-                wav.writeframes(b"\\x00\\x00" * frames)
+                wav.writeframes(b"\x00\x00" * frames)
         else:
             shutil.copyfile(command[command.index("-i") + 1], command[-1])
         return subprocess.CompletedProcess(command, 0)
