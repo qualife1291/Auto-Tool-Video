@@ -13,7 +13,7 @@ import numpy as np
 
 # A sequence of at least four distinct narrated scenes with nearly unchanged
 # edges warrants human review. The threshold is a heuristic, not an acceptance gate.
-EDGE_SIMILARITY = 0.82
+EDGE_SIMILARITY = 0.78
 MIN_CONSECUTIVE_PAIRS = 3
 MIN_EDGE_PIXELS = 100
 
