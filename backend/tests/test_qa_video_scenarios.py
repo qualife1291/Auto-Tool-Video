@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import io
+from itertools import pairwise
 import sys
 from pathlib import Path
 
@@ -123,7 +124,7 @@ def test_every_cue_has_intentional_scene_specific_art(key):
     # This is a visual-content guard, NOT human semantic understanding or G10 approval.
     differences = [
         ImageStat.Stat(ImageChops.difference(a, b)).mean[0]
-        for a, b in zip(images, images[1:], strict=False)
+        for a, b in pairwise(images)
     ]
     assert differences and min(differences) >= 0.4, (key, differences)
 
