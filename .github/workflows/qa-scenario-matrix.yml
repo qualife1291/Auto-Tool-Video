@@ -1,0 +1,97 @@
+name: T01 Multi-Scenario Video QA
+
+on:
+  pull_request:
+    branches:
+      - feat/short-video-studio
+    paths:
+      - scripts/qa_video_scenarios.py
+      - backend/tests/test_qa_video_scenarios.py
+      - .github/workflows/qa-scenario-matrix.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scenario:
+    name: ${{ matrix.case }} (12/30/45/60s, 9:16+16:9)
+    strategy:
+      fail-fast: false
+      matrix:
+        case: [water-12s, shirt-30s, traffic-45s, energy-60s]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      APP_DATA_DIR: /tmp/t01-scenario-fixtures
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Install free offline voice and codec tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak
+          uv sync --project backend --frozen --group dev
+      - name: Fast scenario and validation regression
+        run: |
+          uv run --project backend ruff check scripts/qa_video_scenarios.py backend/tests/test_qa_video_scenarios.py
+          uv run --project backend ruff format --check scripts/qa_video_scenarios.py backend/tests/test_qa_video_scenarios.py
+          uv run --project backend pytest backend/tests/test_qa_video_scenarios.py -q
+      - name: Render and validate both aspect ratio MP4 files
+        run: |
+          uv run --project backend python scripts/qa_video_scenarios.py \
+            --scenario '${{ matrix.case }}' \
+            --output-dir '${{ runner.temp }}/qa-${{ matrix.case }}'
+      - name: Upload for creator manual watch/listen and feedback
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-scenario-${{ matrix.case }}-portrait-landscape
+          path: |
+            ${{ runner.temp }}/qa-${{ matrix.case }}/*.mp4
+            ${{ runner.temp }}/qa-${{ matrix.case }}/scenario-report.json
+            ${{ runner.temp }}/qa-${{ matrix.case }}/scenario-qc-failed-*.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  fullhd-short:
+    name: FullHD 12s portrait + landscape (manual dispatch only)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      APP_DATA_DIR: /tmp/t01-fullhd-fixtures
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Install FFmpeg, eSpeak and Python deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak
+          uv sync --project backend --frozen --group dev
+      - name: Render and validate 12s real FullHD two-aspect videos
+        run: |
+          uv run --project backend python scripts/qa_video_scenarios.py \
+            --scenario water-12s --kind export \
+            --output-dir '${{ runner.temp }}/qa-water-fullhd'
+      - name: Upload FullHD artifacts for manual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-scenario-water-12s-fullhd-portrait-landscape
+          path: |
+            ${{ runner.temp }}/qa-water-fullhd/*.mp4
+            ${{ runner.temp }}/qa-water-fullhd/scenario-report.json
+            ${{ runner.temp }}/qa-water-fullhd/scenario-qc-failed-*.json
+          if-no-files-found: warn
+          retention-days: 7
