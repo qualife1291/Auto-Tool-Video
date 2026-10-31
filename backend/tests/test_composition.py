@@ -230,3 +230,15 @@ def test_invalid_composition_fields_are_rejected(client, patch):
     project = create_story(client)
     project["scenes"][0].update(patch)
     assert save(client, project).status_code == 422
+
+
+def test_new_split_and_ai_scenes_default_to_noncropping_fit():
+    from auto_tool_video.domain import Scene, split_script
+
+    # Newly authored scenes should never lose half the subject in a portrait
+    # output just because a user imports a landscape photo or diagram.
+    assert split_script("Vì sao nước bay hơi?")[0].visual_fit == "contain"
+    # Legacy persisted snapshots continue to deserialize their old default.
+    assert Scene(title="Cũ", narration="Giữ nguyên").visual_fit == "cover"
+    # Explicit creator intent takes precedence, including old snapshots.
+    assert Scene(title="Đã chọn", visual_fit="cover").visual_fit == "cover"

@@ -348,7 +348,7 @@ function App() {
           audio_stale: false,
           duration: 5,
           layout: 'full_frame',
-          visual_fit: 'cover',
+          visual_fit: 'contain',
           transition: 'dissolve',
           focal_x: 0.5,
           focal_y: 0.5,

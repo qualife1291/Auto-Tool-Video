@@ -184,7 +184,7 @@ def validate_proposal(raw: str, project: dict[str, Any], mode: str) -> dict[str,
             )
         )[:10]
         try:
-            scenes.append(Scene(id=str(uuid4()), **values).model_dump())
+            scenes.append(Scene(id=str(uuid4()), visual_fit="contain", **values).model_dump())
         except ValidationError:
             raise DomainError(
                 "MODEL_OUTPUT_INVALID", "Cảnh đề xuất vượt giới hạn lời thoại hoặc dữ liệu."
