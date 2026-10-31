@@ -150,9 +150,7 @@ def test_real_pause_change_invalidates_authored_beats_but_preserves_text(client)
 
 
 @pytest.mark.parametrize("clip_first", [True, False])
-def test_short_clip_with_long_wav_is_order_independent(
-    client, long_clip: bytes, clip_first: bool
-):
+def test_short_clip_with_long_wav_is_order_independent(client, long_clip: bytes, clip_first: bool):
     project = create_story(client, "Đổi cảnh không cắt lời.")
     if clip_first:
         project = _import(client, project, long_clip, "short.mp4")
@@ -201,8 +199,7 @@ def test_long_clip_plus_short_wav_import_order_preserves_visual_frame_floor(
 
     # The visual clip must remain playable in full, irrespective of the shorter audio.
     assert _scene(result)["duration"] >= clip_floor, (
-        f"imported audio shortened a {clip_floor:.6f}s clip to "
-        f"{_scene(result)['duration']:.6f}s"
+        f"imported audio shortened a {clip_floor:.6f}s clip to {_scene(result)['duration']:.6f}s"
     )
 
 
@@ -224,8 +221,7 @@ def test_long_clip_short_wav_fit_does_not_drop_clip_frames(client, long_clip: by
 
     # The same pause and media must not make the clip shorter after Fit Audio.
     assert _scene(result)["duration"] >= clip_floor, (
-        f"fit-audio reduced clip from {clip_floor:.6f}s to "
-        f"{_scene(result)['duration']:.6f}s"
+        f"fit-audio reduced clip from {clip_floor:.6f}s to {_scene(result)['duration']:.6f}s"
     )
 
 
@@ -251,9 +247,7 @@ def test_stale_revision_and_missing_audio_never_change_persisted_project(client)
 def test_three_scenes_exact_60s_respect_fit_boundaries(client):
     project = create_story(client, "Cảnh một.\nCảnh hai.\nCảnh ba.")
     for index in range(3):
-        project = attach(
-            client, project, project["scenes"][index], _wav(19.65), f"{index}.wav"
-        )
+        project = attach(client, project, project["scenes"][index], _wav(19.65), f"{index}.wav")
 
     before = copy.deepcopy(project)
     fit = _fit(client, project, 0.35)
