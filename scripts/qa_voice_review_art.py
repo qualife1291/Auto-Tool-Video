@@ -11,7 +11,6 @@ import io
 
 from PIL import Image, ImageDraw
 
-
 # fmt: off
 # Coordinate-rich source illustration is kept stable for pixel/edge regressions.
 INK = '#29463d'
