@@ -25,6 +25,11 @@
 
 C01–C05 follow the same engineering rulebook and never self-merge. T01 and T02 have equal independent QA verdict and eligible merge authority under owner approval [#70](https://github.com/qualife1291/Auto-Tool-Video/issues/70), but **exactly one primary QA owner per PR**; the other can independently cross-check. Neither BA replaces QA or creator approval.
 
+
+## Universal active-seat responsibility — owner directive, canonical charter coordination
+
+All **active BA/Coder/Tester seats**, and any future owner-approved staffed TR/AIQ/VD/OPS member seats, must proactively follow **their personally assigned** tasks/PR/CI/reviewer feedback on each real work session or explicitly authorized schedule; study and record current official sources, role-relevant skills, upstream releases, licensing, privacy/security/FREE cost; and send **specific evidence-backed quality-improvement proposals** with measurable gates and rollback through BA01+BA02. Keep a short learning/next-owner note on meaningful close/handoff, not a comment-volume metric. This reflects Product Owner requirements tracked by [#82](https://github.com/qualife1291/Auto-Tool-Video/issues/82) and [PR #83](https://github.com/qualife1291/Auto-Tool-Video/pull/83) (research only), not an automatic activation of proposed role members. Numbered member IDs require actual owner approval and BA registry; TR/AIQ/VD/OPS alone are **role categories**. BA01's pending authoritative charter [#51](https://github.com/qualife1291/Auto-Tool-Video/pull/51) is the integration owner; do not cross-edit it here. No invisible background monitoring, unaudited skill installation, paid API, new schedule or self-assigned implementation is implied.
+
 ## One shared hourly watcher
 
 Existing BA01 automation ID `6ae4c97f18f881918a970547315da91a` is **updated in place** for BA01+BA02, hourly near **:53 ICT**. Do not create a duplicate second scheduler or claim that one run creates two independent BA agents. Each cycle watches GitHub assignment/PR/CI/QA/G10 and investigates FREE-first new providers/SDLC harness, source/license/cost/security/effort, producing non-spam verified summaries and needed issue/PR updates.
