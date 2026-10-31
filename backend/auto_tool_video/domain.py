@@ -215,6 +215,11 @@ def split_script(text: str) -> list[Scene]:
     if any(len(part) > 500 for part in paragraphs):
         raise ValueError("Một đoạn quá 500 ký tự. Tách đoạn bằng xuống dòng.")
     return [
-        Scene(title=f"Cảnh {i + 1}", narration=part, duration=min(10, max(3, len(part) / 20)))
+        Scene(
+            title=f"Cảnh {i + 1}",
+            narration=part,
+            duration=min(10, max(3, len(part) / 20)),
+            visual_fit="contain",
+        )
         for i, part in enumerate(paragraphs)
     ]
