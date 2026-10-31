@@ -42,9 +42,7 @@ def test_a04_short_scene_reveal_has_readable_full_color_hold():
     """Regression: 0.78 draw + 0.12 blend left ~0.24s color in 2.37s A04 cue."""
     from voice_wav_acceptance import make_review_scene
 
-    scene = make_review_scene(
-        {"title": "Áo ướt", "narration": "Vì sao áo ướt?", "duration": 2.0}
-    )
+    scene = make_review_scene({"title": "Áo ướt", "narration": "Vì sao áo ướt?", "duration": 2.0})
     assert scene.style == "whiteboard"
     assert scene.visual_fit == "contain"
     # Renderer blends the complete illustration over 0.12 of normalized scene time.
