@@ -8,8 +8,12 @@ actions and wetness stages make each spoken cue distinguishable in the final MP4
 from __future__ import annotations
 
 import io
+
 from PIL import Image, ImageDraw
 
+
+# fmt: off
+# Coordinate-rich source illustration is kept stable for pixel/edge regressions.
 INK = '#29463d'
 BLUE = '#408fb2'
 YELLOW = '#f4c967'
