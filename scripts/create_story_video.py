@@ -333,19 +333,21 @@ def build(
                 flush=True,
             )
             source_clip(clip, art, scene["duration"])
-            try:
-                rendered_ok = _source_clip_format_ok(
-                    clip, width, height, scene["duration"]
-                )
-            except (OSError, TypeError, ValueError, KeyError, StopIteration) as exc:
-                raise ValueError(
-                    "Fresh science source clip could not be verified."
-                ) from exc
-            if not rendered_ok:
-                raise ValueError(
-                    "Fresh science source clip has invalid frame or codec metadata."
-                )
+            # Incomplete visual inputs permit render (e.g. synthetic fixtures),
+            # never a reusable entry. Validate strictly before publishing cache.
             if cacheable:
+                try:
+                    rendered_ok = _source_clip_format_ok(
+                        clip, width, height, scene["duration"]
+                    )
+                except (OSError, TypeError, ValueError, KeyError, StopIteration) as exc:
+                    raise ValueError(
+                        "Fresh science source clip could not be verified."
+                    ) from exc
+                if not rendered_ok:
+                    raise ValueError(
+                        "Fresh science source clip has invalid frame or codec metadata."
+                    )
                 _save_clip_manifest(clip, fingerprint)
     sheet.save(root / f"art-contact-{aspect}.jpg", quality=95)
     if stills:
