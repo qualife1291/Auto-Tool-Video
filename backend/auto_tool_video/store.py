@@ -197,7 +197,10 @@ class Store:
                     if (
                         not isinstance(job, dict)
                         or job.get("id") != row["id"]
+                        or job.get("project_id") != row["project_id"]
                         or job.get("state") != "queued"
+                        or not isinstance(job.get("options"), dict)
+                        or job["options"].get("kind") not in ("plan", "image", "preview", "export")
                     ):
                         raise ValueError("Queued job metadata does not match its database row")
                 except (ValueError, TypeError):
