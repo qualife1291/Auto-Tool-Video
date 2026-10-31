@@ -1,43 +1,23 @@
-"""Execute the QA voice measurement with deterministic offline WAV fixtures."""
+"""Execute the QA voice adapter with deterministic offline WAV fixtures."""
 
-import ast
 import hashlib
-import importlib.util
+import importlib
 import math
+import pathlib
 import shutil
 import struct
 import subprocess
 import wave
-from pathlib import Path
 
 import pytest
 
 
-SOURCE = Path(__file__).resolve().parents[2] / "scripts" / "qa_video_scenarios.py"
+SOURCE = pathlib.Path(__file__).resolve().parents[2] / "scripts" / "qa_video_scenarios.py"
 
 
-def _voice_function():
-    tree = ast.parse(SOURCE.read_text(encoding="utf-8"))
-    function = next(
-        node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "voice"
-    )
-    spec = importlib.util.spec_from_file_location(
-        "qa_voice_metrics", SOURCE.with_name("qa_voice_metrics.py")
-    )
-    assert spec is not None and spec.loader is not None
-    metrics = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(metrics)
-    namespace = {
-        "Path": Path,
-        "shutil": shutil,
-        "subprocess": subprocess,
-        "wave": wave,
-        "measure_voice_wav": metrics.measure_voice_wav,
-        "COMPRESSOR": "acompressor=threshold=-25dB:ratio=3:attack=20:release=200",
-        "digest": lambda path: hashlib.sha256(path.read_bytes()).hexdigest(),
-    }
-    exec(compile(ast.Module(body=[function], type_ignores=[]), str(SOURCE), "exec"), namespace)
-    return namespace["voice"]
+def _voice_function(monkeypatch):
+    monkeypatch.syspath_prepend(str(SOURCE.parent))
+    return importlib.import_module("qa_video_scenarios").voice
 
 
 def _stub_voice_tools(monkeypatch, frames, *, silent=False):
@@ -64,7 +44,7 @@ def _stub_voice_tools(monkeypatch, frames, *, silent=False):
 def test_voice_reports_whitespace_units_not_vietnamese_lexical_words(monkeypatch, tmp_path):
     _stub_voice_tools(monkeypatch, frames=32000)
     path = tmp_path / "voice.wav"
-    result = _voice_function()("Chờ đèn đi bộ", path, 95)
+    result = _voice_function(monkeypatch)("Chờ đèn đi bộ", path, 95)
 
     assert result["duration"] == pytest.approx(2.0)
     assert result["space_delimited_units"] == 4
@@ -78,10 +58,10 @@ def test_voice_reports_whitespace_units_not_vietnamese_lexical_words(monkeypatch
 def test_voice_rejects_empty_wav_even_if_pcm_header_is_valid(monkeypatch, tmp_path):
     _stub_voice_tools(monkeypatch, frames=0)
     with pytest.raises(ValueError, match="no audio frames"):
-        _voice_function()("Chờ đèn đi bộ", tmp_path / "empty.wav", 95)
+        _voice_function(monkeypatch)("Chờ đèn đi bộ", tmp_path / "empty.wav", 95)
 
 
 def test_voice_rejects_fully_silent_audio(monkeypatch, tmp_path):
     _stub_voice_tools(monkeypatch, frames=16000, silent=True)
     with pytest.raises(ValueError, match="Source voice is silent"):
-        _voice_function()("Chờ đèn đi bộ", tmp_path / "silent.wav", 95)
+        _voice_function(monkeypatch)("Chờ đèn đi bộ", tmp_path / "silent.wav", 95)
