@@ -8,7 +8,7 @@ Công cụ web local làm video whiteboard tiếng Việt cho từng nhóm tuổ
 
 ## Tài liệu chung cho AI agent
 
-- [Bảng công việc A01–A10/P1](docs/agent-workboard.md): trạng thái và ưu tiên; [vai trò BA/Tester (T01+T02)/Coder (C01–C05) lâu dài](docs/agent-role-charter.md) và [phân công, file ownership, QA gates hiện tại](docs/agent-role-task-contracts.md): nguồn phân quyền và SDLC cập nhật, bao gồm 4 coder C01/C02/C03/C04, với [C01 #52](https://github.com/qualife1291/Auto-Tool-Video/issues/52) và [C02 #53](https://github.com/qualife1291/Auto-Tool-Video/issues/53) hiện AVAILABLE / UNASSIGNED.
+- [Bảng công việc A01–A10/P1](docs/agent-workboard.md): trạng thái và ưu tiên; [vai trò BA/Tester (T01+T02)/Coder (C01–C05) lâu dài](docs/agent-role-charter.md) và [phân công, file ownership, QA gates hiện tại](docs/agent-role-task-contracts.md): tài liệu điều phối/SDLC; nhân sự đang hoạt động gồm các seat C01–C05, BA01+BA02 và T01+T02 ngang quyền QA (mỗi PR chỉ một `QA_OWNER`). Phân công và trạng thái **hiện hành** cần đối chiếu [master registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31), [BA02 #72](https://github.com/qualife1291/Auto-Tool-Video/issues/72), [T02 #70](https://github.com/qualife1291/Auto-Tool-Video/issues/70), workboard và issue/PR live; không suy luận từ lịch sử đã lưu.
 - [Bàn giao hiện tại](.agent/handover/LATEST.md), [các việc còn mở](.agent/memory/short-term/TASKS.md), [lộ trình M1–M4](docs/development-plan.md), [đặc tả đã duyệt](specs/whiteboard-video-tool.md).
 - **Branch làm việc chung:** `feat/short-video-studio`. Các phần storyboard từng giây, áo chuyển trạng thái và caption bounce mới nhập là WIP chưa kiểm thử lại; video 0,92× chưa render/xác minh. Không lấy kết quả QC cũ làm chứng nhận cho code mới.
 
