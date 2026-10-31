@@ -12,6 +12,12 @@ on:
       - .github/workflows/a02-real-art-qa.yml
   workflow_dispatch:
 
+concurrency:
+  # PR updates supersede older runs only within the same workflow and PR.
+  # Push/post-merge and manual runs are isolated and never auto-cancelled.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 
