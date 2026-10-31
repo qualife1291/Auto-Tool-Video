@@ -198,11 +198,13 @@ def render_aspect(root: Path, aspect: str) -> dict:
         # Real authored objects/actions, not the same rectangle + oval tinted 12 times.
         title = story["scenes"][i]["title"]
         art = render_cue_art(title)
-        illustration_records.append({
-            "title": title,
-            "objects": list(VISUAL_INTENTS[title]),
-            "sha256": hashlib.sha256(art).hexdigest(),
-        })
+        illustration_records.append(
+            {
+                "title": title,
+                "objects": list(VISUAL_INTENTS[title]),
+                "sha256": hashlib.sha256(art).hexdigest(),
+            }
+        )
         project = import_asset(
             store, project["id"], scene["id"], project["revision"], art
         )
