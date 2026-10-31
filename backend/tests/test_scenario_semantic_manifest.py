@@ -6,9 +6,7 @@ import json
 from pathlib import Path
 
 
-def test_scenario_report_tracks_real_art_hashes_without_human_approval(
-    monkeypatch, tmp_path
-):
+def test_semantic_manifest(monkeypatch, tmp_path):
     root = Path(__file__).resolve().parents[2]
     monkeypatch.syspath_prepend(str(root / "scripts"))
     scenarios = importlib.import_module("qa_video_scenarios")
