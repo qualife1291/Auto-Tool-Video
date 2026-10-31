@@ -9,6 +9,12 @@ on:
       - feat/short-video-studio
   workflow_dispatch:
 
+concurrency:
+  # PR updates supersede older runs only within the same workflow and PR.
+  # Non-PR runs use unique run IDs; preserve both running and pending runs.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 
