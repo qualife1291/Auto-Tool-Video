@@ -1,9 +1,8 @@
-"""C04 #89: parity of 30 FPS import and Fit Audio with synthetic media.
+"""C04 #89 RED -> BA-approved #94 GREEN: keep motion source frames.
 
-This is a test-only BA-D03 reproduction: the long-clip/short-WAV cases
-deliberately assert the intended clip-preservation invariant. If they fail,
-the source defect must be routed to BA for a separately approved fix.
-No media, API, timing, store, or workflow implementation is modified.
+Synthetic WAV/MP4 tests preserve immutable original RED in GitHub Actions
+#41173149131 and exercise the new source change without real creator data.
+No renderer, Store, timing, workflow or QA thresholds are modified.
 """
 
 from __future__ import annotations
@@ -195,7 +194,8 @@ def test_long_clip_plus_short_wav_import_order_preserves_visual_frame_floor(
     assert result["revision"] == project["revision"] + 1
     assert _scene(result)["image_id"] == clip_id
     assert _scene(result)["second_by_second"] == original_beats
-    assert _scene(result)["beat_plan_status"] == "needs_review"
+    # With the full clip unchanged, creator-authored timing remains valid.
+    assert _scene(result)["beat_plan_status"] == "authored"
 
     # The visual clip must remain playable in full, irrespective of the shorter audio.
     assert _scene(result)["duration"] >= clip_floor, (
@@ -260,3 +260,89 @@ def test_three_scenes_exact_60s_respect_fit_boundaries(client):
     assert rejected.status_code == 400, rejected.text
     assert rejected.json()["code"] == "DURATION_LIMIT"
     assert client.get(f"/api/projects/{result['id']}").json() == result
+
+
+@pytest.mark.parametrize("clip_first", [True, False])
+@pytest.mark.parametrize("audio_seconds", [1.0, 3.0])
+@pytest.mark.parametrize("pause_after", [0.0, 0.35])
+def test_motion_clip_audio_order_and_pause_use_measured_frame_maximum(
+    client, long_clip: bytes, clip_first: bool, audio_seconds: float, pause_after: float
+):
+    """Neither upload order nor Fit Audio may implicitly clip off video frames."""
+    project = create_story(client, "Không cắt đuôi clip chuyển động.")
+    if clip_first:
+        project = _import(client, project, long_clip, "source.mp4")
+        project = _import(client, project, _wav(audio_seconds), "narration.wav")
+    else:
+        project = _import(client, project, _wav(audio_seconds), "narration.wav")
+        project = _import(client, project, long_clip, "source.mp4")
+    store = client.app.state.store
+    scene = _scene(project)
+    audio = store.get("assets", scene["audio_id"])
+    clip = store.get("assets", scene["image_id"])
+    imported_expected = max(
+        30, frames_for(clip["duration"]), frames_for(audio["duration"] + 0.12)
+    )
+    assert frames_for(scene["duration"]) == imported_expected
+
+    response = _fit(client, project, pause_after)
+    assert response.status_code == 200, response.text
+    result = response.json()
+    expected = max(
+        30, frames_for(clip["duration"]), frames_for(audio["duration"] + pause_after)
+    )
+    assert frames_for(_scene(result)["duration"]) == expected
+    assert _scene(result)["image_id"] == scene["image_id"]
+    assert _scene(result)["audio_id"] == scene["audio_id"]
+    assert _scene(result)["style"] == "motion"
+    assert result["revision"] == project["revision"] + 1
+    assert client.get(f"/api/projects/{project['id']}").json() == result
+
+
+def test_audio_only_fit_shrinks_after_smaller_pause_without_stale_duration_floor(client):
+    """No prior scene length may become a permanent minimum in whiteboard mode."""
+    project = create_story(client, "Chỉ có giọng đọc.")
+    project = _import(client, project, _wav(2.0), "voice.wav")
+    enlarged = _fit(client, project, 0.35)
+    assert enlarged.status_code == 200, enlarged.text
+    expanded = enlarged.json()
+    assert frames_for(_scene(expanded)["duration"]) == frames_for(2.35)
+
+    reduced = _fit(client, expanded, 0.0)
+    assert reduced.status_code == 200, reduced.text
+    assert _scene(reduced.json())["duration"] == 2.0
+
+
+def test_audio_import_exceeding_1800_frames_leaves_no_orphan_asset(client):
+    """The fourth imported WAV must fail atomically, including staged file cleanup."""
+    project = create_story(client, "Một.\nHai.\nBa.\nBốn.")
+    for index in range(3):
+        project = attach(
+            client, project, project["scenes"][index], _wav(15.0), f"voice{index}.wav"
+        )
+    before = copy.deepcopy(project)
+    store = client.app.state.store
+    asset_files_before = {p.name for p in (store.root / "assets").iterdir()}
+
+    response = client.post(
+        f"/api/projects/{project['id']}/scenes/{project['scenes'][3]['id']}/assets",
+        data={"revision": project["revision"]},
+        files={"file": ("voice-last.wav", _wav(15.0))},
+    )
+    assert response.status_code == 400, response.text
+    assert response.json()["code"] == "DURATION_LIMIT"
+    assert client.get(f"/api/projects/{project['id']}").json() == before
+    assert {p.name for p in (store.root / "assets").iterdir()} == asset_files_before
+
+
+def test_scene_limit_fails_closed_on_motion_plus_oversized_pause(client, long_clip: bytes):
+    """A valid clip floor must not override per-scene 600-frame narration cap."""
+    project = create_story(client, "Clip cần giọng ngắn hơn 20 giây.")
+    project = _import(client, project, long_clip, "source.mp4")
+    project = _import(client, project, _wav(19.65), "voice.wav")
+    before = copy.deepcopy(project)
+
+    response = _fit(client, project, 0.36)
+    assert response.status_code == 400, response.text
+    assert response.json()["code"] == "DURATION_LIMIT"
+    assert client.get(f"/api/projects/{project['id']}").json() == before
