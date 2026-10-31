@@ -15,7 +15,7 @@ from PIL import Image, ImageChops, ImageFilter, ImageStat
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 from qa_voice_review_art import VISUAL_INTENTS, render_cue_art, render_portrait_cue_art
-from voice_wav_acceptance import CUES, render_aspect
+from voice_wav_acceptance import CUES, make_review_scene, render_aspect
 
 
 def test_cue_specific_art_is_bound_to_real_a04_story():
@@ -72,7 +72,10 @@ def test_a04_portrait_fit_preserves_full_subject_and_context():
     # RED from actual PR #115 MP4: source landscape art covered 9:16,
     # cropping half the shirt and eliminating distinct context in the export.
     source = inspect.getsource(render_aspect)
-    assert 'visual_fit="contain"' in source
+    assert "make_review_scene(s).model_dump()" in source
+    assert make_review_scene(
+        {"title": "Áo ướt", "narration": "Nước bay hơi.", "duration": 2}
+    ).visual_fit == "contain"
     assert "render_portrait_cue_art(title)" in source
     assert 'if aspect == "portrait"' in source
     portrait_hashes = set()
