@@ -14,8 +14,8 @@ from PIL import Image, ImageChops, ImageFilter, ImageStat
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
-from qa_voice_review_art import VISUAL_INTENTS, render_cue_art  # noqa: E402
-from voice_wav_acceptance import CUES, render_aspect  # noqa: E402
+from qa_voice_review_art import VISUAL_INTENTS, render_cue_art
+from voice_wav_acceptance import CUES, render_aspect
 
 
 def test_cue_specific_art_is_bound_to_real_a04_story():
