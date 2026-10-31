@@ -116,6 +116,17 @@ class Store:
                     ):
                         if key not in scene:
                             scene[key] = before.get(key, default)
+                    # Editing authored cues or narration invalidates their reviewed meaning.
+                    # A separate unchanged save can explicitly confirm the revised plan.
+                    if (
+                        before.get("beat_plan_status") == "authored"
+                        and scene.get("beat_plan_status") == "authored"
+                        and (
+                            scene.get("second_by_second") != before.get("second_by_second")
+                            or scene.get("narration") != before.get("narration")
+                        )
+                    ):
+                        scene["beat_plan_status"] = "needs_review"
                     # The timeline was authored against the exact old duration.
                     # Never erase/reindex the creator's beats automatically.
                     if scene["duration"] != before.get("duration"):

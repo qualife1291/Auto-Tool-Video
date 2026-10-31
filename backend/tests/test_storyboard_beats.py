@@ -230,3 +230,33 @@ def test_failed_revision_cannot_overwrite_beats(client):
     latest = client.get(f"/api/projects/{project['id']}").json()
     assert latest["scenes"][0]["second_by_second"] == beats(3)
     assert latest["revision"] == saved["revision"]
+
+
+@pytest.mark.parametrize("edited_field", ["beat", "narration"])
+def test_store_requires_new_review_after_authored_content_edit(tmp_path, edited_field):
+    store = Store(tmp_path)
+    project = store.create(ProjectInput(title="Edited beat guard").model_dump())
+    scene = Scene(
+        title="Cảnh kiểm duyệt",
+        narration="Chiếc áo ướt đang khô.",
+        duration=3,
+        second_by_second=beats(3),
+        beat_plan_status="authored",
+    ).model_dump()
+    authored = store.save(project["id"], {**project, "scenes": [scene]})
+    assert authored["scenes"][0]["beat_plan_status"] == "authored"
+
+    changed = copy.deepcopy(authored)
+    if edited_field == "beat":
+        changed["scenes"][0]["second_by_second"][0]["action"] = "Giữ áo xanh nguyên vị trí."
+    else:
+        changed["scenes"][0]["narration"] = "Chiếc áo xanh đang bay hơi nước."
+    saved = store.save(project["id"], changed)
+    assert saved["scenes"][0]["beat_plan_status"] == "needs_review"
+    assert saved["scenes"][0]["second_by_second"] == changed["scenes"][0]["second_by_second"]
+    assert saved["scenes"][0]["narration"] == changed["scenes"][0]["narration"]
+
+    reviewed = copy.deepcopy(saved)
+    reviewed["scenes"][0]["beat_plan_status"] = "authored"
+    accepted = store.save(project["id"], reviewed)
+    assert accepted["scenes"][0]["beat_plan_status"] == "authored"
