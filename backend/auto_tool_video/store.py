@@ -186,17 +186,45 @@ class Store:
     def claim(self) -> dict[str, Any] | None:
         with self.connect() as conn:
             conn.execute("BEGIN IMMEDIATE")
-            row = conn.execute(
-                "SELECT data FROM jobs WHERE state='queued' ORDER BY rowid LIMIT 1"
-            ).fetchone()
-            if row is None:
-                return None
-            job = json.loads(row["data"])
-            job.update(state="running", heartbeat=now())
-            conn.execute(
-                "UPDATE jobs SET state='running',data=? WHERE id=?", (json.dumps(job), job["id"])
-            )
-            return job
+            while True:
+                row = conn.execute(
+                    "SELECT id,project_id,data FROM jobs WHERE state='queued' ORDER BY rowid LIMIT 1"
+                ).fetchone()
+                if row is None:
+                    return None
+                try:
+                    job = json.loads(row["data"])
+                    if (
+                        not isinstance(job, dict)
+                        or job.get("id") != row["id"]
+                        or job.get("state") != "queued"
+                    ):
+                        raise ValueError("Queued job metadata does not match its database row")
+                except (ValueError, TypeError):
+                    # A corrupt row must not poison the entire FIFO queue.
+                    # Quarantine it atomically before claiming the next job.
+                    failed = {
+                        "id": row["id"],
+                        "project_id": row["project_id"],
+                        "state": "failed",
+                        "progress": 0,
+                        "options": {},
+                        "result_id": None,
+                        "error": "Dữ liệu tác vụ trong hàng đợi không hợp lệ.",
+                        "error_code": "INVALID_JOB_DATA",
+                        "heartbeat": now(),
+                    }
+                    conn.execute(
+                        "UPDATE jobs SET state='failed',data=? WHERE id=?",
+                        (json.dumps(failed), row["id"]),
+                    )
+                    continue
+                job.update(state="running", heartbeat=now())
+                conn.execute(
+                    "UPDATE jobs SET state='running',data=? WHERE id=?",
+                    (json.dumps(job), row["id"]),
+                )
+                return job
 
     def interrupt_running(self) -> None:
         with self.connect() as conn:

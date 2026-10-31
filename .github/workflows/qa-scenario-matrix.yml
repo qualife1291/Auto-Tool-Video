@@ -9,6 +9,9 @@ on:
       - backend/auto_tool_video/layout.py
       - backend/auto_tool_video/quality.py
       - backend/auto_tool_video/semantic_screen.py
+      - backend/auto_tool_video/store.py
+      - backend/auto_tool_video/worker.py
+      - backend/tests/test_claim_corruption_recovery.py
       - backend/tests/test_repeated_scene_visual_screen.py
       - backend/tests/test_caption_visual_safe_zone.py
       - scripts/qa_video_scenarios.py
