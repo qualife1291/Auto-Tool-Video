@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from datetime import datetime
 from pathlib import Path
@@ -64,7 +65,7 @@ def collect_garbage(
 
     Database row removal is serialized against uploads and job claims; physical
     file deletion follows commit so a filesystem error cannot corrupt the DB.
-    The next sweep may remove files left behind by an interrupted unlink.
+    A global startup sweep also reclaims interrupted file writes and failed unlinks.
     """
     cutoff = time.time() - max(0, min_age_seconds)
     pending: list[tuple[Path, int]] = []
@@ -114,6 +115,32 @@ def collect_garbage(
             freed_bytes += size
         except OSError:
             logger.exception("Could not unlink unused asset %s", path)
+    if project_id is None:
+        # A crash between file write and DB INSERT, or a failed unlink after
+        # commit, can leave a file without any DB row. Only the global startup
+        # sweep reclaims old, UUID-named files; never touch user-managed files.
+        with store.connect() as conn:
+            known = {
+                json.loads(row[0]).get("path")
+                for row in conn.execute("SELECT data FROM assets")
+            }
+        directory = store.root / "assets"
+        for path in directory.iterdir():
+            if (
+                not re.fullmatch(r"[0-9a-fA-F-]{36}\\.(?:png|jpg|jpeg|mp4|wav|mp3)", path.name)
+                or path.is_symlink()
+                or not path.is_file()
+                or str(path.relative_to(store.root)) in known
+                or path.stat().st_mtime > cutoff
+            ):
+                continue
+            try:
+                size = path.stat().st_size
+                path.unlink()
+                deleted += 1
+                freed_bytes += size
+            except OSError:
+                logger.exception("Could not remove orphaned asset file %s", path)
     return {"deleted": deleted, "freed_bytes": freed_bytes}
 
 
