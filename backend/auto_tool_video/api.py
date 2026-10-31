@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import os
 import shutil
 from pathlib import Path
@@ -33,6 +32,7 @@ from .quality import csv_sheet, quality_job, quality_payload, save_review
 from .render import FONT_DIR
 from .social import upload_hub
 from .store import DomainError, Store
+from .timing import frames_for
 
 
 class BodyLimit:
@@ -213,16 +213,21 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
                     "MISSING_AUDIO", "Mọi cảnh cần giọng khớp lời trước khi khớp nhịp."
                 )
             asset = store.get("assets", scene["audio_id"])
-            scene["duration"] = max(1, math.ceil((asset["duration"] + data.pause_after) * 30) / 30)
-        # All audio references must be checked before duration limits (MISSING_AUDIO
-        # keeps its existing priority). These values are already aligned to 30 FPS.
+            frames = max(30, frames_for(asset["duration"] + data.pause_after))
+            if scene.get("image_id"):
+                visual = store.get("assets", scene["image_id"])
+                if visual["kind"] == "clip":
+                    frames = max(frames, frames_for(visual["duration"]))
+            scene["duration"] = frames / 30
+        # All audio references are checked before global limits (MISSING_AUDIO
+        # keeps its priority). Count 30fps renderer frames to enforce 600/1800.
         # Store.save accepts raw project dicts and cannot enforce Scene's 20s field.
-        if any(scene["duration"] > 20 for scene in project["scenes"]):
+        if any(frames_for(scene["duration"]) > 600 for scene in project["scenes"]):
             raise DomainError(
                 "DURATION_LIMIT",
                 "Giọng và khoảng nghỉ vượt 20 giây mỗi cảnh; rút gọn lời trước.",
             )
-        if sum(s["duration"] for s in project["scenes"]) > 60:
+        if sum(frames_for(s["duration"]) for s in project["scenes"]) > 1800:
             raise DomainError(
                 "DURATION_LIMIT", "Giọng và khoảng nghỉ vượt 60 giây; rút gọn lời trước."
             )

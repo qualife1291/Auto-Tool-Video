@@ -37,17 +37,17 @@ Each of the four core workflows now uses:
 
 ```yaml
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 ```
 
-**Effect:** when a newer run starts for the **same PR and same workflow**, its older running/queued version may be canceled. Different PRs have different group keys. Canonical `push` and `workflow_dispatch` use distinct event groups and do **not** auto-cancel. This does **not** prevent the newer PR run from executing full tests. All original workflow names, triggers, job names, full render steps, formatting thresholds and permissions remain unchanged.
+**Effect:** when a newer run starts for the **same PR and same workflow**, its older running/queued version may be canceled. Different PRs have different group keys. Canonical `push` and `workflow_dispatch` use a unique `github.run_id` for **each** non-PR run, so even concurrent same-ref runs do not share a concurrency group; neither an executing nor an older **pending** canonical/manual run is displaced by another run. `cancel-in-progress: false` alone would NOT protect pending runs if the group were ref-based. This does **not** prevent the newer PR run from executing full tests. All original workflow names, triggers, job names, full render steps, formatting thresholds and permissions remain unchanged.
 
 **Known limits:** cancellation cannot recover time already consumed, doesn't eliminate the first expensive run for a docs-only PR, and one could still create many PRs at once. Treat `cancelled` as `OBSOLETE / NOT PASS`; do not use cancellation as a success signal.
 
 ## Suggested QA verification — before merge
 
-- Review exact changed workflow YAML and expression syntax; verify group isolation by workflow, event, PR number or ref; confirm `cancel-in-progress` applies **only** to pull_request.
+- Review exact changed workflow YAML and expression syntax; verify group isolation by workflow, event, PR number or unique non-PR run ID; confirm `cancel-in-progress` applies **only** to pull_request.
 - Run existing full required checks on this PR's exact head and merge-ref. Verify no job name/required check is deleted, permissions are not broadened, and all A04/FullHD/Blender gates still execute when currently applicable.
 - **If BA/T01/T02 authorize a controlled test:** use a dedicated test PR with two close-together pushes and observe previous same-workflow run cancellation while the current exact SHA finishes; check another PR and canonical postmerge runs are unaffected. No forced rerun just to manufacture evidence.
 - Keep a rollback: revert this PR if newer runs are improperly canceled or current required checks become blocked.
