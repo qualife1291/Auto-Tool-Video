@@ -23,3 +23,16 @@ playwright-report/
 *.tsbuildinfo
 .tools/
 .models/
+# Local QA/profiler artifacts (preserve failure evidence in protected CI storage)
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+.prof/
+*.prof
+*.pstats
+*.memray
+*.trace.zip
+*.har
+*.log
+*.py-spy.svg

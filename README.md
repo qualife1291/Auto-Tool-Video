@@ -8,9 +8,12 @@ Công cụ web local làm video whiteboard tiếng Việt cho từng nhóm tuổ
 
 ## Tài liệu chung cho AI agent
 
+- [Chỉ mục tài liệu, BA/PM, QA và nguồn sự thật](docs/documentation-index.md); [quy trình phân công AI-BA](docs/ba-sdlc-process.md); [kiểm kê PR đã/chưa merge](docs/pr-merge-audit-2026-10-30.md). Các file audit là snapshot có ngày, không thay trạng thái GitHub live.
 - [Bảng công việc A01–A10](docs/agent-workboard.md): nơi duy nhất theo dõi task, ưu tiên, tiêu chí nghiệm thu và cách phối hợp.
 - [Bàn giao hiện tại](.agent/handover/LATEST.md), [các việc còn mở](.agent/memory/short-term/TASKS.md), [lộ trình M1–M4](docs/development-plan.md), [đặc tả đã duyệt](specs/whiteboard-video-tool.md).
-- **Branch làm việc chung:** `feat/short-video-studio`. Các phần storyboard từng giây, áo chuyển trạng thái và caption bounce mới nhập là WIP chưa kiểm thử lại; video 0,92× chưa render/xác minh. Không lấy kết quả QC cũ làm chứng nhận cho code mới.
+- **Branch làm việc chung:** `feat/short-video-studio`. A01 storyboard contract đã có CI trước đây; các test A02/A03 bổ sung đã merge nhưng chưa đủ nghiệm thu creator cho toàn video. A04 tempo 0,92× còn ở PR #8 chưa merge tại snapshot 2026-10-30. Không lấy QC/video cũ hoặc một PR green làm chứng nhận cho code mới; kiểm tra [PR audit](docs/pr-merge-audit-2026-10-30.md) và handover mới nhất.
+
+Dọn file/log theo [quy trình bảo tồn chứng cứ QA](docs/repository-maintenance.md); không xóa tự động `.data/`, artifacts hoặc handover lịch sử. Tài liệu vai trò BA và coder lanes thuộc [BA process](docs/ba-sdlc-process.md).
 
 ## Cách chạy
 
