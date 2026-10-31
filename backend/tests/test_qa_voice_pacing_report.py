@@ -19,7 +19,9 @@ def _voice_function():
     function = next(
         node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "voice"
     )
-    spec = importlib.util.spec_from_file_location("qa_voice_metrics", SOURCE.with_name("qa_voice_metrics.py"))
+    spec = importlib.util.spec_from_file_location(
+        "qa_voice_metrics", SOURCE.with_name("qa_voice_metrics.py")
+    )
     assert spec is not None and spec.loader is not None
     metrics = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(metrics)
