@@ -21,6 +21,7 @@ from auto_tool_video.store import DomainError
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "storyboard_eval_cases.json"
 FIXTURE_BYTES = FIXTURE_PATH.read_bytes()
 SUITE = json.loads(FIXTURE_BYTES)
+EXPECTED_FIXTURE_SHA256 = "bac36989251c88b2cf5b2129e28343f132c955f016aa77d31200ee22180e0b39"
 
 
 def test_frozen_fixture_metadata_and_pairwise_coverage():
@@ -42,7 +43,7 @@ def test_frozen_fixture_metadata_and_pairwise_coverage():
     }
     assert all(c["source_provenance"] == SUITE["source_provenance"] for c in cases)
     digest = hashlib.sha256(FIXTURE_BYTES).hexdigest()
-    assert len(digest) == 64
+    assert digest == EXPECTED_FIXTURE_SHA256
     print(f"STORYBOARD_EVAL_FIXTURE_SHA256={digest}")
 
 

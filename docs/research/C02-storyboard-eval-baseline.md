@@ -33,15 +33,15 @@ uv run --project backend ruff format --check backend/tests/test_storyboard_eval_
 sha256sum backend/tests/fixtures/storyboard_eval_cases.json
 ```
 
-`STORYBOARD_EVAL_FIXTURE_SHA256` is printed by the metadata test for exact-byte provenance, independently verifiable by `sha256sum`. Do not substitute a manually guessed hash. Runner CI uses the existing `.github/workflows/ci.yml`; **no new workflow** is added.
+The fixture is pinned to SHA-256 `bac36989251c88b2cf5b2129e28343f132c955f016aa77d31200ee22180e0b39` in the pytest oracle. The metadata test asserts this exact-byte checksum **before the individual 40 cases can count as baseline evidence**, and also prints `STORYBOARD_EVAL_FIXTURE_SHA256`. Independently confirm with `sha256sum`; altering the fixture requires an intentional oracle and document review. This digest is a provenance/integrity guard, **not** proof of semantic accuracy or a cryptographic signature. Runner CI uses the existing `.github/workflows/ci.yml`; **no new workflow** is added.
 
 ## Results, limitations and evidence ledger
 
 | Gate | Result as authored | Interpretation |
 | --- | --- | --- |
-| Fixture suite 20 valid + 20 negative | **NOT RUN** until actual CI/pytest execution | Frozen expectations only; no fictitious pre-fix RED |
-| Existing Python/format/mypy/web checks | **NOT RUN** at authoring | Require exact commit/head evidence |
-| A04 FullHD / Dual | **NOT RUN** at authoring | PR review requires current merge-ref checks |
+| Fixture suite 20 valid + 20 negative | **Prior-base CI PASS** at PR HEAD `36a19555c50480e6ee3b7a6c60c7028e3a7fdd27` | Validated via actual Python full regressions; pinning change & latest-base CI **NOT RUN** at this revision |
+| Existing Python/format/mypy/web checks | **Prior-base Main #41174457994 SUCCESS**: 483 passed, 2 skipped, browser 17 passed | Pytest skips are explicitly reported; historical checkout base `bd21b688...`, not latest-base proof |
+| A04 FullHD / Dual | **Prior-base A04 #41174458031 SUCCESS** (485 passed, browser 17 passed); **Dual #41174458114 SUCCESS** | Historical CI only, require new exact HEAD/current merge-ref checks after sync |
 | Native science/semantics/causal and character continuity | **NOT MEASURED / MANUAL REVIEW** | A validator cannot prove science or creative quality |
 | 30fps timing | **NOT MEASURED** by planner evaluator | `frames_for()` belongs to rendering; planner is seconds/beats |
 | Actual model quality p50/p95, latency, token/cost | **NOT RUN / DEFERRED** | No Ollama/Comfy/live model or paid service calls |
@@ -49,4 +49,4 @@ sha256sum backend/tests/fixtures/storyboard_eval_cases.json
 
 **Observed values must be recorded only after real tests/CI** (case count and PASS/FAIL/SKIP; fixture SHA-256; Python/tool versions; exact PR head/merge-ref and workflow links). A negative fixture passing proves the evaluator catches malformed contracts, **not** a product regression or a true semantic quality score. The existing generation retry mechanism and persistence guarantees are separate tested contracts, not automatically claimed by these 40 examples.
 
-**Next gate:** independent BA01/BA02 reconciliation of owner-requested priority override; finalize one T01 or T02 `QA_OWNER`, check P1 #86/#59, exact current base and Main/A04/Dual before Draft→Ready. C02 never self-merges.
+**Next gate:** T01 has personally ACCEPTED sole independent `QA_OWNER` on [PR #95](https://github.com/qualife1291/Auto-Tool-Video/pull/95#issuecomment-6539882468). C02 syncs to canonical `8741ea4fdb926f4344494c64bc000b4dba566e0d` in the same meaningful integrity-guard update; new exact-HEAD/latest merged-checkout Main/A04/Dual are **NOT YET RUN at this writing**. Check #86/#59 P1 priority and new CI before Draft→Ready. C02 never self-merges.
