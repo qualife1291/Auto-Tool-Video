@@ -165,9 +165,29 @@ def verify_tempo(root: Path) -> dict:
     return {"total_seconds": total, "files": len(timed), "tempo": 0.92}
 
 
+
+# A04 short engineering samples should show the *completed* illustration long
+# enough to inspect at 1x. This does not change production Scene defaults.
+A04_REVIEW_DRAW_FRACTION = 0.50
+
+
+def make_review_scene(spec: dict) -> "Scene":
+    """Make a short whiteboard QA cue with a readable final-color hold."""
+    from auto_tool_video.domain import Scene
+
+    return Scene(
+        title=spec["title"],
+        narration=spec["narration"],
+        duration=spec["duration"],
+        style="whiteboard",
+        visual_fit="contain",
+        draw_fraction=A04_REVIEW_DRAW_FRACTION,
+    )
+
+
 def render_aspect(root: Path, aspect: str) -> dict:
     """Import 12 voiced WAVs with original illustrations and export real 1080p."""
-    from auto_tool_video.domain import ExportInput, Scene
+    from auto_tool_video.domain import ExportInput
     from auto_tool_video.jobs import enqueue
     from auto_tool_video.media import import_asset, probe
     from auto_tool_video.render import render_job
@@ -191,12 +211,7 @@ def render_aspect(root: Path, aspect: str) -> dict:
         }
     )
     project["scenes"] = [
-        Scene(
-            title=s["title"],
-            narration=s["narration"],
-            duration=s["duration"],
-            visual_fit="contain",
-        ).model_dump()
+        make_review_scene(s).model_dump()
         for s in story["scenes"]
     ]
     project = store.save(project["id"], project)
