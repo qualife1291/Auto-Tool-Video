@@ -13,7 +13,6 @@ import math
 import shutil
 import subprocess
 import tempfile
-import wave
 from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
@@ -25,6 +24,7 @@ from auto_tool_video.render import render_job
 from auto_tool_video.store import Store
 from auto_tool_video.timing import frames_for
 from qa_semantic_art import EXPECTED_OBJECTS, semantic_visual
+from qa_voice_metrics import measure_voice_wav
 
 
 @dataclass(frozen=True)
@@ -168,21 +168,10 @@ def voice(text: str, path: Path, speech_rate: int) -> dict:
         )
     finally:
         raw.unlink(missing_ok=True)
-    with wave.open(str(path), "rb") as wav:
-        duration = wav.getnframes() / wav.getframerate()
-        if wav.getnchannels() != 1 or wav.getsampwidth() != 2:
-            raise ValueError("Source voice not mono PCM16")
-    if not math.isfinite(duration) or duration <= 0:
-        raise ValueError("Source voice has no playable samples")
-    # Vietnamese spaces separate syllable-like units, not necessarily lexical words.
-    space_delimited_units = len(text.split())
     return {
-        "duration": duration,
         "narration": text,
         "sha256": digest(path),
-        "space_delimited_units": space_delimited_units,
-        "units_per_minute": round(60 * space_delimited_units / duration, 1),
-        "voice_review": "NOT RUN",
+        **measure_voice_wav(path, text),
     }
 
 
