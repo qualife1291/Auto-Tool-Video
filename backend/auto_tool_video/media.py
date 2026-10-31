@@ -13,6 +13,7 @@ from uuid import uuid4
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from .store import DomainError, Store
+from .timing import frames_for
 
 MAX_UPLOAD = 20 * 1024 * 1024
 Image.MAX_IMAGE_PIXELS = 20_000_000
@@ -152,12 +153,14 @@ def import_asset(
             previous_duration = target["duration"]
             target[f"{'image' if kind == 'clip' else kind}_id"] = identifier
             if kind == "clip":
-                target.update(style="motion", duration=max(1, duration))
+                target.update(style="motion", duration=max(1, frames_for(duration) / 30))
                 if target.get("audio_id"):
                     existing_audio = store.get("assets", target["audio_id"], conn)
-                    target["duration"] = max(target["duration"], existing_audio["duration"] + 0.12)
+                    target["duration"] = max(
+                        target["duration"], frames_for(existing_audio["duration"] + 0.12) / 30
+                    )
             if kind == "audio":
-                target.update(duration=max(1, duration + 0.12), audio_stale=False)
+                target.update(duration=max(1, frames_for(duration + 0.12) / 30), audio_stale=False)
             # This direct SQL path bypasses Store.save's duration-change invalidation.
             # Keep authored beat text intact, but require re-review after any retime.
             if target["duration"] != previous_duration:

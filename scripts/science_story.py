@@ -385,10 +385,13 @@ class Art:
             # Lower cloth sways by a few source pixels, with no framewise zoom steps.
             amplitude = 0.008 if self.template == "wind" else 0.0035
             shear = amplitude * math.sin(t * (2.4 if self.template == "wind" else 1.7))
+            # The cutout's hanger row is about 68/320 of its source height.
+            # Pillow samples output->input; pivoting here keeps the peg fixed.
+            peg_y = source.height * 68 / 320
             source = source.transform(
                 source.size,
                 Image.Transform.AFFINE,
-                (1.0, -shear, 0.0, 0.0, 1.0, 0.0),
+                (1.0, -shear, shear * peg_y, 0.0, 1.0, 0.0),
                 resample=Image.Resampling.BICUBIC,
                 fillcolor=(0, 0, 0, 0),
             )
