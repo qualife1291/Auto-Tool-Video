@@ -176,9 +176,10 @@ def import_asset(
                 # Preserve legacy audio-only staging: Fit Audio/export enforce 1800
                 # frames when the creator finishes arranging the narration.
                 # Motion imports/retimes must reject oversized projects now.
-                if clip_attached and sum(
-                    frames_for(s["duration"]) for s in current["scenes"]
-                ) > 1800:
+                if (
+                    clip_attached
+                    and sum(frames_for(s["duration"]) for s in current["scenes"]) > 1800
+                ):
                     raise DomainError("DURATION_LIMIT", "Tổng thời lượng vượt 60 giây.")
             # This direct SQL path bypasses Store.save's duration-change invalidation.
             # Keep authored beat text intact, but require re-review after any retime.
