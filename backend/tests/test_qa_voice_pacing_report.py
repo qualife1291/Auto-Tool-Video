@@ -16,7 +16,9 @@ SOURCE = Path(__file__).resolve().parents[2] / "scripts" / "qa_video_scenarios.p
 
 def _voice_function():
     tree = ast.parse(SOURCE.read_text(encoding="utf-8"))
-    function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "voice")
+    function = next(
+        node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "voice"
+    )
     namespace = {
         "Path": Path,
         "shutil": shutil,
