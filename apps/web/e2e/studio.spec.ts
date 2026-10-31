@@ -154,6 +154,8 @@ for (const width of [1366, 390]) {
     await page.getByLabel('Tên dự án').fill(title);
     await page.getByLabel('Lời thoại', { exact: true }).fill('Nước bay hơi.');
     await page.getByRole('button', { name: 'Tạo storyboard' }).click();
+    // A scrollable project list must remain keyboard focusable at mobile widths.
+    await expect(page.locator('.project-list')).toHaveAttribute('tabindex', '0');
     await expect(page.getByLabel('Bố cục hình')).toHaveValue('full_frame');
     await expect(page.getByLabel('Cách lấp khung')).toHaveValue('contain');
     // New scenes protect source art; explicit creator cover+focal overrides that default.
