@@ -151,12 +151,27 @@ class Store:
             raise DomainError("INVALID_ASSET", "Tệp tài nguyên bị thiếu hoặc không hợp lệ.")
         return path
 
+    def transition(self, identifier: str, from_states: set[str], **changes: Any) -> dict[str, Any]:
+        """Atomically perform a compare-and-set state transition."""
+        with self.connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            job = self.get("jobs", identifier, conn)
+            if job["state"] not in from_states:
+                raise DomainError("REVISION_CONFLICT", "Tác vụ đã kết thúc.", 409)
+            job.update(changes, heartbeat=now())
+            conn.execute(
+                "UPDATE jobs SET state=?, data=? WHERE id=?",
+                (job["state"], json.dumps(job), identifier),
+            )
+        return job
+
     def update_job(self, identifier: str, **changes: Any) -> dict[str, Any]:
         with self.connect() as conn:
             conn.execute("BEGIN IMMEDIATE")
             job = self.get("jobs", identifier, conn)
-            # Never resurrect a cancelled job after a late encoder callback.
-            if job["state"] == "cancelled" and changes.get("state") != "cancelled":
+            # Terminal jobs cannot be resurrected by late worker callbacks.
+            terminal = {"cancelled", "succeeded", "failed", "interrupted"}
+            if job["state"] in terminal and changes.get("state", job["state"]) != job["state"]:
                 return job
             job.update(changes, heartbeat=now())
             conn.execute(
