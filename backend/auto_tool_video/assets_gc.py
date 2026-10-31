@@ -121,8 +121,7 @@ def collect_garbage(
         # sweep reclaims old, UUID-named files; never touch user-managed files.
         with store.connect() as conn:
             known = {
-                json.loads(row[0]).get("path")
-                for row in conn.execute("SELECT data FROM assets")
+                json.loads(row[0]).get("path") for row in conn.execute("SELECT data FROM assets")
             }
         directory = store.root / "assets"
         for path in directory.iterdir():
