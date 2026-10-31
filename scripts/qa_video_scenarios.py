@@ -13,7 +13,6 @@ import math
 import shutil
 import subprocess
 import tempfile
-import wave
 from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
@@ -25,6 +24,7 @@ from auto_tool_video.render import render_job
 from auto_tool_video.store import Store
 from auto_tool_video.timing import frames_for
 from qa_semantic_art import EXPECTED_OBJECTS, semantic_visual
+from qa_voice_metrics import measure_voice_wav
 
 
 @dataclass(frozen=True)
@@ -168,11 +168,14 @@ def voice(text: str, path: Path, speech_rate: int) -> dict:
         )
     finally:
         raw.unlink(missing_ok=True)
-    with wave.open(str(path), "rb") as wav:
-        duration = wav.getnframes() / wav.getframerate()
-        if wav.getnchannels() != 1 or wav.getsampwidth() != 2:
-            raise ValueError("Source voice not mono PCM16")
-    return {"duration": duration, "narration": text, "sha256": digest(path)}
+    metrics = measure_voice_wav(path, text)
+    if "ALL_WINDOWS_QUIET" in metrics["audio_warnings"]:
+        raise ValueError("Source voice is silent")
+    return {
+        "narration": text,
+        "sha256": digest(path),
+        **metrics,
+    }
 
 
 def beats(seconds: int, narration: str) -> list[dict]:
@@ -386,6 +389,10 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
         "release_approved": False,
         "human_review": "NOT RUN",
         "voice_approval": "NOT APPROVED",
+        "voice_pacing": (
+            "MEASURED_ONLY: whitespace-delimited Vietnamese units/minute, "
+            "NOT lexical WPM; native-speaker intelligibility NOT REVIEWED"
+        ),
         "outputs": [],
     }
     try:
