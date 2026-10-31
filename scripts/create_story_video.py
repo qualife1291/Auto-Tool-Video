@@ -19,7 +19,7 @@ from auto_tool_video.render import render_job
 from auto_tool_video.store import Store
 from create_review_video import contact_sheet
 from PIL import Image
-from science_story import Art, FONT, beat_timeline
+from science_story import FONT, Art, beat_timeline
 
 
 def source_clip(path: Path, art: Art, duration: float):
