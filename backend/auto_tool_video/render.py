@@ -149,6 +149,20 @@ class ScenePainter:
             1920 if self.landscape else 1080, 1080 if self.landscape else 1920, self.layout
         )
         self.caption_box, self.image_box = geometry["caption"], geometry["image"]
+        # A contained illustration must not sit behind an opaque caption card.
+        # Reserve the caption strip only when narration and captions are present;
+        # explicit cover crops and caption-free edge-to-edge scenes are unchanged.
+        if (
+            captions
+            and scene.get("narration")
+            and self.layout == "full_frame"
+            and self.fit == "contain"
+        ):
+            ix, iy, iw, ih = self.image_box
+            caption_top = self.caption_box[1]
+            safe_bottom = caption_top - 24
+            if safe_bottom > iy:
+                self.image_box = (ix, iy, iw, min(ih, safe_bottom - iy))
         self.base = Image.new("RGB", (width, height), "#FFF8EB")
         self.heading_layer = Image.new("RGBA", (width, height))
         draw = ImageDraw.Draw(self.heading_layer)

@@ -5,6 +5,9 @@ on:
     branches:
       - feat/short-video-studio
     paths:
+      - backend/auto_tool_video/render.py
+      - backend/auto_tool_video/layout.py
+      - backend/tests/test_caption_visual_safe_zone.py
       - scripts/qa_video_scenarios.py
       - scripts/qa_semantic_art.py
       - backend/tests/test_qa_video_scenarios.py
@@ -43,12 +46,15 @@ jobs:
         run: |
           uv run --project backend ruff check \
             scripts/qa_video_scenarios.py scripts/qa_semantic_art.py \
-            backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py
+            backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py \
+            backend/tests/test_caption_visual_safe_zone.py
           uv run --project backend ruff format --check \
             scripts/qa_video_scenarios.py scripts/qa_semantic_art.py \
-            backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py
+            backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py \
+            backend/tests/test_caption_visual_safe_zone.py
           uv run --project backend pytest \
-            backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py -q
+            backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py \
+            backend/tests/test_caption_visual_safe_zone.py -q
       - name: Render and validate both aspect ratio MP4 files
         run: |
           uv run --project backend python scripts/qa_video_scenarios.py \
