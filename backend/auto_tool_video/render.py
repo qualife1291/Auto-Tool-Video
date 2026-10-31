@@ -291,11 +291,17 @@ class ScenePainter:
                     self.source_image = Image.fromarray(cv2.cvtColor(clip_frame, cv2.COLOR_BGR2RGB))
             x, y, bw, bh = [round(v * self.scale) for v in self.image_box]
             eased = progress * progress * (3 - 2 * progress)
-            zoom = (
-                (1 + 0.025 * eased if self.layout == "full_frame" else 0.94 + 0.06 * eased)
-                if not self.capture
-                else 1
-            )
+            # A full-frame "contain" must never crop source edges during motion.
+            # Ease from a slightly inset image to exactly 1x; keep the subtle
+            # push-in beyond 1x only for explicitly cropped "cover" visuals.
+            if self.capture:
+                zoom = 1.0
+            elif self.layout != "full_frame":
+                zoom = 0.94 + 0.06 * eased
+            elif self.fit == "contain":
+                zoom = 0.975 + 0.025 * eased
+            else:
+                zoom = 1 + 0.025 * eased
             visual = fitted_image(
                 self.source_image,
                 (bw, bh),
