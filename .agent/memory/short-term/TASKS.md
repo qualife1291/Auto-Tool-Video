@@ -1,25 +1,68 @@
-# Việc đang code
+# Việc đang code — snapshot 2026-10-31
 
-**Branch chung:** `feat/short-video-studio`. **Bảng điều phối duy nhất:** [docs/agent-workboard.md](../../../docs/agent-workboard.md). Nhận một task A01–A10 qua issue/PR, tạo nhánh `agent/Axx-...` từ branch chung và gửi PR trở lại branch chung. Không gán agent nếu chưa thực sự nhận việc.
+**Canonical:** `feat/short-video-studio` @ `09c4a8ea858e26f7e3f0b5147377d9d0930a541a` khi cập nhật; **refresh HEAD GitHub trước mỗi hành động**. Nguồn phân vai/ownership/AC: [stable role charter](../../../docs/agent-role-charter.md), [Agent Role and Task Contracts](../../../docs/agent-role-task-contracts.md), [BA registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31) và [workboard](../../../docs/agent-workboard.md). Đoạn mở đầu này được viết tại checkpoint ban đầu; bảng ngày 2026-10-31 phía dưới mới là tình trạng đã kiểm chứng. **BA01/BA02 đồng cấp; C01–C05 đang hoạt động; T01/T02 ngang quyền QA/merge theo từng QA_OWNER.**
 
-## Ưu tiên và trạng thái (2026-10-30)
+## Latest verified operational checkpoint — 2026-10-31, after T02 merges #69 and #65
 
-- **P0 / A01 (DONE-VERIFIED):** [PR #2](https://github.com/qualife1291/Auto-Tool-Video/pull/2) đã merge; chuẩn giây liên tiếp, bảo toàn khi đổi thời lượng, lưu qua client cũ, preserve tiếng Việt và revision. [CI pass](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41052656718): 212 pytest pass/1 skip, 10 Vitest và 13 Playwright pass; lint/mypy/build/format pass.
-- **P0 / A02 (WIP-UNTESTED):** áo ướt→khô/lay/gấp→trải; cần test continuity/crop/mask ở cả 9:16 và 16:9.
-- **P0 / A03 (WIP-UNTESTED):** caption bounce và beat editor; cần typecheck/E2E/readability/save-reload.
-- **P0 / A04 (TODO):** giọng 0,92× giữ cao độ và tính lại timeline bằng WAV thật; chưa có MP4 41,9s được xác minh.
-- **P0 / A05 (BLOCKED A02–A04):** kiểm thử tổng hợp, xuất 2 MP4 mới, đo QC và thu đánh giá người xem. Chỉ báo cáo baseline 205 tests/38,7s của phiên trước, **không áp dụng kết quả đó cho code đã merge**.
-- **P1 / A06–A07 (TODO):** xác minh Hugging Face/Gradio Spaces và NVIDIA NIM, quyền truy cập, phí, license, tiếng Việt, độ trễ và hạn mức thực.
-- **P1 / A08 (TODO, phụ thuộc A06–A07):** online AI opt-in có fallback local độc lập.
-- **P2 / A09 (TODO):** TTS UI, phrase alignment/SRT. **P3 / A10 (TODO):** OAuth/social upload.
+**Canonical observed:** `47fe858cb3d8937c1dd26c4443f878ca99ec0e3b` on `feat/short-video-studio`. This is a dated checkpoint, **not a permanent current SHA**; inspect LIVE GitHub issues/PRs, current canonical, exact HEAD/merge-ref CI before acting. The ~11:00 ICT table below is an **archived historical snapshot**, NOT current assignment or QA authority.
 
-## Điều kiện đánh dấu hoàn thành
+**MERGED / correct QA ownership:** C05 [#68 / PR #69](https://github.com/qualife1291/Auto-Tool-Video/pull/69) was independently **QA-PASS-CODE + MERGED by sole QA_OWNER=T02** at `4df70a0cb74d64a5d10deb5cf2677fca36c4c64e`; issue #68 closed and postmerge [Main #41172482534](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41172482534) + [Dual #41172482546](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41172482546) SUCCESS. T01 is **not** #69 owner. C03 [#49 / research PR #65](https://github.com/qualife1291/Auto-Tool-Video/pull/65) independently **QA-PASS-CODE + MERGED by T02** as `47fe858cb3d8937c1dd26c4443f878ca99ec0e3b`; Main + A04 + Dual passed before merge, research acceptance/implementation remains a separate BA01+BA02 decision. These completed PRs must not be routed back for QA.
 
-Có commit/PR, test thực tế, bằng chứng chất lượng/artifact và ghi rõ nội dung chưa được xem/nghe hoặc kiểm model live. Không tự xem trạng thái merge là QA pass. Không thêm dependency online trả phí, upload mạng xã hội hoặc ghi secret/weights vào Git.
+**Latest assigned work at this checkpoint:** C05 [#90 / PR #93](https://github.com/qualife1291/Auto-Tool-Video/pull/93) **Draft / RED expected**, provenance fix not QA-ready; C01 [#88 / PR #91](https://github.com/qualife1291/Auto-Tool-Video/pull/91) **Draft**, native garment/alpha ROI proof outstanding; C04 [#89 / PR #92](https://github.com/qualife1291/Auto-Tool-Video/pull/92) **Draft**, Fit Audio vs imported clip parity repro pending. T01 remains primary independent QA on [BA01 charter PR #51](https://github.com/qualife1291/Auto-Tool-Video/pull/51) and **P1 BLOCKED** [CI PR #87](https://github.com/qualife1291/Auto-Tool-Video/pull/87) until its author fixes non-PR concurrency. T01-authored [docs PR #46](https://github.com/qualife1291/Auto-Tool-Video/pull/46) is **QA_OWNER=T02**, CHANGES REQUESTED until this checkpoint correction, fresh-current-base CI and T02 independent verdict; T01 must not self-QA/merge. T01-authored [watcher #60](https://github.com/qualife1291/Auto-Tool-Video/pull/60) is Draft and [video scenarios #37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) need new-base independent T02 gates.
 
-## Tài liệu liên quan
+**Authority and creator boundary:** BA01=BA02 equal coordination; T01=T02 equal independent QA/eligible merge with **ONE primary QA_OWNER per PR**; C01–C05 staffed. Proposed TR/AIQ/VD/OPS role categories are **not activated members**. Human creator audiovisual **G10 NOT APPROVED**; synthetic preview/full-decode CI, research merges and role docs do not authorize release.
 
-- [Handover](../../handover/LATEST.md) — bản bàn giao kỹ thuật gần nhất.
-- [Lộ trình](../../../docs/development-plan.md) — M1–M4.
-- [Quy chuẩn video](../../../docs/video-quality-standard.md) — test/QC và manual review.
-- [Đặc tả](../../../specs/whiteboard-video-tool.md) — nguồn xác định phạm vi đã duyệt.
+### Historical ~11:00 ICT evidence snapshot (superseded; NOT live task ownership)
+
+
+**Canonical:** `feat/short-video-studio` @ `3868fcf0d068b18033516470f942ec393ba9d378` ([T02-QA-merged research PR #81](https://github.com/qualife1291/Auto-Tool-Video/pull/81)); postmerge [Main #41165945577](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41165945577) and [Dual #41165945740](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41165945740) SUCCESS. This is a **dated evidence snapshot**; GitHub live issues, PRs, current HEAD and required CI outrank any later-stale line here.
+
+**Governance:** **BA01 and BA02 are co-equal** ([#31](https://github.com/qualife1291/Auto-Tool-Video/issues/31), [#72](https://github.com/qualife1291/Auto-Tool-Video/issues/72)); **T01 and T02 have equal independent QA-PASS-CODE/eligible merge authority**, with **one QA_OWNER per PR**, independent of its author ([#70](https://github.com/qualife1291/Auto-Tool-Video/issues/70)). **C01–C05** are five staffed coder seat IDs; role families `BA/C/T` are separate from numbered seats. New `TR / AIQ / VD / OPS` categories are **research proposals only** [#82](https://github.com/qualife1291/Auto-Tool-Video/issues/82)/[PR #83](https://github.com/qualife1291/Auto-Tool-Video/pull/83): no automatically created seat, scheduler, GitHub identity or authorization.
+
+| Accountable seat | Observed task/PR status, linked evidence |
+| --- | --- |
+| **BA01 + BA02** | Co-coordinate roadmaps, assignments, role charter, FREE-first research and source/skill refresh; [BA01 charter PR #51](https://github.com/qualife1291/Auto-Tool-Video/pull/51) still Ready/old-base A04 FAIL; [BA02 new-doc PR #73](https://github.com/qualife1291/Auto-Tool-Video/pull/73) Ready/old-base 3 CI green but current integration pending; [DOC cleanup #75](https://github.com/qualife1291/Auto-Tool-Video/issues/75) open. Proposed specialist role research [#83](https://github.com/qualife1291/Auto-Tool-Video/pull/83) Ready/old-base CI green, activation deferred. |
+| **C01** | [Peg pivot #55 / PR #63](https://github.com/qualife1291/Auto-Tool-Video/pull/63) **MERGED** `fecfea79...`; [30 FPS art evidence #74 / PR #76](https://github.com/qualife1291/Auto-Tool-Video/pull/76) **Ready**, latest-current-base Main/A02 Blender/Dual FullHD PASS, A04 regression **in progress at this checkpoint**, independent **QA_OWNER=T01**; composite-alpha/garment safe-zone risks remain open for native visual review. |
+| **C02** | [Caption preview #57 / PR #62](https://github.com/qualife1291/Auto-Tool-Video/pull/62) **MERGED** `73717943...` after T01 independent code QA; [new offline Vietnamese storyboard eval #84](https://github.com/qualife1291/Auto-Tool-Video/issues/84) queued, no provider calls. |
+| **C03** | [Beat E2E #58 / PR #67](https://github.com/qualife1291/Auto-Tool-Video/pull/67) MERGED; [H1 evidence research #49 / PR #65](https://github.com/qualife1291/Auto-Tool-Video/pull/65) **Ready**, current-base Main/Dual PASS, A04 **in progress**, **QA_OWNER=T02**. Research ≠ implemented harness automation. |
+| **C04** | [Media 30 FPS #61 / PR #64](https://github.com/qualife1291/Auto-Tool-Video/pull/64), [Fit Audio #44 / PR #47](https://github.com/qualife1291/Auto-Tool-Video/pull/47) and [focus-visible #77 / PR #78](https://github.com/qualife1291/Auto-Tool-Video/pull/78) **MERGED**; [safe Playwright evidence research #79 / PR #85](https://github.com/qualife1291/Auto-Tool-Video/pull/85) Ready/content QA accepted but requires latest-base integrated CI; **QA_OWNER=T01**, no CI security implementation approved. |
+| **C05** | [Science review proposed beats #68 / PR #69](https://github.com/qualife1291/Auto-Tool-Video/pull/69) **Ready** at old `489f6669...`; earlier 3 workflows SUCCESS but current-canonical sync/combined test **NOT RUN**, **QA_OWNER=T01**, no creator approval. |
+| **T01 + T02** | **QA_OWNER=T01** for #69/#76/#83/#85; **QA_OWNER=T02** for T01-authored [docs PR #46](https://github.com/qualife1291/Auto-Tool-Video/pull/46), BA02 [#73](https://github.com/qualife1291/Auto-Tool-Video/pull/73), C03 [#65](https://github.com/qualife1291/Auto-Tool-Video/pull/65) and other explicitly assigned PRs. T01 [watcher PR #60](https://github.com/qualife1291/Auto-Tool-Video/pull/60) Draft; [#37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) has **8 validated preview MP4s** (four 12/30/45/60s scenarios × two aspect ratios) at historic [run #41103011675](https://github.com/qualife1291/Auto-Tool-Video/actions/runs/41103011675), separate native FullHD scenario skipped, current-base integration still pending. Human creator full media G10 **NOT APPROVED**. |
+
+**Mandatory workflow:** issue/AC and exclusive path claim → Draft → real RED/GREEN or justified coverage scope → author marks Ready → assigned independent QA_OWNER checks exact current SHA, current-base merged tree/CI and evidence → QA PASS/CHANGES REQUESTED → only QA_OWNER may merge (never self-merge) → postmerge CI → human creator audiovisual G10 if applicable. Research-only docs and synthetic eSpeak engineering clips **never** equal implemented tooling, activated personnel or creator release approval. On each actual work session/authorized schedule, everyone proactively follows their own task/CI/feedback, checks official skills and trustworthy sources, and proposes concrete measurable FREE-first quality improvements via BA coordination.
+
+**Later merge checkpoint — 2026-10-31:** C01 A02 continuous 30fps evidence [PR #76](https://github.com/qualife1291/Auto-Tool-Video/pull/76) **T01 QA-PASS-CODE / MERGED** at `107ac95b54bdfff79085cd8f6d3f41b132787347`; its strict four integrated PR-head runs were all SUCCESS, but new merged-SHA Main/FullHD were still in progress at check. Do not treat this as G10 visual acceptance: existing shirt/warm/wind/dry garment safe-zone diagnostics remain open. Previous #76 Ready row is an earlier timestamped record, not live status.
+
+### Archived status notes below (historical evidence only)
+
+
+
+## Active work / trạng thái chính thức
+
+| Agent | Task / PR | Status / next concrete step |
+| --- | --- | --- |
+| **C01** | [Registry #52](https://github.com/qualife1291/Auto-Tool-Video/issues/52) | AVAILABLE / UNASSIGNED, không thừa kế claim cũ, chờ BA01 giao task có AC/file scope. |
+| **C02** | [Registry #53](https://github.com/qualife1291/Auto-Tool-Video/issues/53) | AVAILABLE / UNASSIGNED, không thừa kế claim cũ, chờ BA01 giao task có AC/file scope. |
+| **BA01** | [Epic #26](https://github.com/qualife1291/Auto-Tool-Video/issues/26), [#31](https://github.com/qualife1291/Auto-Tool-Video/issues/31); research [#38](https://github.com/qualife1291/Auto-Tool-Video/issues/38), [#39](https://github.com/qualife1291/Auto-Tool-Video/issues/39) | ACTIVE: cập nhật AC/owner/file scopes, backlog, SDLC/harness FREE-first, release plan. Research NOT implementation. |
+| **C03** | **P1-C [#41](https://github.com/qualife1291/Auto-Tool-Video/issues/41)** / [PR #42](https://github.com/qualife1291/Auto-Tool-Video/pull/42) | **CODE MERGED** at `97dfea49a712de2263648e187e08c4495098182b`, exact synced-head main CI 335 pytest, 10 Vitest, 15 Playwright, dual1080 and A04 PASS. Merged-SHA CI and creator gate remain separately pending. P1-C reservation complete; C03 available for new BA01 assignment. |
+| **C04** | **P1-B [#44](https://github.com/qualife1291/Auto-Tool-Video/issues/44)** | BA ASSIGNED / CLAIM PENDING. Prove 19.65s audio + 1s pause causes >20s scene via actual RED; then minimal `backend/auto_tool_video/api.py::fit_audio` validation + NEW `backend/tests/test_fit_audio_scene_limit.py`. No overlap C03. |
+| **T01** | QA [#17](https://github.com/qualife1291/Auto-Tool-Video/issues/17), creator feedback [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36), four-content scenarios [PR #37](https://github.com/qualife1291/Auto-Tool-Video/pull/37) | Hourly PR/CI + random focused regression/standards research + mandatory manual report every time. PR #37 still BLOCKED by strict final audio QC pending four-story dual MP4 evidence; fix owned QA fixture, not C03/C04 product code. Independent code merges on verified current SHA only, report BA01. |
+
+## Code integrated — human review outstanding
+
+- **A01** [PR #2](https://github.com/qualife1291/Auto-Tool-Video/pull/2) baseline beat data integrity.
+- **A02/C03** [PR #34](https://github.com/qualife1291/Auto-Tool-Video/pull/34) cloth/Blender **CODE MERGED / technical PASS**; human motion continuity/physics both aspects pending.
+- **A03/C04** [PR #35](https://github.com/qualife1291/Auto-Tool-Video/pull/35) captions/beat UI **CODE MERGED / technical PASS**; creator typography/bounce/safe zones pending.
+- **A04** [PR #8](https://github.com/qualife1291/Auto-Tool-Video/pull/8) voice 0.92× **CODE MERGED / real dual FullHD synthetic audio technical PASS**; approved original speaker/voice and human listening NOT RUN.
+- **P1-A/C04** [PR #40](https://github.com/qualife1291/Auto-Tool-Video/pull/40) WAV/MP4 import duration invalidates authored beat approval, verified RED→GREEN, **CODE MERGED** at `09c4a8ea858e26f7e3f0b5147377d9d0930a541a`.
+- **GitHub T01 watcher** [PR #43](https://github.com/qualife1291/Auto-Tool-Video/pull/43) emergency spam fix **MERGED**, now cron **every 15 minutes only** plus manual dispatch, not after each CI.
+- **A05/human creator signoff** [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36) and final release gate remain BLOCKED. CI-green ≠ human-approved video.
+
+## Mandatory workflow
+
+1. BA01 task spec/AC + single-writer path reservation; C01/C02/C03/C04 claim by issue, base SHA, branch, files, conflict check. Coder RED→GREEN with negative/happy/boundary and current-head lint/types/pytest/Vitest/E2E/dual FullHD.
+2. QA_OWNER=T01 or T02 independently reviews diff/ownership/current integrated SHA/checks. FAIL or NOT RUN → leave PR open and return to correct owner; all mandatory PASS → QA_OWNER authorized merge to canonical with expected HEAD SHA, postmerge CI and BA01 comment.
+3. **Every hour** T01 must send user actual result PASS/FAIL/BLOCKED/NOT RUN, a verified downloadable preview/FullHD link if available (else OLD BUILD/NO BUILD), 3–6 steps manual test and ask feedback. Log issue/device/aspect/timestamp/expected/actual to [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36). Creator exact video hash watch/listen before feature DONE and release.
+4. All claims need exact commit/run/video SHA; no fabricated media, no unapproved paid provider, no premature social publishing. See [quality gates](../../../docs/qa-evidence-gates.md) and [approved spec](../../../specs/whiteboard-video-tool.md).
+
+**Historical statuses in earlier handovers/PR #23/#21 are not current; preserve provenance, update before integration.**
