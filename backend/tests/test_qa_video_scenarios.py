@@ -3,16 +3,21 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import sys
+from itertools import pairwise
 from pathlib import Path
 
 import pytest
+from PIL import Image, ImageChops, ImageStat
 from pydantic import ValidationError
 
 from auto_tool_video.domain import Scene
 from auto_tool_video.timing import frames_for
 
 ROOT = Path(__file__).resolve().parents[2]
+# Importlib does not automatically put the directly executable scripts directory on sys.path.
+sys.path.insert(0, str(ROOT / "scripts"))
 spec = importlib.util.spec_from_file_location(
     "qa_video_scenarios", ROOT / "scripts/qa_video_scenarios.py"
 )
@@ -101,3 +106,43 @@ def test_original_visual_assets_differ_scene_by_scene():
     assert a.startswith(bytes.fromhex("89504e47"))
     assert b.startswith(bytes.fromhex("89504e47"))
     assert a != b
+
+
+@pytest.mark.parametrize("key", sorted(module.SCENARIOS))
+def test_every_cue_has_intentional_scene_specific_art(key):
+    case = module.SCENARIOS[key]
+    expected = module.EXPECTED_OBJECTS[key]
+    assert set(expected) == {title for title, _narration in case.cues}
+    images = []
+    for i, (title, _narration) in enumerate(case.cues):
+        assert expected[title], f"{key}/{title} has no object intent"
+        source = module.visual(i, case)
+        with Image.open(io.BytesIO(source)) as image:
+            assert image.format == "PNG"
+            assert image.size == (1400, 1000)
+            images.append(image.convert("L").resize((140, 100)))
+    # The existing negative fixtures reused near-identical outlines for every cue.
+    # This is a visual-content guard, NOT human semantic understanding or G10 approval.
+    differences = [ImageStat.Stat(ImageChops.difference(a, b)).mean[0] for a, b in pairwise(images)]
+    assert differences and min(differences) >= 0.4, (key, differences)
+
+
+def test_semantic_art_fails_closed_instead_of_reusing_generic_topic_icon():
+    case = module.SCENARIOS["traffic-45s"]
+    with pytest.raises(ValueError, match="out of range"):
+        module.visual(len(case.cues), case)
+    with pytest.raises(ValueError, match="out of range"):
+        module.visual(-1, case)
+    with pytest.raises(ValueError, match="Unknown semantic"):
+        module.semantic_visual(case.key, "Mặt trăng")
+
+
+def test_shirt_continuity_keeps_shirt_but_changes_wet_dry_state():
+    expected = module.EXPECTED_OBJECTS["shirt-30s"]
+    assert "shirt" in expected["Áo ướt"]
+    assert "shirt" in expected["Áo khô"]
+    assert "water_drops" in expected["Áo ướt"]
+    assert "dry_state" in expected["Áo khô"]
+    assert module.semantic_visual("shirt-30s", "Áo ướt") != module.semantic_visual(
+        "shirt-30s", "Áo khô"
+    )

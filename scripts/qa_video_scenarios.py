@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import io
 import json
 import math
 import shutil
@@ -25,7 +24,7 @@ from auto_tool_video.media import import_asset, probe
 from auto_tool_video.render import render_job
 from auto_tool_video.store import Store
 from auto_tool_video.timing import frames_for
-from PIL import Image, ImageDraw
+from qa_semantic_art import EXPECTED_OBJECTS, semantic_visual
 
 
 @dataclass(frozen=True)
@@ -127,61 +126,13 @@ def digest(path: Path) -> str:
 
 
 def visual(index: int, scenario: Scenario) -> bytes:
-    image = Image.new("RGB", (1400, 1000), "#FFF8EB")
-    draw = ImageDraw.Draw(image)
-    colors = ("#ADDDE4", "#DDEAB4", "#E8B587", "#BDB5E0", "#F8D274")
-    shift = (index * 61) % 180
-    draw.rounded_rectangle((125, 135, 1250, 880), radius=90, fill="#F5F1DC")
-    draw.ellipse(
-        (245 + shift, 180, 950 + shift, 785),
-        fill=colors[index % len(colors)],
-        outline="#254D3D",
-        width=17,
-    )
-    if scenario.key.startswith("water"):
-        draw.polygon([(650, 240), (460, 650), (835, 650)], fill="#73BFD0")
-    elif scenario.key.startswith("shirt"):
-        draw.polygon(
-            [
-                (390, 250),
-                (520, 220),
-                (600, 310),
-                (740, 310),
-                (825, 220),
-                (960, 250),
-                (1020, 470),
-                (865, 540),
-                (865, 745),
-                (475, 745),
-                (475, 540),
-                (330, 470),
-            ],
-            fill=colors[index % len(colors)],
-            outline="#254D3D",
-            width=12,
-        )
-    elif scenario.key.startswith("traffic"):
-        draw.rectangle(
-            (600, 250, 780, 705),
-            fill="#344B45",
-            outline="#132823",
-            width=15,
-        )
-        for i, light in enumerate(("#DE6B62", "#E9BE67", "#76BD88")):
-            y = 285 + i * 135
-            draw.ellipse((640, y, 740, y + 100), fill=light)
-    else:
-        draw.rectangle(
-            (490, 380, 850, 610),
-            fill="#F8E19B",
-            outline="#254D3D",
-            width=15,
-        )
-        draw.line((565, 480, 760, 480), fill="#254D3D", width=17)
-    draw.line((85, 920, 1315, 920), fill="#254D3D", width=16)
-    output = io.BytesIO()
-    image.save(output, "PNG")
-    return output.getvalue()
+    """Bind visual content to a specific spoken cue, never only scenario topic."""
+    if not 0 <= index < len(scenario.cues):
+        raise ValueError("Scene visual index out of range")
+    title, _narration = scenario.cues[index]
+    if title not in EXPECTED_OBJECTS.get(scenario.key, {}):
+        raise ValueError(f"Missing visual concept for {scenario.key}: {title}")
+    return semantic_visual(scenario.key, title)
 
 
 def voice(text: str, path: Path, speech_rate: int) -> dict:
@@ -261,11 +212,13 @@ def render_one(
             title=title,
             narration=cue,
             duration=scenario.scene_seconds,
-            style=("whiteboard", "motion")[i % 2],
-            caption_style=("card", "contrast", "accent")[i % 3],
-            caption_emphasis=cue.split()[0] if i % 3 == 2 else "",
-            layout=("board", "full_frame")[i % 2],
-            transition=("cut", "dissolve")[i % 2],
+            # Stable framing: old alternating board/full-frame caused tiny/overzoom art.
+            style="motion",
+            caption_style="contrast",
+            caption_emphasis="",
+            layout="full_frame",
+            visual_fit="contain",
+            transition="dissolve",
             second_by_second=beats(scenario.scene_seconds, cue),
             beat_plan_status="authored",
         ).model_dump()
@@ -418,7 +371,8 @@ def run(key: str, root: Path, kind: str = "preview") -> dict:
         "scenes": len(scenario.cues),
         "target_seconds": scenario.seconds,
         "cues": [{"title": t, "narration": c} for t, c in scenario.cues],
-        "source": f"Pillow art + local eSpeak vi, {speech_rate} wpm",
+        "source": f"Cue-specific offline Pillow pictograms + local eSpeak vi, {speech_rate} wpm",
+        "visual_gate": "engineering illustration only; semantic/creator video review NOT RUN",
         "audio_mastering": "synthetic-fixture compressor only",
         "release_approved": False,
         "human_review": "NOT RUN",
