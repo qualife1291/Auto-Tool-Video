@@ -1,11 +1,13 @@
 """Worker RED regression: one broken job must not poison the queue."""
 
+import json
 import sqlite3
 from pathlib import Path
 
 import pytest
 
 from auto_tool_video import worker
+from auto_tool_video.store import Store
 
 
 class Queue:
@@ -109,3 +111,37 @@ def test_transient_claim_lock_has_bounded_backoff(monkeypatch, tmp_path):
     with pytest.raises(KeyboardInterrupt):
         worker.main()
     assert sleeps == [0.5, 1.0, 2.0, 0.5]
+
+
+
+@pytest.mark.parametrize("error", [KeyError("bad shape"), sqlite3.OperationalError("db write")])
+def test_real_sqlite_queue_survives_two_sequential_jobs(tmp_path, monkeypatch, error):
+    store = Store(tmp_path)
+    for identifier in ("broken", "following"):
+        job = {
+            "id": identifier,
+            "project_id": "regression",
+            "state": "queued",
+            "options": {"kind": "export"},
+        }
+        with store.connect() as conn:
+            conn.execute(
+                "INSERT INTO jobs VALUES(?,?,?,?,?,?)",
+                (identifier, "regression", identifier, "hash", "queued", json.dumps(job)),
+            )
+
+    def render(actual_store, job):
+        if job["id"] == "broken":
+            raise error
+        actual_store.update_job(job["id"], state="succeeded", result_id="tested")
+
+    monkeypatch.setattr(worker, "render_job", render)
+    assert worker.run_once(store) is True
+    first = store.get("jobs", "broken")
+    assert first["state"] == "failed"
+    assert first["error_code"] == "WORKER_ERROR"
+    assert worker.run_once(store) is True
+    second = store.get("jobs", "following")
+    assert second["state"] == "succeeded"
+    assert second["result_id"] == "tested"
+    assert worker.run_once(store) is False
