@@ -96,7 +96,7 @@ def cache_environment(tmp_path, monkeypatch):
 @pytest.mark.parametrize("aspect", ["portrait", "landscape"])
 def test_changed_scene_visual_rebuilds_same_size_same_frame_cached_clip(cache_environment, aspect):
     """Genuine RED: old reuse accepts the prior MP4 despite changed story."""
-    root, renders, run = cache_environment
+    _root, renders, run = cache_environment
     original = story_scene()
     clip = run(original, aspect=aspect)
     assert clip.is_file()
