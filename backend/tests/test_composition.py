@@ -232,7 +232,6 @@ def test_invalid_composition_fields_are_rejected(client, patch):
     assert save(client, project).status_code == 422
 
 
-
 def test_new_split_and_ai_scenes_default_to_noncropping_fit():
     from auto_tool_video.domain import Scene, split_script
 
