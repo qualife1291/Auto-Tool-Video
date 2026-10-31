@@ -21,6 +21,7 @@ import numpy as np
 from .domain import QualityReviewInput
 from .layout import boxes
 from .media import probe
+from .semantic_screen import EDGE_SIMILARITY, MIN_CONSECUTIVE_PAIRS, repeated_visual_findings
 from .store import DomainError, Store, now
 from .timing import frames_for, silence_report
 
@@ -339,12 +340,15 @@ def scene_signals(rows: list[dict], scene: dict, start: float, scene_number: int
 def scan_video(path: Path, scenes: list[dict], check: Callable[[], None]) -> dict:
     capture = cv2.VideoCapture(str(path))
     metrics = []
+    screening_frames: list[np.ndarray] = []
     try:
         frame_number = 0
         for number, scene in enumerate(scenes, 1):
             rows, previous = [], None
             start = frame_number / 30
-            for _ in range(frames_for(scene["duration"])):
+            scene_frames = frames_for(scene["duration"])
+            sample_at = max(0, round(scene_frames * 0.9) - 1)
+            for local_index in range(scene_frames):
                 check()
                 ok, frame = capture.read()
                 if not ok:
@@ -360,6 +364,8 @@ def scan_video(path: Path, scenes: list[dict], check: Callable[[], None]) -> dic
                 gray = cv2.resize(
                     cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY), (160, 160), interpolation=cv2.INTER_AREA
                 )
+                if local_index == sample_at:
+                    screening_frames.append(gray.copy())
                 rows.append(
                     {
                         "luma": float(gray.mean()),
@@ -377,16 +383,23 @@ def scan_video(path: Path, scenes: list[dict], check: Callable[[], None]) -> dic
     finally:
         capture.release()
     return {
-        "method": "Every frame, illustration ROI resized to160×160 grayscale; pixel/luminance proxies, not VBench or semantic/physics scores.",
+        "method": (
+            "Every frame, illustration ROI resized to160×160 grayscale; "
+            "near-tail cross-scene edge repetition is advisory only. "
+            "Not VBench, semantic alignment, or human approval."
+        ),
         "thresholds": {
             "isolated_luma_jump": 35,
             "return_tolerance": 8,
             "near_repeat_mae": 0.08,
             "motion_required_freeze_seconds": 0.5,
+            "repeated_art_edge_similarity": EDGE_SIMILARITY,
+            "repeated_art_min_adjacent_pairs": MIN_CONSECUTIVE_PAIRS,
         },
         "sharpness_policy": "Laplacian descriptive only: line art and soft backgrounds do not have a universal blur threshold.",
         "scenes": metrics,
-        "findings": [item for metric in metrics for item in metric["findings"]],
+        "findings": [item for metric in metrics for item in metric["findings"]]
+        + repeated_visual_findings(screening_frames, scenes),
     }
 
 
