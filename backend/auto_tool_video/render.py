@@ -152,7 +152,12 @@ class ScenePainter:
         # A contained illustration must not sit behind an opaque caption card.
         # Reserve the caption strip only when narration and captions are present;
         # explicit cover crops and caption-free edge-to-edge scenes are unchanged.
-        if captions and scene.get("narration") and self.layout == "full_frame" and self.fit == "contain":
+        if (
+            captions
+            and scene.get("narration")
+            and self.layout == "full_frame"
+            and self.fit == "contain"
+        ):
             ix, iy, iw, ih = self.image_box
             caption_top = self.caption_box[1]
             safe_bottom = caption_top - 24
