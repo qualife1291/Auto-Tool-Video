@@ -717,4 +717,4 @@ def render_job(store: Store, job: dict[str, Any]) -> None:
             logger.exception("Could not persist render failure for job %s", job["id"])
         raise
     finally:
-        shutil.rmtree(root)
+        shutil.rmtree(root, ignore_errors=True)

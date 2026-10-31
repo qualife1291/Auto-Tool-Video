@@ -48,7 +48,7 @@ def test_worker_isolates_unhandled_render_error_and_continues(monkeypatch, error
     monkeypatch.setattr(worker, "render_job", render)
     assert worker.run_once(queue)
     assert queue.get("jobs", "bad")["state"] == "failed"
-    assert queue.get("jobs", "bad")["error_code"] == "WORKER_FAILED"
+    assert queue.get("jobs", "bad")["error_code"] == "WORKER_ERROR"
     assert worker.run_once(queue)
     assert queue.get("jobs", "good")["state"] == "succeeded"
     assert not worker.run_once(queue)

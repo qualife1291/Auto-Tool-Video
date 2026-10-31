@@ -38,7 +38,7 @@ def run_once(store: Store) -> bool:
                     job["id"],
                     state="failed",
                     error="Tác vụ thất bại do lỗi xử lý nội bộ. Xem log worker.",
-                    error_code="WORKER_FAILED",
+                    error_code="WORKER_ERROR",
                 )
         except Exception:
             # A broken/locked DB must not hide the original processing exception
