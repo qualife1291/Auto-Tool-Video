@@ -13,6 +13,11 @@ from auto_tool_video.store import Store
         "{invalid-json",
         "[]",
         '{"id":"wrong-id","project_id":"project","state":"queued","options":{"kind":"export"}}',
+        '{"id":"damaged","project_id":"another-project","state":"queued","options":{"kind":"export"}}',
+        '{"id":"damaged","project_id":"project","state":"queued","options":[]}',
+        '{"id":"damaged","project_id":"project","state":"queued","options":{}}',
+        '{"id":"damaged","project_id":"project","state":"queued","options":{"kind":42}}',
+        '{"id":"damaged","project_id":"project","state":"queued","options":{"kind":"unknown"}}',
     ],
 )
 def test_claim_quarantines_malformed_queued_row_and_claims_next(tmp_path, damaged_data):
