@@ -6,7 +6,9 @@ on:
       - feat/short-video-studio
     paths:
       - scripts/qa_video_scenarios.py
+      - scripts/qa_semantic_art.py
       - backend/tests/test_qa_video_scenarios.py
+      - backend/tests/test_crosswalk_art.py
       - .github/workflows/qa-scenario-matrix.yml
   workflow_dispatch:
 
@@ -39,9 +41,14 @@ jobs:
           uv sync --project backend --frozen --group dev
       - name: Fast scenario and validation regression
         run: |
-          uv run --project backend ruff check scripts/qa_video_scenarios.py backend/tests/test_qa_video_scenarios.py
-          uv run --project backend ruff format --check scripts/qa_video_scenarios.py backend/tests/test_qa_video_scenarios.py
-          uv run --project backend pytest backend/tests/test_qa_video_scenarios.py -q
+          uv run --project backend ruff check \
+            scripts/qa_video_scenarios.py scripts/qa_semantic_art.py \
+            backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py
+          uv run --project backend ruff format --check \
+            scripts/qa_video_scenarios.py scripts/qa_semantic_art.py \
+            backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py
+          uv run --project backend pytest \
+            backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py -q
       - name: Render and validate both aspect ratio MP4 files
         run: |
           uv run --project backend python scripts/qa_video_scenarios.py \
