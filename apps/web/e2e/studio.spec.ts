@@ -155,7 +155,9 @@ for (const width of [1366, 390]) {
     await page.getByLabel('Lời thoại', { exact: true }).fill('Nước bay hơi.');
     await page.getByRole('button', { name: 'Tạo storyboard' }).click();
     await expect(page.getByLabel('Bố cục hình')).toHaveValue('full_frame');
-    await expect(page.getByLabel('Cách lấp khung')).toHaveValue('cover');
+    await expect(page.getByLabel('Cách lấp khung')).toHaveValue('contain');
+    // New scenes protect source art; explicit creator cover+focal overrides that default.
+    await page.getByLabel('Cách lấp khung').selectOption('cover');
     await expect(page.getByRole('button', { name: 'Khớp nhịp theo giọng đã nhập' })).toBeDisabled();
     await page
       .getByLabel('Nhập ảnh minh họa', { exact: true })
@@ -189,6 +191,7 @@ for (const width of [1366, 390]) {
     await page.reload();
     await page.getByRole('button', { name: new RegExp(title) }).click();
     await page.getByRole('button', { name: /Storyboard/, exact: false }).click();
+    await expect(page.getByLabel('Cách lấp khung')).toHaveValue('cover');
     await expect(page.getByLabel('Tiêu điểm ngang')).toHaveValue('0.72');
     await expect(page.getByLabel('Tiêu điểm dọc')).toHaveValue('0.35');
     await expect(page.getByLabel('Chuyển cảnh')).toHaveValue('cut');
