@@ -152,6 +152,7 @@ def import_asset(
             target = next(item for item in current["scenes"] if item["id"] == scene_id)
             previous_duration = target["duration"]
             target[f"{'image' if kind == 'clip' else kind}_id"] = identifier
+            clip_attached = kind == "clip"
             if kind == "clip":
                 # Use the new measured clip, not a stale prior scene duration.
                 frames = max(30, frames_for(duration))
@@ -164,6 +165,7 @@ def import_asset(
                 if target.get("image_id"):
                     visual = store.get("assets", target["image_id"], conn)
                     if visual["kind"] == "clip":
+                        clip_attached = True
                         frames = max(frames, frames_for(visual["duration"]))
                 target.update(duration=frames / 30, audio_stale=False)
             if kind in {"clip", "audio"}:
@@ -171,7 +173,12 @@ def import_asset(
                 # file is removed by the existing rollback handler on errors.
                 if frames_for(target["duration"]) > 600:
                     raise DomainError("DURATION_LIMIT", "Clip và giọng vượt 20 giây mỗi cảnh.")
-                if sum(frames_for(s["duration"]) for s in current["scenes"]) > 1800:
+                # Preserve legacy audio-only staging: Fit Audio/export enforce 1800
+                # frames when the creator finishes arranging the narration.
+                # Motion imports/retimes must reject oversized projects now.
+                if clip_attached and sum(
+                    frames_for(s["duration"]) for s in current["scenes"]
+                ) > 1800:
                     raise DomainError("DURATION_LIMIT", "Tổng thời lượng vượt 60 giây.")
             # This direct SQL path bypasses Store.save's duration-change invalidation.
             # Keep authored beat text intact, but require re-review after any retime.

@@ -280,17 +280,13 @@ def test_motion_clip_audio_order_and_pause_use_measured_frame_maximum(
     scene = _scene(project)
     audio = store.get("assets", scene["audio_id"])
     clip = store.get("assets", scene["image_id"])
-    imported_expected = max(
-        30, frames_for(clip["duration"]), frames_for(audio["duration"] + 0.12)
-    )
+    imported_expected = max(30, frames_for(clip["duration"]), frames_for(audio["duration"] + 0.12))
     assert frames_for(scene["duration"]) == imported_expected
 
     response = _fit(client, project, pause_after)
     assert response.status_code == 200, response.text
     result = response.json()
-    expected = max(
-        30, frames_for(clip["duration"]), frames_for(audio["duration"] + pause_after)
-    )
+    expected = max(30, frames_for(clip["duration"]), frames_for(audio["duration"] + pause_after))
     assert frames_for(_scene(result)["duration"]) == expected
     assert _scene(result)["image_id"] == scene["image_id"]
     assert _scene(result)["audio_id"] == scene["audio_id"]
@@ -313,13 +309,25 @@ def test_audio_only_fit_shrinks_after_smaller_pause_without_stale_duration_floor
     assert _scene(reduced.json())["duration"] == 2.0
 
 
-def test_audio_import_exceeding_1800_frames_leaves_no_orphan_asset(client):
-    """The fourth imported WAV must fail atomically, including staged file cleanup."""
+def test_audio_only_import_may_stage_over_1800_frames_for_later_fit(client):
+    """Whiteboard narration can be staged; Fit Audio must enforce the final cap."""
     project = create_story(client, "Một.\nHai.\nBa.\nBốn.")
-    for index in range(3):
-        project = attach(
-            client, project, project["scenes"][index], _wav(15.0), f"voice{index}.wav"
-        )
+    for index in range(4):
+        project = attach(client, project, project["scenes"][index], _wav(15.0), f"voice{index}.wav")
+    assert sum(frames_for(scene["duration"]) for scene in project["scenes"]) > 1800
+    before = copy.deepcopy(project)
+
+    response = _fit(client, project, 0.5)
+    assert response.status_code == 400, response.text
+    assert response.json()["code"] == "DURATION_LIMIT"
+    assert client.get(f"/api/projects/{project['id']}").json() == before
+
+
+def test_motion_clip_import_over_1800_frames_rolls_back_staged_asset(client, long_clip: bytes):
+    """Adding motion to an already overlong draft must reject without orphan files."""
+    project = create_story(client, "Một.\nHai.\nBa.\nBốn.")
+    for index in range(4):
+        project = attach(client, project, project["scenes"][index], _wav(15.0), f"voice{index}.wav")
     before = copy.deepcopy(project)
     store = client.app.state.store
     asset_files_before = {p.name for p in (store.root / "assets").iterdir()}
@@ -327,7 +335,7 @@ def test_audio_import_exceeding_1800_frames_leaves_no_orphan_asset(client):
     response = client.post(
         f"/api/projects/{project['id']}/scenes/{project['scenes'][3]['id']}/assets",
         data={"revision": project["revision"]},
-        files={"file": ("voice-last.wav", _wav(15.0))},
+        files={"file": ("motion.mp4", long_clip)},
     )
     assert response.status_code == 400, response.text
     assert response.json()["code"] == "DURATION_LIMIT"
