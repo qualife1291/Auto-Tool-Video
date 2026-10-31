@@ -21,7 +21,14 @@ import numpy as np
 from .domain import QualityReviewInput
 from .layout import boxes
 from .media import probe
-from .semantic_screen import EDGE_SIMILARITY, MIN_CONSECUTIVE_PAIRS, repeated_visual_findings
+from .semantic_screen import (
+    EDGE_SIMILARITY,
+    LOW_DETAIL_MAX_EDGE_PIXELS,
+    LOW_DETAIL_MAX_LUMA_SPREAD,
+    MIN_CONSECUTIVE_PAIRS,
+    MIN_LOW_DETAIL_SCENES,
+    repeated_visual_findings,
+)
 from .store import DomainError, Store, now
 from .timing import frames_for, silence_report
 
@@ -385,7 +392,7 @@ def scan_video(path: Path, scenes: list[dict], check: Callable[[], None]) -> dic
     return {
         "method": (
             "Every frame, illustration ROI resized to160×160 grayscale; "
-            "near-tail cross-scene edge repetition is advisory only. "
+            "near-tail edge repetition and low-detail runs are advisory only. "
             "Not VBench, semantic alignment, or human approval."
         ),
         "thresholds": {
@@ -395,6 +402,9 @@ def scan_video(path: Path, scenes: list[dict], check: Callable[[], None]) -> dic
             "motion_required_freeze_seconds": 0.5,
             "repeated_art_edge_similarity": EDGE_SIMILARITY,
             "repeated_art_min_adjacent_pairs": MIN_CONSECUTIVE_PAIRS,
+            "low_detail_max_edge_pixels": LOW_DETAIL_MAX_EDGE_PIXELS,
+            "low_detail_max_luma_spread": LOW_DETAIL_MAX_LUMA_SPREAD,
+            "low_detail_min_scenes": MIN_LOW_DETAIL_SCENES,
         },
         "sharpness_policy": "Laplacian descriptive only: line art and soft backgrounds do not have a universal blur threshold.",
         "scenes": metrics,
