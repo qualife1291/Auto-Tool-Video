@@ -227,9 +227,42 @@ class Store:
                 return job
 
     def interrupt_running(self) -> None:
+        """Recover every running row atomically, even if one persisted JSON is damaged."""
         with self.connect() as conn:
-            ids = [row[0] for row in conn.execute("SELECT id FROM jobs WHERE state='running'")]
-        for identifier in ids:
-            self.update_job(
-                identifier, state="interrupted", error="Worker đã dừng. Hãy xuất lại khi sẵn sàng."
-            )
+            conn.execute("BEGIN IMMEDIATE")
+            rows = conn.execute(
+                "SELECT id, project_id, data FROM jobs WHERE state='running'"
+            ).fetchall()
+            for row in rows:
+                try:
+                    job = json.loads(row["data"])
+                    if (
+                        not isinstance(job, dict)
+                        or job.get("id") != row["id"]
+                        or job.get("project_id") != row["project_id"]
+                        or job.get("state") != "running"
+                    ):
+                        raise ValueError("Running job metadata does not match its database row")
+                except (ValueError, TypeError):
+                    # Do not let one poisoned running row prevent worker startup.
+                    job = {
+                        "id": row["id"],
+                        "project_id": row["project_id"],
+                        "state": "failed",
+                        "progress": 0,
+                        "options": {},
+                        "result_id": None,
+                        "error": "Dữ liệu tác vụ đang chạy không hợp lệ.",
+                        "error_code": "INVALID_JOB_DATA",
+                        "heartbeat": now(),
+                    }
+                else:
+                    job.update(
+                        state="interrupted",
+                        heartbeat=now(),
+                        error="Worker đã dừng. Hãy xuất lại khi sẵn sàng.",
+                    )
+                conn.execute(
+                    "UPDATE jobs SET state=?, data=? WHERE id=?",
+                    (job["state"], json.dumps(job), row["id"]),
+                )

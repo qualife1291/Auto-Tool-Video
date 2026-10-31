@@ -54,9 +54,7 @@ def test_claim_quarantines_malformed_queued_row_and_claims_next(tmp_path, damage
         '{"id":"damaged","project_id":"project","state":"queued","options":{}}',
     ],
 )
-def test_worker_startup_quarantines_corrupt_running_row_and_recovers_others(
-    tmp_path, damaged_data
-):
+def test_startup_quarantines_corrupt_running_row(tmp_path, damaged_data):
     """A single damaged running row must not prevent the worker from starting."""
     store = Store(tmp_path)
     healthy = {
