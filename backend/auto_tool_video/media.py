@@ -12,6 +12,7 @@ from uuid import uuid4
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
+from .assets_gc import MAX_PROJECT_IMPORT_BYTES, gc_after_mutation, project_import_usage
 from .store import DomainError, Store
 from .timing import frames_for
 
@@ -41,12 +42,8 @@ def import_asset(
     if scene is None:
         raise DomainError("NOT_FOUND", "Không tìm thấy cảnh.", 404)
     with store.connect() as conn:
-        total = sum(
-            item.get("size", 0)
-            for row in conn.execute("SELECT data FROM assets")
-            if (item := json.loads(row[0])).get("project_id") == project_id
-        )
-    if total + len(content) > 500 * 1024 * 1024:
+        total = project_import_usage(conn, project_id)
+    if total + len(content) > MAX_PROJECT_IMPORT_BYTES:
         raise DomainError("DISK_LOW", "Kho tài nguyên đạt giới hạn 500 MiB của bản đầu tiên.")
     identifier = str(uuid4())
     metadata: dict[str, Any] = {}
@@ -194,4 +191,5 @@ def import_asset(
     except Exception:
         path.unlink(missing_ok=True)
         raise
+    gc_after_mutation(store, project_id)
     return current
