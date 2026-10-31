@@ -4,7 +4,6 @@ import concurrent.futures
 from uuid import uuid4
 
 import pytest
-
 from conftest import attach, create_story
 
 from auto_tool_video.domain import ExportInput
