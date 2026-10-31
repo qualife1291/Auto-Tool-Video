@@ -189,7 +189,8 @@ def _person(d: ImageDraw.ImageDraw, x: int, y: int, adult: bool = True) -> None:
 
 def _crossing(d: ImageDraw.ImageDraw) -> None:
     d.rectangle((145, 490, 1255, 835), fill="#AEBFC3", outline=INK, width=9)
-    for x in range(205, 1220, 165):
+    # Leave a margin inside the road's x=1255 right edge; x=1195 overran it.
+    for x in range(205, 1150, 165):
         d.rectangle((x, 540, x + 100, 800), fill="#FFFFFF")
 
 
