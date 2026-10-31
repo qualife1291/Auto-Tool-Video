@@ -62,13 +62,15 @@ def cache_environment(tmp_path, monkeypatch):
 
     def fake_probe(path: Path) -> dict:
         return {
-            "streams": [{
-                "codec_type": "video",
-                "width": 1080 if "portrait" in str(path) else 1920,
-                "height": 1920 if "portrait" in str(path) else 1080,
-                "avg_frame_rate": "30/1",
-                "nb_frames": "90",
-            }]
+            "streams": [
+                {
+                    "codec_type": "video",
+                    "width": 1080 if "portrait" in str(path) else 1920,
+                    "height": 1920 if "portrait" in str(path) else 1080,
+                    "avg_frame_rate": "30/1",
+                    "nb_frames": "90",
+                }
+            ]
         }
 
     def stop_store(_root: Path):
@@ -85,7 +87,10 @@ def cache_environment(tmp_path, monkeypatch):
         )
         with pytest.raises(AfterSourceSelection):
             video.build(
-                tmp_path, aspect, stills=False, reuse_clips=reuse,
+                tmp_path,
+                aspect,
+                stills=False,
+                reuse_clips=reuse,
                 rebuild_templates=tuple(rebuild),
             )
         return tmp_path / f"clips-{aspect}" / "scene-01.mp4"
