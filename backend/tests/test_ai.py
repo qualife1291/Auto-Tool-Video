@@ -18,7 +18,12 @@ from auto_tool_video.domain import (
     Scene,
 )
 from auto_tool_video.generation import apply_generation, enqueue_generation, run_generation
-from auto_tool_video.planning import SYSTEM_PROMPT, prompt_messages, source_chunks, validate_proposal
+from auto_tool_video.planning import (
+    SYSTEM_PROMPT,
+    prompt_messages,
+    source_chunks,
+    validate_proposal,
+)
 from auto_tool_video.providers import (
     Comfy,
     LocalTransport,
