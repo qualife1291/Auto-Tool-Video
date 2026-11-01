@@ -18,6 +18,12 @@ from pathlib import Path
 
 MAX_AUDIO = 24 * 1024**2
 MAX_VIDEO = 200 * 1024**2
+# The active review generator pins both model repositories, exact revisions and SDK.
+REVIEWED_MODELS = {
+    "pnnbao-ump/VieNeu-TTS-v3-Turbo": "61b85e3d937fbbacb387714180e8182823512523",
+    "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX": "ceff0d0749bfb3fa2d61149794ec6feef0d1e1ae",
+}
+REVIEWED_SDK = "3.8.3"
 
 
 def _read_json(path: Path) -> dict:
@@ -66,11 +72,18 @@ def load_trial(root: Path) -> dict:
         or not isinstance(asr, list)
         or len(asr) != len(scenes)
         or provenance.get("sdk") != "vieneu"
+        or provenance.get("version") != REVIEWED_SDK
         or not isinstance(provenance.get("voice"), str)
         or not provenance["voice"]
         or not isinstance(models, list)
-        or not models
-        or any(not isinstance(m, dict) or m.get("license") != "apache-2.0" for m in models)
+        or len(models) != len(REVIEWED_MODELS)
+        or any(
+            not isinstance(m, dict)
+            or m.get("license") != "apache-2.0"
+            or REVIEWED_MODELS.get(m.get("repository")) != m.get("revision")
+            for m in models
+        )
+        or {m["repository"] for m in models if isinstance(m, dict)} != set(REVIEWED_MODELS)
     ):
         raise ValueError("Review is not a complete pinned VieNeu trial")
     trials = []
