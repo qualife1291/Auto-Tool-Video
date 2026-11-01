@@ -18,7 +18,12 @@ from auto_tool_video.domain import (
     Scene,
 )
 from auto_tool_video.generation import apply_generation, enqueue_generation, run_generation
-from auto_tool_video.planning import prompt_messages, source_chunks, validate_proposal
+from auto_tool_video.planning import (
+    SYSTEM_PROMPT,
+    prompt_messages,
+    source_chunks,
+    validate_proposal,
+)
 from auto_tool_video.providers import (
     Comfy,
     LocalTransport,
@@ -226,11 +231,24 @@ def test_cancel_and_restart_keep_original_project(tmp_path):
 def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
     store = Store(tmp_path)
     p = project(store)
-    p = store.save(p["id"], {**p, "scenes": [Scene(image_prompt="blue shirt").model_dump()]})
+    p = store.save(
+        p["id"],
+        {
+            **p,
+            "scenes": [
+                Scene(
+                    image_prompt="blue shirt",
+                    visual_description="Close-up cotton fabric drying in a breezy garden",
+                ).model_dump()
+            ],
+        },
+    )
     scene = p["scenes"][0]
     job = enqueue_generation(
         store, p["id"], ImageInput(revision=1, idempotency_key=str(uuid4())), scene["id"]
     )
+
+    generated = {}
 
     class Images:
         def identity(self, config):
@@ -239,6 +257,7 @@ def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
         graph = staticmethod(Comfy.graph)
 
         def generate(self, config, graph, client_id, check, submitted):
+            generated["prompt"] = graph["6"]["inputs"]["text"]
             submitted("our-prompt")
             check()
             return image_bytes
@@ -249,15 +268,36 @@ def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
     run_generation(store, store.claim(), comfy=Images())
     result = store.get("jobs", job["id"])
     assert result["state"] == "succeeded"
+    assert "Close-up cotton fabric drying in a breezy garden" in generated["prompt"]
     assert result["result"]["provenance"]["resolution_profile"] == "standard"
     candidate = store.get("assets", result["result"]["candidate_id"])
     assert candidate["review_required"]
+    assert result["result"]["visual_review"] == candidate["visual_review"]
+    assert result["result"]["visual_review"]["aesthetic_review"] == "not_performed"
+    assert result["result"]["visual_review"]["human_approval"] == "pending"
     assert (
         candidate["sha256"] == hashlib.sha256(store.asset_path(candidate).read_bytes()).hexdigest()
     )
     assert store.get("projects", p["id"]) == p
+    # A flagged candidate must not be applicable via direct API confirm=True alone.
+    candidate["visual_review"]["warnings"] = [
+        {"code": "sparse_simple_art", "message": "Review sparse source art."}
+    ]
+    with store.connect() as conn:
+        conn.execute(
+            "UPDATE assets SET data=? WHERE id=?",
+            (json.dumps(candidate), candidate["id"]),
+        )
+    with pytest.raises(DomainError) as blocked:
+        apply_generation(store, p["id"], job["id"], ApplyInput(revision=1, confirm=True), "image")
+    assert blocked.value.code == "VISUAL_REVIEW_REQUIRED"
+    assert store.get("projects", p["id"]) == p
     saved = apply_generation(
-        store, p["id"], job["id"], ApplyInput(revision=1, confirm=True), "image"
+        store,
+        p["id"],
+        job["id"],
+        ApplyInput(revision=1, confirm=True, visual_warnings_acknowledged=True),
+        "image",
     )
     assert saved["scenes"][0]["image_id"] == candidate["id"]
     assert not store.get("assets", candidate["id"])["review_required"]
@@ -487,3 +527,10 @@ def test_api_brief_validation_backwards_save_and_job_privacy(client):
     assert (
         client.post(f"/api/projects/{p['id']}/plan", json=payload).json()["id"] == job.json()["id"]
     )
+
+
+def test_planner_prompts_require_semantic_visual_detail_not_repeated_icons():
+    assert "material detail" in SYSTEM_PROMPT
+    assert "foreground/midground/" in SYSTEM_PROMPT
+    assert "phone" in SYSTEM_PROMPT
+    assert "generic isolated icon" in SYSTEM_PROMPT

@@ -17,6 +17,7 @@ from .planning import planner_data, prompt_messages, validate_proposal
 from .providers import Comfy, Ollama, load_workflow
 from .render import Cancelled
 from .store import DomainError, Store, now
+from .visual_candidate import inspect_candidate_visual
 
 
 def enqueue_generation(
@@ -111,6 +112,7 @@ def candidate_asset(store: Store, job: dict, content: bytes, provenance: dict) -
         raise DomainError(
             "MODEL_OUTPUT_INVALID", "Ảnh model lỗi hoặc quá 20 megapixel.", 502
         ) from None
+    visual_review = inspect_candidate_visual(image)
     identifier = str(uuid4())
     path = store.root / "assets" / f"{identifier}.png"
     asset = {
@@ -127,6 +129,7 @@ def candidate_asset(store: Store, job: dict, content: bytes, provenance: dict) -
         "source": "comfyui-local",
         "provenance": {**provenance, "original_sha256": hashlib.sha256(content).hexdigest()},
         "review_required": True,
+        "visual_review": visual_review,
     }
     with store.connect() as conn:
         conn.execute("BEGIN IMMEDIATE")
@@ -198,9 +201,10 @@ def run_generation(
                     None,
                     [
                         scene["image_prompt"],
+                        scene.get("visual_description", ""),
                         brief.get("style_bible", ""),
                         brief.get("character_bible", ""),
-                        "No text, letters, logo or watermark. One clear focal subject.",
+                        "Show the narrated event, objects and setting. No text, letters, logo or watermark. One clear focal subject.",
                     ],
                 )
             )
@@ -236,6 +240,7 @@ def run_generation(
             result = {
                 "candidate_id": asset["id"],
                 "provenance": asset["provenance"],
+                "visual_review": asset["visual_review"],
                 "review_required": True,
             }
         check()
@@ -303,6 +308,14 @@ def apply_generation(
             )
             if not scene or (asset["project_id"], asset["scene_id"]) != (project_id, scene["id"]):
                 raise DomainError("INVALID_ASSET", "Ảnh không thuộc cảnh hiện tại.")
+            review = asset.get("visual_review")
+            warnings = review.get("warnings", []) if isinstance(review, dict) else []
+            if warnings and not request.visual_warnings_acknowledged:
+                raise DomainError(
+                    "VISUAL_REVIEW_REQUIRED",
+                    "Ảnh còn cảnh báo ít chi tiết. Hãy xem ảnh gốc và xác nhận trước khi dùng.",
+                    409,
+                )
             scene["image_id"] = asset["id"]
             asset["review_required"] = False
             conn.execute("UPDATE assets SET data=? WHERE id=?", (json.dumps(asset), asset["id"]))

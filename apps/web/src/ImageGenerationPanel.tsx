@@ -26,9 +26,17 @@ export function ImageGenerationPanel({
   const [seed, setSeed] = useState(42);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [visualWarningsAcknowledged, setVisualWarningsAcknowledged] = useState(false);
   const key = `whiteboard-image-${project.id}-${scene.id}`;
   const active = !!job && ['queued', 'running'].includes(job.state);
   const detailedPrompt = suggestDetailedImagePrompt(scene);
+  const visualReview = job?.result?.visual_review;
+  const visualWarnings = visualReview?.warnings || [];
+  const needsVisualAcknowledgment = visualWarnings.length > 0 && !visualWarningsAcknowledged;
+  useEffect(() => {
+    setVisualWarningsAcknowledged(false);
+  }, [job?.id]);
+
   useEffect(() => {
     api<Capabilities>('/capabilities')
       .then(setCaps)
@@ -64,6 +72,7 @@ export function ImageGenerationPanel({
     }
   }
   async function start() {
+    setVisualWarningsAcknowledged(false);
     const p = await saveProject();
     const next = await api<GenerationJob>(`/projects/${p.id}/scenes/${scene.id}/images`, {
       method: 'POST',
@@ -73,11 +82,15 @@ export function ImageGenerationPanel({
     localStorage.setItem(key, next.id);
   }
   async function apply() {
-    if (!job) return;
+    if (!job || needsVisualAcknowledgment) return;
     const p = await saveProject();
     const saved = await api<Project>(`/projects/${p.id}/images/${job.id}/apply`, {
       method: 'POST',
-      body: JSON.stringify({ revision: p.revision, confirm: true }),
+      body: JSON.stringify({
+        revision: p.revision,
+        confirm: true,
+        visual_warnings_acknowledged: visualWarningsAcknowledged,
+      }),
     });
     await onApplied(saved);
     setJob({ ...job, applied_revision: saved.revision });
@@ -169,9 +182,43 @@ export function ImageGenerationPanel({
           <p className="small">
             Checkpoint: {String(job.result.provenance?.checkpoint || '')} · seed {job.options.seed}
           </p>
+          <a
+            href={`/api/assets/${job.result.candidate_id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Mở ảnh gốc để kiểm tra nét và vật thể ở kích thước thật
+          </a>
+          {visualReview && (
+            <div className="candidate-visual-review" aria-label="Kiểm tra chi tiết ảnh nguồn">
+              <p className="small">
+                Ảnh nguồn: {visualReview.width} × {visualReview.height}. Vùng có nét:{' '}
+                {Math.round(visualReview.occupied_tile_fraction * 100)}%.
+              </p>
+              <p className="small">
+                Số đo cấu trúc, không phải đánh giá thẩm mỹ hay độ khớp lời thoại.
+              </p>
+              {visualWarnings.map((warning) => (
+                <p key={warning.code} className="source-warning" role="status">
+                  {warning.message}
+                </p>
+              ))}
+              {visualWarnings.length > 0 && (
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={visualWarningsAcknowledged}
+                    disabled={busy || disabled || !!job.applied_revision}
+                    onChange={(event) => setVisualWarningsAcknowledged(event.target.checked)}
+                  />
+                  Tôi đã mở và xem ảnh gốc; tự quyết định có dùng ảnh còn cảnh báo.
+                </label>
+              )}
+            </div>
+          )}
           <button
             className="button primary"
-            disabled={busy || disabled || !!job.applied_revision}
+            disabled={busy || disabled || !!job.applied_revision || needsVisualAcknowledgment}
             onClick={() => void action(apply)}
           >
             {job.applied_revision ? 'Đã chọn ảnh này' : 'Dùng ảnh đề xuất cho cảnh'}

@@ -19,7 +19,8 @@ export const emptyBrief: CreativeBrief = {
   required_facts: '',
   sources: [],
   avoid: '',
-  style_bible: 'Nét đen sạch, ít màu, nền kem, không chữ trong ảnh',
+  style_bible:
+    'Minh họa giáo dục giàu chất liệu, nhiều lớp tiền/trung/hậu cảnh; chủ thể chính lớn, đúng tỷ lệ, nét tinh, ánh sáng và bóng đổ rõ; vật thể phụ phải giải thích hành động trong lời thoại, không lặp icon đơn giản; bố cục đầy đặn nhưng chừa vùng chữ, không chữ/logo trong ảnh.',
   character_bible: '',
 };
 export type Capability = {
@@ -30,6 +31,20 @@ export type Capability = {
   checkpoint?: string;
 };
 export type Capabilities = { script: Capability; image: Capability };
+export type CandidateVisualReview = {
+  policy: string;
+  method: string;
+  width: number;
+  height: number;
+  edge_fraction: number;
+  occupied_tile_fraction: number;
+  coarse_palette_bins: number;
+  warnings: { code: string; message: string }[];
+  semantic_review: 'not_performed';
+  aesthetic_review: 'not_performed';
+  human_approval: 'pending';
+};
+
 export type GenerationJob = {
   id: string;
   project_id: string;
@@ -55,6 +70,7 @@ export type GenerationJob = {
     };
     candidate_id?: string;
     provenance?: Record<string, string | number>;
+    visual_review?: CandidateVisualReview;
   };
 };
 export type SecondBeat = {
