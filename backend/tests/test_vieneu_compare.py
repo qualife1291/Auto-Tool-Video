@@ -35,7 +35,18 @@ def _trial(root: Path, voice: str, narration: str = "Áo ướt sẽ khô.") -> 
         "sdk": "vieneu",
         "version": "3.8.3",
         "voice": voice,
-        "models": [{"repository": "pnnbao-ump/VieNeu-TTS-v3-Turbo", "revision": "pinned", "license": "apache-2.0"}],
+        "models": [
+            {
+                "repository": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+                "revision": "61b85e3d937fbbacb387714180e8182823512523",
+                "license": "apache-2.0",
+            },
+            {
+                "repository": "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX",
+                "revision": "ceff0d0749bfb3fa2d61149794ec6feef0d1e1ae",
+                "license": "apache-2.0",
+            },
+        ],
         "records": [{"narration": narration, "file": "audio/scene-01.wav", "sha256": sha}],
     }
     files = []
@@ -103,6 +114,16 @@ def test_ab_rejects_modified_voice_wav_and_model_license(tmp_path):
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError, match="pinned VieNeu"):
         module.load_trial(b)
+
+
+def test_ab_rejects_model_revision_mismatch(tmp_path):
+    a = _trial(tmp_path / "a", "Hải Đăng")
+    path = a / "tts-provenance.json"
+    data = json.loads(path.read_text())
+    data["models"][0]["revision"] = "another-commit"
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError, match="pinned VieNeu"):
+        module.load_trial(a)
 
 
 def test_ab_rejects_unverified_or_missing_export(tmp_path):
