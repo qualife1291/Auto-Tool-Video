@@ -25,8 +25,10 @@ def test_portrait_full_frame_uses_canvas_without_relocating_board_caption(width,
     full = boxes(width, height, "full_frame")
     board = boxes(width, height, "board")
     cy = full["caption"][1]
-    assert cy >= round(height * 0.82)
-    assert cy + full["caption"][3] <= height - round(height * 0.04)
+    # Vertical social UI uses the bottom portion; an attractive full frame
+    # must never sacrifice readable captions to fill empty pixels.
+    assert round(height * 0.70) <= cy <= round(height * 0.76)
+    assert cy + full["caption"][3] <= round(height * 0.83)
     assert board["caption"][1] == round(1335 * width / 1080)
     assert board["image"][1] == round(420 * width / 1080)
 
