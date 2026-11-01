@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { type Capabilities, type GenerationJob, type Project, type Scene } from './domain';
+import { suggestDetailedImagePrompt } from './richImagePrompt';
 
 type Props = {
   project: Project;
@@ -94,6 +95,23 @@ export function ImageGenerationPanel({
           onChange={(e) => onPrompt(e.target.value)}
         />
       </label>
+      <button
+        className="button"
+        type="button"
+        disabled={
+          busy ||
+          disabled ||
+          active ||
+          suggestDetailedImagePrompt(scene) === scene.image_prompt
+        }
+        onClick={() => onPrompt(suggestDetailedImagePrompt(scene))}
+      >
+        Gợi ý minh họa giàu chi tiết, có bối cảnh
+      </button>
+      <p className="muted small">
+        Chỉ bổ sung gợi ý vào prompt để bạn sửa và duyệt; không tự gọi model hay
+        bảo đảm chất lượng ảnh. Giữ nguyên prompt đã nhập.
+      </p>
       <label>
         Seed ảnh
         <input
