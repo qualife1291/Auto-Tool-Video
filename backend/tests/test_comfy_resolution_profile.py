@@ -44,7 +44,9 @@ def test_trusted_high_detail_profile_requests_more_source_pixels(config):
 
 
 @pytest.mark.parametrize("profile", ["huge", "", "1024x1792", None, 5, {}, []])
-def test_unknown_or_unbounded_resolution_profile_fails_closed(tmp_path, monkeypatch, config, profile):
+def test_unknown_or_unbounded_resolution_profile_fails_closed(
+    tmp_path, monkeypatch, config, profile
+):
     config["resolution_profile"] = profile
     path = tmp_path / "test-workflow.json"
     path.write_text(json.dumps(config), encoding="utf-8")
