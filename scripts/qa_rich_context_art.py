@@ -174,10 +174,10 @@ def garment_detail(
 
 def cue_fabric_effects(d: ImageDraw.ImageDraw, title: str, portrait: bool) -> None:
     """A few physical causal signals around the garment; not dense random noise."""
-    shift_x, shift_y = (0, 110) if portrait else (0, 0)
+    shift_y = 110 if portrait else 0
     if title in {"Nước bay hơi", "Không khí", "Không cần sôi"}:
         for x, y in ((485, 370), (620, 420), (760, 340)):
-            xx = x + (0 if portrait else 0)
+            xx = x
             yy = y + shift_y
             d.arc((xx - 30, yy - 60, xx + 24, yy + 10), 196, 353, fill=WATER, width=8)
             d.ellipse((xx + 21, yy - 83, xx + 35, yy - 69), outline=WATER, width=4)
