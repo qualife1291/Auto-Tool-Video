@@ -19,7 +19,8 @@ export const emptyBrief: CreativeBrief = {
   required_facts: '',
   sources: [],
   avoid: '',
-  style_bible: 'Minh họa giáo dục giàu chất liệu, nhiều lớp tiền/trung/hậu cảnh; chủ thể chính lớn, đúng tỷ lệ, nét tinh, ánh sáng và bóng đổ rõ; vật thể phụ phải giải thích hành động trong lời thoại, không lặp icon đơn giản; bố cục đầy đặn nhưng chừa vùng chữ, không chữ/logo trong ảnh.',
+  style_bible:
+    'Minh họa giáo dục giàu chất liệu, nhiều lớp tiền/trung/hậu cảnh; chủ thể chính lớn, đúng tỷ lệ, nét tinh, ánh sáng và bóng đổ rõ; vật thể phụ phải giải thích hành động trong lời thoại, không lặp icon đơn giản; bố cục đầy đặn nhưng chừa vùng chữ, không chữ/logo trong ảnh.',
   character_bible: '',
 };
 export type Capability = {
