@@ -83,7 +83,8 @@ def load_trial(root: Path) -> dict:
             or REVIEWED_MODELS.get(m.get("repository")) != m.get("revision")
             for m in models
         )
-        or {m["repository"] for m in models if isinstance(m, dict)} != set(REVIEWED_MODELS)
+        or {m["repository"] for m in models if isinstance(m, dict)}
+        != set(REVIEWED_MODELS)
     ):
         raise ValueError("Review is not a complete pinned VieNeu trial")
     trials = []
@@ -147,7 +148,11 @@ def load_trial(root: Path) -> dict:
         "voice": provenance["voice"],
         "sdk_version": provenance.get("version"),
         "models": [
-            {"repository": m.get("repository"), "revision": m.get("revision"), "license": m["license"]}
+            {
+                "repository": m.get("repository"),
+                "revision": m.get("revision"),
+                "license": m["license"],
+            }
             for m in models
         ],
         "scenes": trials,
@@ -187,7 +192,11 @@ def compare_trials(baseline: Path, candidate: Path) -> dict:
         )
     return {
         "source": "VieNeu pinned local ONNX CPU trials (not eSpeak)",
-        "baseline": {"voice": left["voice"], "models": left["models"], "exports": left["exports"]},
+        "baseline": {
+            "voice": left["voice"],
+            "models": left["models"],
+            "exports": left["exports"],
+        },
         "candidate": {
             "voice": right["voice"],
             "models": right["models"],
