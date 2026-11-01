@@ -131,7 +131,18 @@ test('mock image candidate keeps current image until explicitly applied', async 
   await expect(page.locator('.portrait-image img')).toBeVisible();
   const oldSource = await page.locator('.portrait-image img').getAttribute('src');
   await page.getByLabel('Prompt ảnh', { exact: true }).fill('Original shirt');
+  const pageErrors: string[] = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.getByRole('button', { name: 'Gợi ý minh họa giàu chi tiết, có bối cảnh' }).click();
+  console.log(
+    'RICH_PROMPT_E2E_DIAGNOSTIC',
+    JSON.stringify({
+      url: page.url(),
+      textboxCount: await page.getByLabel('Prompt ảnh', { exact: true }).count(),
+      errors: pageErrors,
+      body: (await page.locator('body').innerText()).slice(0, 1200),
+    }),
+  );
   await expect(page.getByLabel('Prompt ảnh', { exact: true })).toHaveValue(
     /Detailed story illustration preset v1/,
   );
