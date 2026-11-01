@@ -90,3 +90,50 @@ def test_portrait_full_bleed_preserves_caption_safe_area_and_no_fake_quality_cla
     assert "low-detail" in negative
     assert "cropped subject" in negative
     assert "quality score" not in positive.lower()
+
+
+def test_authored_storyboard_staging_informs_one_physically_coherent_frame():
+    scene = _scene(
+        second_by_second=[
+            {
+                "second": 0,
+                "visual_state": "wet blue cotton shirt",
+                "action": "wind starts",
+                "camera": "wide establishing yard",
+                "continuity": "same wooden clothesline",
+            },
+            {
+                "second": 1,
+                "visual_state": "partly dry blue cotton shirt",
+                "action": "breeze lifts wet hem",
+                "camera": "medium shot, entire shirt in frame",
+                "continuity": "same blue shirt and wooden clothesline",
+            },
+            {
+                "second": 2,
+                "visual_state": "dry blue cotton shirt",
+                "action": "wind fades",
+                "camera": "wide closing frame",
+                "continuity": "same wooden clothesline",
+            },
+        ],
+    )
+    prompt, _ = build_image_prompt(_project(), scene)
+    assert "medium shot, entire shirt in frame" in prompt
+    assert "same blue shirt and wooden clothesline" in prompt
+    assert "depict only the representative moment" in prompt
+    assert "breeze lifts wet hem" in prompt
+
+
+def test_art_direction_keeps_color_material_light_and_scene_consistency():
+    prompt, negative = build_image_prompt(_project(), _scene())
+    for phrase in (
+        "color palette",
+        "lighting",
+        "fabric weave",
+        "cast shadows",
+        "foreground",
+        "background",
+    ):
+        assert phrase in prompt.lower()
+    assert "random color shifts" in negative
