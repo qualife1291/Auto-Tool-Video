@@ -31,9 +31,7 @@ def inspect_candidate_visual(image: Image.Image) -> dict:
     active_cell_fraction = float(np.count_nonzero(cell_edge_pixels >= 8) / GRID**2)
     edge_fraction = float(edges.mean())
     # Coarse palette prevents pixel-scale JPEG noise from inflating diversity.
-    palette_bins = int(
-        np.unique((rgb // 32).reshape((-1, 3)), axis=0).shape[0]
-    )
+    palette_bins = int(np.unique((rgb // 32).reshape((-1, 3)), axis=0).shape[0])
     warnings: list[dict[str, str]] = []
     if edge_fraction < 0.004:
         warnings.append(
