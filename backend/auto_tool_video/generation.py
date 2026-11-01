@@ -112,9 +112,7 @@ def candidate_asset(store: Store, job: dict, content: bytes, provenance: dict) -
         raise DomainError(
             "MODEL_OUTPUT_INVALID", "Ảnh model lỗi hoặc quá 20 megapixel.", 502
         ) from None
-    visual_review = inspect_candidate_visual(
-        image, expected_aspect=job["snapshot"]["aspect"]
-    )
+    visual_review = inspect_candidate_visual(image, expected_aspect=job["snapshot"]["aspect"])
     identifier = str(uuid4())
     path = store.root / "assets" / f"{identifier}.png"
     asset = {

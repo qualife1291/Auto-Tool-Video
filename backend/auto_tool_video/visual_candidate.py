@@ -16,9 +16,7 @@ SAMPLE = 192
 GRID = 8
 
 
-def inspect_candidate_visual(
-    image: Image.Image, *, expected_aspect: str | None = None
-) -> dict:
+def inspect_candidate_visual(image: Image.Image, *, expected_aspect: str | None = None) -> dict:
     """Compute bounded, advisory evidence using actual image pixels."""
     if image.width < 1 or image.height < 1:
         raise ValueError("Candidate image must have nonzero dimensions")
