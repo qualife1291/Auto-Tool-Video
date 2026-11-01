@@ -30,6 +30,20 @@ export type Capability = {
   checkpoint?: string;
 };
 export type Capabilities = { script: Capability; image: Capability };
+export type CandidateVisualReview = {
+  policy: string;
+  method: string;
+  width: number;
+  height: number;
+  edge_fraction: number;
+  occupied_tile_fraction: number;
+  coarse_palette_bins: number;
+  warnings: { code: string; message: string }[];
+  semantic_review: 'not_performed';
+  aesthetic_review: 'not_performed';
+  human_approval: 'pending';
+};
+
 export type GenerationJob = {
   id: string;
   project_id: string;
@@ -55,6 +69,7 @@ export type GenerationJob = {
     };
     candidate_id?: string;
     provenance?: Record<string, string | number>;
+    visual_review?: CandidateVisualReview;
   };
 };
 export type SecondBeat = {
