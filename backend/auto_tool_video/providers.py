@@ -284,7 +284,11 @@ class Comfy(LocalTransport):
         graph = copy.deepcopy(config["workflow"])
         # Trusted local config controls a bounded source resolution, not user/model text.
         profile = config.get("resolution_profile", "standard")
-        if profile not in COMFY_RESOLUTION_PROFILES or aspect not in {"portrait", "landscape"}:
+        if (
+            not isinstance(profile, str)
+            or profile not in COMFY_RESOLUTION_PROFILES
+            or aspect not in {"portrait", "landscape"}
+        ):
             raise DomainError(
                 "PROVIDER_CONFIG_ERROR", "Hồ sơ độ phân giải ComfyUI không hợp lệ.", 503
             )
