@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from PIL import Image, ImageDraw
 
+from auto_tool_video.domain import CreativeBrief
 from auto_tool_video.visual_candidate import POLICY, inspect_candidate_visual
 
 
@@ -57,3 +58,14 @@ def test_deterministic_analysis_and_no_mutation():
 def test_empty_image_rejected(size):
     with pytest.raises(ValueError):
         inspect_candidate_visual(Image.new("RGB", size))
+
+
+
+def test_new_story_uses_layered_art_direction_without_overwriting_legacy_projects():
+    style = CreativeBrief().style_bible
+    assert "nhiều lớp" in style
+    assert "chủ thể chính lớn" in style
+    assert "chất liệu" in style
+    assert "không chữ/logo" in style
+    old = CreativeBrief(style_bible="Nét đen sạch, ít màu, nền kem")
+    assert old.style_bible == "Nét đen sạch, ít màu, nền kem"
