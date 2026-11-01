@@ -104,9 +104,7 @@ export function ImageGenerationPanel({
       >
         Gợi ý minh họa giàu chi tiết, có bối cảnh
       </button>
-      <p className="muted small">
-        Gợi ý chỉ sửa prompt. Không tự tạo ảnh hay tự duyệt chất lượng.
-      </p>
+      <p className="muted small">Gợi ý chỉ sửa prompt, không tự tạo ảnh.</p>
       <label>
         Seed ảnh
         <input
