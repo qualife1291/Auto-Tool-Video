@@ -167,7 +167,7 @@ def verify_tempo(root: Path) -> dict:
 
 # A04 short engineering samples should show the *completed* illustration long
 # enough to inspect at 1x. This does not change production Scene defaults.
-A04_REVIEW_DRAW_FRACTION = 0.50
+A04_REVIEW_DRAW_FRACTION = 0.34
 
 
 def make_review_scene(spec: dict):
