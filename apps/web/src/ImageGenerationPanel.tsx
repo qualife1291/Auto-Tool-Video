@@ -28,6 +28,7 @@ export function ImageGenerationPanel({
   const [error, setError] = useState('');
   const key = `whiteboard-image-${project.id}-${scene.id}`;
   const active = !!job && ['queued', 'running'].includes(job.state);
+  const detailedPrompt = suggestDetailedImagePrompt(scene);
   useEffect(() => {
     api<Capabilities>('/capabilities')
       .then(setCaps)
@@ -98,19 +99,13 @@ export function ImageGenerationPanel({
       <button
         className="button"
         type="button"
-        disabled={
-          busy ||
-          disabled ||
-          active ||
-          suggestDetailedImagePrompt(scene) === scene.image_prompt
-        }
-        onClick={() => onPrompt(suggestDetailedImagePrompt(scene))}
+        disabled={busy || disabled || active || detailedPrompt === scene.image_prompt}
+        onClick={() => onPrompt(detailedPrompt)}
       >
         Gợi ý minh họa giàu chi tiết, có bối cảnh
       </button>
       <p className="muted small">
-        Chỉ bổ sung gợi ý vào prompt để bạn sửa và duyệt; không tự gọi model hay
-        bảo đảm chất lượng ảnh. Giữ nguyên prompt đã nhập.
+        Gợi ý chỉ sửa prompt. Không tự tạo ảnh hay tự duyệt chất lượng.
       </p>
       <label>
         Seed ảnh
