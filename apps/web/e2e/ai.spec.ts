@@ -160,7 +160,7 @@ test('mock image candidate keeps current image until explicitly applied', async 
   await expect(page.locator('.portrait-image img')).toHaveAttribute('src', oldSource!);
   await expect(page.getByText('Ảnh nguồn ít chi tiết, cần xem trước.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Dùng ảnh đề xuất cho cảnh' })).toBeDisabled();
-  await expect(page.getByText(/Không phải điểm thẩm mỹ/)).toBeVisible();
+  await expect(page.getByText(/không phải đánh giá thẩm mỹ/)).toBeVisible();
   await page
     .getByLabel('Tôi đã mở và xem ảnh gốc; tự quyết định có dùng ảnh còn cảnh báo.')
     .check();
