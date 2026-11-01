@@ -5,6 +5,7 @@ import {
   duration,
   preflight,
   sourceNeedsUpscale,
+  emptyBrief,
   type Project,
   type Scene,
 } from './domain';
@@ -156,4 +157,12 @@ describe('estimated caption pages (browser preview, not pixel-exact export)', ()
         .join(''),
     ).toBe('Nước bay hơi.');
   });
+});
+
+
+
+it('defaults new briefs to layered art without losing older creator-authored styles', () => {
+  expect(emptyBrief.style_bible).toContain('nhiều lớp');
+  expect(emptyBrief.style_bible).toContain('chất liệu');
+  expect(emptyBrief.style_bible).toContain('chủ thể chính lớn');
 });
