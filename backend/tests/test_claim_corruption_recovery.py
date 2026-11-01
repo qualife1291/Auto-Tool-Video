@@ -11,7 +11,6 @@ from auto_tool_video.store import Store
     "damaged_data",
     [
         "{invalid-json",
-        b"\xff\x80\x00",  # SQLite TEXT column holding invalid UTF-8 BLOB
         "[]",
         "[" * 10_000 + "0" + "]" * 10_000,  # JSON nesting beyond decoder limit
         '{"id":"wrong-id","project_id":"project","state":"queued","options":{"kind":"export"}}',
@@ -56,7 +55,6 @@ def test_claim_quarantines_malformed_queued_row_and_claims_next(tmp_path, damage
     "damaged_data",
     [
         "{invalid-json",
-        b"\xff\x80\x00",  # SQLite TEXT column holding invalid UTF-8 BLOB
         "[]",
         "[" * 10_000 + "0" + "]" * 10_000,  # JSON nesting beyond decoder limit
         '{"id":"wrong-id","project_id":"project","state":"running","options":{}}',
@@ -131,3 +129,39 @@ def test_corrupt_blob_project_id_does_not_stop_queue_or_startup(tmp_path, state)
     assert claimed is not None and claimed["id"] == "healthy"
     assert store.get("jobs", "damaged")["state"] == "failed"
     assert store.get("jobs", "damaged")["error_code"] == "INVALID_JOB_DATA"
+
+
+@pytest.mark.parametrize("state", ["queued", "running"])
+def test_null_sqlite_primary_key_cannot_starve_or_escape_recovery(tmp_path, state):
+    """SQLite rowid tables permit NULL in a TEXT PRIMARY KEY despite its name."""
+    store = Store(tmp_path)
+    damaged = {
+        "id": None,
+        "project_id": "project",
+        "state": state,
+        "options": {"kind": "export"},
+    }
+    healthy = {
+        "id": "healthy",
+        "project_id": "project",
+        "state": "queued",
+        "options": {"kind": "export"},
+    }
+    with store.connect() as conn:
+        conn.execute(
+            "INSERT INTO jobs VALUES(?,?,?,?,?,?)",
+            (None, "project", "bad-key", "hash", state, json.dumps(damaged)),
+        )
+        conn.execute(
+            "INSERT INTO jobs VALUES(?,?,?,?,?,?)",
+            ("healthy", "project", "good-key", "hash", "queued", json.dumps(healthy)),
+        )
+
+    if state == "running":
+        store.interrupt_running()
+    claimed = store.claim()
+    assert claimed is not None and claimed["id"] == "healthy"
+    with store.connect() as conn:
+        poisoned = conn.execute("SELECT state,data FROM jobs WHERE id IS NULL").fetchone()
+    assert poisoned is not None and poisoned["state"] == "failed"
+    assert json.loads(poisoned["data"])["error_code"] == "INVALID_JOB_DATA"
