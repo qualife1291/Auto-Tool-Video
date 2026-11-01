@@ -12,7 +12,7 @@ NEGATIVE = (
     "text, watermark, logo, unreadable labels, clutter, inconsistent character, "
     "generic isolated icon, flat vector clip art, low-detail pictogram, "
     "mostly blank background, plain empty border, cropped subject, "
-    "blurry outlines, low-detail textures, duplicate main objects"
+    "blurry outlines, low-detail textures, duplicate main objects, random color shifts"
 )
 
 
@@ -57,11 +57,24 @@ def build_image_prompt(project: dict[str, Any], scene: dict[str, Any]) -> tuple[
                 pieces.append("Representative visible state: " + state)
             if isinstance(action, str) and action.strip():
                 pieces.append("Visible action to depict: " + action)
+            camera = beat.get("camera", "")
+            continuity = beat.get("continuity", "")
+            if isinstance(camera, str) and camera.strip():
+                pieces.append("Representative shot framing: " + camera)
+            if isinstance(continuity, str) and continuity.strip():
+                pieces.append("Continuity anchors: " + continuity)
+            pieces.append(
+                "depict only the representative moment, not several contradictory "
+                "wet/dry stages at the same time; later stages belong in animation."
+            )
 
     pieces.extend(
         [
             framing,
             (
+                "Establish a coherent color palette consistent with the story and "
+                "subject materials; keep lighting direction, object proportions and "
+                "character identity stable between neighboring scenes. "
                 "Detailed scene-specific objects and correct physical relationships; "
                 "visible material grain, fabric weave or surface texture as appropriate, "
                 "precise edges, natural lighting and cast shadows, foreground/midground/"
