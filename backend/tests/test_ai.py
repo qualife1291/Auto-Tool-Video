@@ -269,6 +269,10 @@ def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
     result = store.get("jobs", job["id"])
     assert result["state"] == "succeeded"
     assert "Close-up cotton fabric drying in a breezy garden" in generated["prompt"]
+    assert "Portrait 9:16" in generated["prompt"]
+    assert "Áo ướt." not in generated["prompt"]
+    assert "blue shirt" in generated["prompt"]
+    assert "Show the narrated event" not in generated["prompt"]
     assert result["result"]["provenance"]["resolution_profile"] == "standard"
     candidate = store.get("assets", result["result"]["candidate_id"])
     assert candidate["review_required"]

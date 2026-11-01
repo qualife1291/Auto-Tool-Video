@@ -13,6 +13,7 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 
 from .assets_gc import MAX_PROJECT_IMPORT_BYTES, gc_after_mutation, project_import_usage
 from .domain import ApplyInput, ImageInput, PlanInput
+from .image_prompt import build_image_prompt
 from .planning import planner_data, prompt_messages, validate_proposal
 from .providers import Comfy, Ollama, load_workflow
 from .render import Cancelled
@@ -195,20 +196,7 @@ def run_generation(
             identity = images.identity(config)
             project = job["snapshot"]
             scene = next(s for s in project["scenes"] if s["id"] == job["options"]["scene_id"])
-            brief = project.get("brief", {})
-            prompt = "\n".join(
-                filter(
-                    None,
-                    [
-                        scene["image_prompt"],
-                        scene.get("visual_description", ""),
-                        brief.get("style_bible", ""),
-                        brief.get("character_bible", ""),
-                        "Show the narrated event, objects and setting. No text, letters, logo or watermark. One clear focal subject.",
-                    ],
-                )
-            )
-            negative = "text, watermark, logo, unreadable labels, clutter, inconsistent character"
+            prompt, negative = build_image_prompt(project, scene)
             graph = images.graph(
                 config, prompt, negative, job["options"]["seed"], project["aspect"]
             )
