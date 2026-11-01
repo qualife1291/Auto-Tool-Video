@@ -89,6 +89,7 @@ export function ImageGenerationPanel({
       <label>
         Prompt ảnh
         <textarea
+          aria-label="Prompt ảnh"
           rows={3}
           maxLength={2000}
           disabled={busy || disabled || active}
