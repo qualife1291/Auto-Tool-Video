@@ -18,7 +18,7 @@ from auto_tool_video.domain import (
     Scene,
 )
 from auto_tool_video.generation import apply_generation, enqueue_generation, run_generation
-from auto_tool_video.planning import prompt_messages, source_chunks, validate_proposal
+from auto_tool_video.planning import SYSTEM_PROMPT, prompt_messages, source_chunks, validate_proposal
 from auto_tool_video.providers import (
     Comfy,
     LocalTransport,
@@ -490,3 +490,11 @@ def test_api_brief_validation_backwards_save_and_job_privacy(client):
     assert (
         client.post(f"/api/projects/{p['id']}/plan", json=payload).json()["id"] == job.json()["id"]
     )
+
+
+
+def test_planner_prompts_require_semantic_visual_detail_not_repeated_icons():
+    assert "material detail" in SYSTEM_PROMPT
+    assert "foreground/midground/" in SYSTEM_PROMPT
+    assert "phone" in SYSTEM_PROMPT
+    assert "generic isolated icon" in SYSTEM_PROMPT
