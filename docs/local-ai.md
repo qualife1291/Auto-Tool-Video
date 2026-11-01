@@ -28,6 +28,14 @@ Adapter kiểm checkpoint có trong node metadata, lưu tên checkpoint và hash
 
 Tạo một ảnh mẫu, xem candidate/provenance rồi bấm dùng ảnh cho cảnh. Ảnh cũ và bản xuất cũ được giữ. Hủy chỉ xóa prompt của job đang chờ; Comfy có thể tiếp tục prompt đã bắt đầu vì app không global-interrupt các tác vụ khác. Lỗi/timeout/restart không tự retry vô hạn hoặc mua API khác.
 
+## Nâng chất lượng tranh nhiều chi tiết (tùy chọn, không mất dữ liệu)
+
+Trong bước **Tạo ảnh AI local**, dùng nút **Gợi ý minh họa giàu chi tiết, có bối cảnh** để bổ sung hướng dẫn dựng cảnh vào prompt đang có. Gợi ý yêu cầu vật thể/hành động khớp kịch bản, chất liệu, chiều sâu tiền–trung–hậu cảnh, đường nét sắc và chủ thể đủ lớn ở kích thước điện thoại. Prompt gốc được giữ; không gọi provider cho đến khi creator bấm **Tạo một ảnh xem thử**. Nếu prompt đã gần giới hạn 2.000 ký tự, nút không tự cắt nội dung người dùng.
+
+Chất lượng thực tế phụ thuộc **checkpoint/model, workflow API, VRAM và ảnh nguồn**. SDXL có thể dùng img2img hoặc ControlNet (sketch/depth/lineart) để giữ bố cục giữa cảnh; đây là **hướng nâng cấp để kiểm thử**, không phải tính năng ControlNet đã tích hợp hoặc được chứng thực trên máy hiện tại. Tài liệu: [Diffusers img2img và ControlNet](https://huggingface.co/docs/diffusers/using-diffusers/img2img). Không tự tải weights/custom node hay tự nhận giấy phép. Nếu dùng model/bộ dữ liệu/ảnh tham chiếu bên ngoài, quản trị cần đối chiếu license cụ thể của từng thành phần.
+
+Quy trình review: so ảnh candidate với lời thoại từng cảnh và style/character bible; xem đủ hình ở 9:16 và 16:9, vùng chữ, bề mặt vải/tay/vật thể và tính liên tục. Ảnh đủ pixel nhưng quá thô, sai vật thể hoặc đồ họa chỉ thay màu phải được thay trước khi xác nhận dùng. **AI generated candidate, QA fixture và codec PASS đều không tự tạo G10 PASS.**
+
 ### Độ phân giải ảnh nguồn cao hơn (tùy chọn)
 
 Workflow ComfyUI cục bộ có thể khai báo `"resolution_profile": "high_detail"` ở **cấp gốc** file JSON tin cậy của quản trị. Ứng dụng sẽ yêu cầu ảnh nguồn portrait **1024×1792** hoặc landscape **1792×1024**, thay vì mặc định **768×1344/1344×768**. Kích thước không do prompt, model hoặc trình duyệt tùy ý thay đổi; giá trị khác `standard` hoặc `high_detail` bị từ chối. Mặc định cũ giữ nguyên cho máy không đủ RAM/VRAM.

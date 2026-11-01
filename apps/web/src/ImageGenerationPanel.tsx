@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { type Capabilities, type GenerationJob, type Project, type Scene } from './domain';
+import { suggestDetailedImagePrompt } from './richImagePrompt';
 
 type Props = {
   project: Project;
@@ -27,6 +28,7 @@ export function ImageGenerationPanel({
   const [error, setError] = useState('');
   const key = `whiteboard-image-${project.id}-${scene.id}`;
   const active = !!job && ['queued', 'running'].includes(job.state);
+  const detailedPrompt = suggestDetailedImagePrompt(scene);
   useEffect(() => {
     api<Capabilities>('/capabilities')
       .then(setCaps)
@@ -87,6 +89,7 @@ export function ImageGenerationPanel({
       <label>
         Prompt ảnh
         <textarea
+          aria-label="Prompt ảnh"
           rows={3}
           maxLength={2000}
           disabled={busy || disabled || active}
@@ -94,6 +97,15 @@ export function ImageGenerationPanel({
           onChange={(e) => onPrompt(e.target.value)}
         />
       </label>
+      <button
+        className="button"
+        type="button"
+        disabled={busy || disabled || active || detailedPrompt === scene.image_prompt}
+        onClick={() => onPrompt(detailedPrompt)}
+      >
+        Gợi ý minh họa giàu chi tiết, có bối cảnh
+      </button>
+      <p className="muted small">Gợi ý chỉ sửa prompt, không tự tạo ảnh.</p>
       <label>
         Seed ảnh
         <input

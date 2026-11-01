@@ -131,6 +131,12 @@ test('mock image candidate keeps current image until explicitly applied', async 
   await expect(page.locator('.portrait-image img')).toBeVisible();
   const oldSource = await page.locator('.portrait-image img').getAttribute('src');
   await page.getByLabel('Prompt ảnh', { exact: true }).fill('Original shirt');
+  await page.getByRole('button', { name: 'Gợi ý minh họa giàu chi tiết, có bối cảnh' }).click();
+  await expect(page.getByLabel('Prompt ảnh', { exact: true })).toHaveValue(
+    /Detailed story illustration preset v1/,
+  );
+  // A prompt suggestion must never generate or replace image assets by itself.
+  await expect(page.locator('.candidate-review img')).toHaveCount(0);
   await page.getByRole('button', { name: 'Tạo một ảnh xem thử' }).click();
   await expect(page.locator('.candidate-review img')).toBeVisible();
   await expect(page.locator('.portrait-image img')).toHaveAttribute('src', oldSource!);
