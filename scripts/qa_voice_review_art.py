@@ -11,6 +11,13 @@ import io
 
 from PIL import Image, ImageDraw, ImageOps
 
+from qa_rich_context_art import (
+    cue_fabric_effects,
+    garment_detail,
+    landscape_environment,
+    portrait_environment,
+)
+
 # fmt: off
 # Coordinate-rich source illustration is kept stable for pixel/edge regressions.
 INK = '#29463d'
@@ -159,11 +166,15 @@ def render_cue_art(title: str) -> bytes:
     draw = ImageDraw.Draw(image)
     draw.rounded_rectangle((100,100,1300,890),radius=45,
                            fill='#f9f6ec',outline='#deded0',width=10)
+    landscape_environment(draw, title)
     draw.line((185,855,1215,855),fill=INK,width=11)
     wet_levels = {'Câu hỏi':5,'Nước bay hơi':4,'Không khí':4,'Gió':3,
                   'Ánh nắng':2,'Nhiệt độ':2,'Trải áo':2,'Đừng gấp':3,
                   'Bóng râm':1,'Không cần sôi':1,'Quan sát':1,'Tổng kết':0}
     _shirt(draw,wet=wet_levels[title],spread=title=='Trải áo')
+    garment_detail(draw, origin=(325, 275), scale=1.0, wet=wet_levels[title],
+                   spread=title == 'Trải áo')
+    cue_fabric_effects(draw, title, portrait=False)
     _draw_context(draw,title)
     buffer = io.BytesIO()
     image.save(buffer,format='PNG')
@@ -203,36 +214,31 @@ _WET_STAGE = {
 
 
 def render_portrait_cue_art(title: str) -> bytes:
-    """Two readable stacked panels for the actual 9:16 rendered MP4.
+    """One large continuous yard scene with a contextual inset, not two empty cards.
 
-    Top: complete shirt/wetness/line state. Bottom: scene-specific action.
-    Captions and heading are rendered by Studio outside the illustration panels.
-    No external media, TTS, licensed sources or creator quality claims.
+    Storyboard titles and captions are composed by Studio, not embedded in art.
+    Still a procedural engineering visual, not approved AI imagery or creator G10.
     """
     if title not in VISUAL_INTENTS:
         raise ValueError(f"No authored visual semantics for cue: {title!r}")
     original = Image.open(io.BytesIO(render_cue_art(title))).convert("RGB")
     output = Image.new("RGB", (1000, 1600), BG)
     draw = ImageDraw.Draw(output)
-    draw.rounded_rectangle(
-        (95, 225, 905, 775), radius=48, fill="#f9f6ec", outline="#deded0", width=9
+    portrait_environment(draw, title)
+    wet = _WET_STAGE[title]
+    _shirt(draw, wet=wet, origin=(250, 398), scale=0.96, spread=title == "Trải áo")
+    garment_detail(
+        draw, origin=(250, 398), scale=0.96, wet=wet, spread=title == "Trải áo"
     )
-    _shirt(
-        draw, wet=_WET_STAGE[title], origin=(260, 260), scale=0.9,
-        spread=title == "Trải áo"
-    )
-    if title == "Trải áo":
-        draw.line((180, 245, 820, 245), fill=INK, width=12)
-        for x in (400, 670):
-            draw.rounded_rectangle(
-                (x, 235, x + 33, 275), 7, fill=YELLOW, outline=INK, width=5
-            )
-    draw.rounded_rectangle(
-        (145, 785, 855, 1125), radius=42, fill="#f9f6ec", outline="#deded0", width=9
-    )
+    cue_fabric_effects(draw, title, portrait=True)
+    # A scene-specific observed mechanism appears as a small visual note on the
+    # yard instead of occupying an isolated half-height second card.
     detail = original.crop(_PORTRAIT_CONTEXT_CROPS[title])
-    detail = ImageOps.contain(detail, (660, 300), Image.Resampling.LANCZOS)
-    output.paste(detail, ((1000 - detail.width) // 2, 802 + (300 - detail.height) // 2))
+    detail = ImageOps.contain(detail, (310, 265), Image.Resampling.LANCZOS)
+    note = (555, 952, 896, 1270)
+    draw.rounded_rectangle(note, radius=24, fill="#F7F4EB", outline="#C9D1BF", width=6)
+    output.paste(detail, (note[0] + (341 - detail.width) // 2,
+                          note[1] + (318 - detail.height) // 2))
     buffer = io.BytesIO()
     output.save(buffer, "PNG")
     return buffer.getvalue()
