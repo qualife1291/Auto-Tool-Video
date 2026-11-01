@@ -55,7 +55,17 @@ def main() -> None:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             raise SystemExit("Worker khác đang chạy cho data directory này.") from None
-        store.interrupt_running()
+        # Recovery runs before the normal claim loop. Retry database errors here
+        # too, otherwise a temporary SQLite failure terminates the only worker.
+        backoff = 0.5
+        while True:
+            try:
+                store.interrupt_running()
+                break
+            except sqlite3.DatabaseError:
+                logger.exception("Startup queue recovery failed; retrying after %.1fs", backoff)
+                time.sleep(backoff)
+                backoff = min(backoff * 2, 8.0)
         try:
             collect_garbage(store)
         except Exception:
@@ -65,7 +75,7 @@ def main() -> None:
         while True:
             try:
                 processed = run_once(store)
-            except sqlite3.OperationalError:
+            except sqlite3.DatabaseError:
                 logger.exception("Queue claim failed; retrying after %.1fs", backoff)
                 time.sleep(backoff)
                 backoff = min(backoff * 2, 8.0)
