@@ -99,7 +99,7 @@ def landscape_environment(d: ImageDraw.ImageDraw, title: str) -> None:
 def portrait_environment(d: ImageDraw.ImageDraw, title: str) -> None:
     """One tall cohesive scene instead of two tiny isolated icon cards."""
     d.rounded_rectangle(
-        (76, 198, 924, 1370), 49, fill="#EBF4E7", outline="#C4D7C7", width=7
+        (76, 198, 924, 1570), 49, fill="#EBF4E7", outline="#C4D7C7", width=7
     )
     for y in range(222, 921, 24):
         amount = (y - 222) / 699
@@ -111,22 +111,33 @@ def portrait_environment(d: ImageDraw.ImageDraw, title: str) -> None:
                 int(240 - 11 * amount),
             ),
         )
-    d.rectangle((92, 926, 908, 1350), fill="#DCE8D4")
+    # Extend the same yard below the inset, rather than leaving empty cream.
+    d.rectangle((92, 926, 908, 1550), fill="#DCE8D4")
+    for y in range(1350, 1550, 10):
+        amount = (y - 1350) / 200
+        d.rectangle(
+            (92, y, 908, min(y + 10, 1550)),
+            fill=(
+                round(220 - 11 * amount),
+                round(232 - 7 * amount),
+                round(212 - 8 * amount),
+            ),
+        )
     d.ellipse((103, 856, 464, 991), fill="#CADFCB")
     d.ellipse((635, 861, 895, 1000), fill="#CADFCB")
     for x in range(130, 910, 95):
-        d.rounded_rectangle((x, 880, x + 19, 1260), 5, fill="#D2C2A7")
-        d.line((x + 7, 901, x + 7, 1234), fill="#EFE0C8", width=4)
-    for y in (961, 1138):
+        d.rounded_rectangle((x, 880, x + 19, 1490), 5, fill="#D2C2A7")
+        d.line((x + 7, 901, x + 7, 1464), fill="#EFE0C8", width=4)
+    for y in (961, 1138, 1415):
         d.line((99, y, 901, y), fill="#BACCBA", width=10)
     _shrub(d, 183, 835, 1.15)
     _shrub(d, 818, 834, 1.3)
     # Tall wooden posts and clothesline connect the portrait garment to the yard.
     for x in (121, 857):
         d.rounded_rectangle(
-            (x, 282, x + 29, 1308), 12, fill=WOOD, outline=DEEP, width=5
+            (x, 282, x + 29, 1495), 12, fill=WOOD, outline=DEEP, width=5
         )
-        d.line((x + 10, 297, x + 10, 1267), fill=LIGHT_WOOD, width=5)
+        d.line((x + 10, 297, x + 10, 1450), fill=LIGHT_WOOD, width=5)
     d.line((146, 367, 873, 367), fill="#6E8173", width=10)
     for x in (361, 675):
         d.rounded_rectangle(
@@ -138,6 +149,24 @@ def portrait_environment(d: ImageDraw.ImageDraw, title: str) -> None:
         d.line((x + 17, y + 23, x + 2, y), fill="#6B9D74", width=5)
     for x, y in ((208, 1220), (280, 1261), (748, 1227), (806, 1260)):
         _flower(d, x, y)
+    # Pavers, foliage, and foreground grass create more depth without
+    # introducing an unrelated repeated icon or touching the caption.
+    for row, y in enumerate((1402, 1493)):
+        for x in range(167 + (row % 2) * 34, 845, 113):
+            d.rounded_rectangle(
+                (x, y, x + 65, y + 32),
+                10,
+                fill="#BAC9AA",
+                outline="#94AC95",
+                width=3,
+            )
+            d.line((x + 12, y + 8, x + 44, y + 8), fill="#E2ECD7", width=3)
+    for x in range(122, 886, 51):
+        y = 1503 + ((x // 51) % 3) * 5
+        d.line((x - 10, y + 25, x, y), fill="#5E956F", width=4)
+        d.line((x + 9, y + 24, x + 2, y + 3), fill="#77A27C", width=4)
+    for x, y in ((207, 1408), (810, 1446), (345, 1510), (716, 1516)):
+        _flower(d, x, y, 0.65)
     if title in {"Câu hỏi", "Nước bay hơi", "Không khí"}:
         d.rounded_rectangle(
             (161, 1129, 390, 1295), 26, fill="#80BED3", outline=DEEP, width=9

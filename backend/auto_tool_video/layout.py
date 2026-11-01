@@ -11,7 +11,14 @@ def boxes(width: int, height: int, layout: str = "board") -> dict:
     image = (0, 0, 1920, 1080) if landscape else (0, 0, 1080, 1920)
     if layout != "full_frame":
         image = (240, 230, 1440, 580) if landscape else (90, 420, 810, 850)
-    caption = (240, 860, 1440, 150) if landscape else (90, 1335, 810, 170)
+    # Full-frame portrait scenes reserve room for captions near the bottom, not
+    # a huge unused lower fifth. Board layout retains its legacy geometry.
+    if landscape:
+        caption = (240, 860, 1440, 150)
+    elif layout == "full_frame":
+        caption = (90, 1400, 810, 170)
+    else:
+        caption = (90, 1335, 810, 170)
     return {
         "image": tuple(round(v * scale) for v in image),
         "caption": tuple(round(v * scale) for v in caption),

@@ -49,4 +49,6 @@ def test_a04_short_scene_reveal_has_readable_full_color_hold():
     # A 2-second cue must retain >=0.75s fully colored, without changing product defaults.
     full_color_hold = scene.duration * (1 - scene.draw_fraction - 0.12)
     assert full_color_hold >= 0.75
-    assert scene.draw_fraction == 0.50
+    assert scene.draw_fraction == 0.34
+    # A04 QA should give viewers more than one second of finished art.
+    assert full_color_hold >= 1.0
