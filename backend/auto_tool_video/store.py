@@ -203,7 +203,7 @@ class Store:
                         or job["options"].get("kind") not in ("plan", "image", "preview", "export")
                     ):
                         raise ValueError("Queued job metadata does not match its database row")
-                except (ValueError, TypeError):
+                except (ValueError, TypeError, RecursionError):
                     # A corrupt row must not poison the entire FIFO queue.
                     # Quarantine it atomically before claiming the next job.
                     failed = {
@@ -246,7 +246,7 @@ class Store:
                         or job.get("state") != "running"
                     ):
                         raise ValueError("Running job metadata does not match its database row")
-                except (ValueError, TypeError):
+                except (ValueError, TypeError, RecursionError):
                     # Do not let one poisoned running row prevent worker startup.
                     job = {
                         "id": row["id"],
