@@ -192,9 +192,11 @@ export function ImageGenerationPanel({
           {visualReview && (
             <div className="candidate-visual-review" aria-label="Kiểm tra chi tiết ảnh nguồn">
               <p className="small">
-                Kiểm cấu trúc ảnh tự động ({visualReview.width}×{visualReview.height}): vùng có
-                đường nét {Math.round(visualReview.occupied_tile_fraction * 100)}%. Không phải
-                điểm thẩm mỹ hay kiểm khớp lời thoại.
+                Ảnh nguồn: {visualReview.width} × {visualReview.height}. Vùng có nét:{' '}
+                {Math.round(visualReview.occupied_tile_fraction * 100)}%.
+              </p>
+              <p className="small">
+                Số đo cấu trúc, không phải đánh giá thẩm mỹ hay độ khớp lời thoại.
               </p>
               {visualWarnings.map((warning) => (
                 <p key={warning.code} className="source-warning" role="status">
