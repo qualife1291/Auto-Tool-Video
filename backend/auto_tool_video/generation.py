@@ -201,9 +201,10 @@ def run_generation(
                     None,
                     [
                         scene["image_prompt"],
+                        scene.get("visual_description", ""),
                         brief.get("style_bible", ""),
                         brief.get("character_bible", ""),
-                        "No text, letters, logo or watermark. One clear focal subject.",
+                        "Show the narrated event, objects and setting. No text, letters, logo or watermark. One clear focal subject.",
                     ],
                 )
             )
