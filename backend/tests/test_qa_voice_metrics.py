@@ -79,3 +79,49 @@ def test_rejects_wrong_channels(tmp_path):
     _write_wav(path, [100] * 160, channels=2)
     with pytest.raises(ValueError, match="mono PCM16"):
         metrics.measure_voice_wav(path, "a")
+
+
+def test_quiet_padding_does_not_hide_fast_audio_span(tmp_path):
+    path = tmp_path / "padded.wav"
+    sound = [round(7000 * math.sin(2 * math.pi * 440 * i / 8000)) for i in range(8320)]
+    _write_wav(path, [0] * 3840 + sound + [0] * 3840)
+    report = metrics.measure_voice_wav(path, "Chờ đèn đi bộ")
+    assert report["units_per_minute"] == 120.0
+    assert report["leading_quiet_seconds"] == 0.48
+    assert report["trailing_quiet_seconds"] == 0.48
+    assert report["speech_span_seconds"] == 1.04
+    assert report["speech_span_units_per_minute"] == 230.8
+    assert report["longest_quiet_seconds"] == 0.48
+    assert "NOT lexical WPM" in report["speech_span_basis"]
+
+
+def test_internal_quiet_pause_remains_inside_speech_span(tmp_path):
+    path = tmp_path / "internal-pause.wav"
+    tone = [round(7000 * math.sin(2 * math.pi * 440 * i / 8000)) for i in range(3200)]
+    _write_wav(path, tone + [0] * 6400 + tone)
+    report = metrics.measure_voice_wav(path, "Một hai ba bốn")
+    assert report["leading_quiet_seconds"] == 0
+    assert report["trailing_quiet_seconds"] == 0
+    assert report["longest_quiet_seconds"] == 0.8
+    assert report["speech_span_seconds"] == 1.6
+
+
+def test_fully_quiet_audio_does_not_divide_by_zero(tmp_path):
+    path = tmp_path / "all-quiet.wav"
+    _write_wav(path, [0] * 8000)
+    report = metrics.measure_voice_wav(path, "Xin chào")
+    assert report["speech_span_seconds"] == 0
+    assert report["speech_span_units_per_minute"] is None
+    assert report["leading_quiet_seconds"] == 1
+    assert report["trailing_quiet_seconds"] == 1
+    assert "ALL_WINDOWS_QUIET" in report["audio_warnings"]
+
+
+def test_partial_final_window_counts_actual_samples(tmp_path):
+    path = tmp_path / "partial-tail.wav"
+    tone = [round(7000 * math.sin(2 * math.pi * 440 * i / 8000)) for i in range(320)]
+    _write_wav(path, tone + [0] * 160)
+    report = metrics.measure_voice_wav(path, "Xin")
+    assert report["duration"] == 0.06
+    assert report["trailing_quiet_seconds"] == 0.02
+    assert report["speech_span_seconds"] == 0.04
