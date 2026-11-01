@@ -24,9 +24,15 @@ def _shrub(d: ImageDraw.ImageDraw, x: int, y: int, scale: float = 1) -> None:
     for dx, dy in ((-38, 0), (-5, -25), (30, -12), (48, 8)):
         rr = round(27 * scale)
         xx, yy = x + round(dx * scale), y + round(dy * scale)
-        d.ellipse((xx - rr, yy - rr, xx + rr, yy + rr), fill=LEAF, outline="#719C7B", width=3)
+        d.ellipse(
+            (xx - rr, yy - rr, xx + rr, yy + rr), fill=LEAF, outline="#719C7B", width=3
+        )
     for dx in (-22, 16):
-        d.line((x + round(dx * scale), y + 12, x + round(dx * scale), y + 45), fill=DEEP, width=5)
+        d.line(
+            (x + round(dx * scale), y + 12, x + round(dx * scale), y + 45),
+            fill=DEEP,
+            width=5,
+        )
 
 
 def _flower(d: ImageDraw.ImageDraw, x: int, y: int, scale: float = 1) -> None:
@@ -62,7 +68,9 @@ def landscape_environment(d: ImageDraw.ImageDraw, title: str) -> None:
         d.line((x + 8, 204, x + 8, 822), fill=LIGHT_WOOD, width=5)
     d.line((215, 265, 1225, 265), fill="#6E8173", width=9)
     for x in (480, 770):
-        d.rounded_rectangle((x, 248, x + 29, 315), 8, fill=LIGHT_WOOD, outline=DEEP, width=5)
+        d.rounded_rectangle(
+            (x, 248, x + 29, 315), 8, fill=LIGHT_WOOD, outline=DEEP, width=5
+        )
         d.line((x + 13, 250, x + 13, 299), fill=WOOD, width=4)
     # Foreground grass and flowers add small but identifiable material detail.
     for x in range(180, 1250, 58):
@@ -73,12 +81,16 @@ def landscape_environment(d: ImageDraw.ImageDraw, title: str) -> None:
         _flower(d, x, y, 0.8)
     # Scene-specific real ground props: basin and basket mark causal stages.
     if title in {"Câu hỏi", "Nước bay hơi", "Không khí"}:
-        d.rounded_rectangle((182, 717, 403, 833), 19, fill="#78BBD0", outline=DEEP, width=9)
+        d.rounded_rectangle(
+            (182, 717, 403, 833), 19, fill="#78BBD0", outline=DEEP, width=9
+        )
         d.arc((199, 711, 388, 748), 0, 180, fill="#F4FDFF", width=8)
         for x, y, r in ((220, 701, 12), (287, 678, 20), (366, 706, 12)):
             d.ellipse((x - r, y - r, x + r, y + r), fill=CLOUD, outline=WATER, width=3)
     elif title in {"Quan sát", "Tổng kết"}:
-        d.rounded_rectangle((192, 730, 405, 839), 18, fill="#DAB286", outline=DEEP, width=8)
+        d.rounded_rectangle(
+            (192, 730, 405, 839), 18, fill="#DAB286", outline=DEEP, width=8
+        )
         for x in range(215, 398, 29):
             d.line((x, 743, x, 828), fill="#A77B59", width=5)
         d.line((203, 779, 399, 779), fill="#A77B59", width=5)
@@ -86,12 +98,18 @@ def landscape_environment(d: ImageDraw.ImageDraw, title: str) -> None:
 
 def portrait_environment(d: ImageDraw.ImageDraw, title: str) -> None:
     """One tall cohesive scene instead of two tiny isolated icon cards."""
-    d.rounded_rectangle((76, 198, 924, 1370), 49, fill="#EBF4E7", outline="#C4D7C7", width=7)
+    d.rounded_rectangle(
+        (76, 198, 924, 1370), 49, fill="#EBF4E7", outline="#C4D7C7", width=7
+    )
     for y in range(222, 921, 24):
         amount = (y - 222) / 699
         d.rectangle(
             (92, y, 907, min(y + 24, 924)),
-            fill=(int(224 + 14 * amount), int(243 - 9 * amount), int(240 - 11 * amount)),
+            fill=(
+                int(224 + 14 * amount),
+                int(243 - 9 * amount),
+                int(240 - 11 * amount),
+            ),
         )
     d.rectangle((92, 926, 908, 1350), fill="#DCE8D4")
     d.ellipse((103, 856, 464, 991), fill="#CADFCB")
@@ -105,11 +123,15 @@ def portrait_environment(d: ImageDraw.ImageDraw, title: str) -> None:
     _shrub(d, 818, 834, 1.3)
     # Tall wooden posts and clothesline connect the portrait garment to the yard.
     for x in (121, 857):
-        d.rounded_rectangle((x, 282, x + 29, 1308), 12, fill=WOOD, outline=DEEP, width=5)
+        d.rounded_rectangle(
+            (x, 282, x + 29, 1308), 12, fill=WOOD, outline=DEEP, width=5
+        )
         d.line((x + 10, 297, x + 10, 1267), fill=LIGHT_WOOD, width=5)
     d.line((146, 367, 873, 367), fill="#6E8173", width=10)
     for x in (361, 675):
-        d.rounded_rectangle((x - 13, 349, x + 19, 406), 7, fill=LIGHT_WOOD, outline=DEEP, width=5)
+        d.rounded_rectangle(
+            (x - 13, 349, x + 19, 406), 7, fill=LIGHT_WOOD, outline=DEEP, width=5
+        )
     for x in range(170, 869, 65):
         y = 1283 + (x // 65) % 3 * 9
         d.line((x - 15, y + 33, x, y), fill="#6B9D74", width=5)
@@ -117,12 +139,16 @@ def portrait_environment(d: ImageDraw.ImageDraw, title: str) -> None:
     for x, y in ((208, 1220), (280, 1261), (748, 1227), (806, 1260)):
         _flower(d, x, y)
     if title in {"Câu hỏi", "Nước bay hơi", "Không khí"}:
-        d.rounded_rectangle((161, 1129, 390, 1295), 26, fill="#80BED3", outline=DEEP, width=9)
+        d.rounded_rectangle(
+            (161, 1129, 390, 1295), 26, fill="#80BED3", outline=DEEP, width=9
+        )
         d.arc((174, 1131, 377, 1176), 5, 178, fill=CLOUD, width=8)
         for x, y, r in ((219, 1102, 16), (287, 1128, 12), (344, 1114, 20)):
             d.ellipse((x - r, y - r, x + r, y + r), fill=CLOUD, outline=WATER, width=4)
     elif title in {"Quan sát", "Tổng kết"}:
-        d.rounded_rectangle((172, 1152, 406, 1302), 24, fill="#DDB488", outline=DEEP, width=8)
+        d.rounded_rectangle(
+            (172, 1152, 406, 1302), 24, fill="#DDB488", outline=DEEP, width=8
+        )
         for x in range(196, 395, 32):
             d.line((x, 1178, x, 1291), fill="#A77850", width=7)
 
@@ -156,7 +182,7 @@ def garment_detail(
     d.rounded_rectangle((*p(310, 228), *p(398, 345)), 8, outline=outline, width=w)
     d.line((*p(319, 255), *p(390, 255)), fill=outline, width=max(2, w - 2))
     for x, y1, y2 in ((137, 250, 458), (220, 220, 480), (374, 246, 469)):
-        pts=[p(x, y1), p(x - 11, (y1 + y2)//2), p(x + 15, y2)]
+        pts = [p(x, y1), p(x - 11, (y1 + y2) // 2), p(x + 15, y2)]
         d.line(pts, fill=soft, width=w, joint="curve")
     # Subtle, repeated short cotton slubs establish texture on the body.
     for y in range(365, 480, 27):
@@ -183,9 +209,17 @@ def cue_fabric_effects(d: ImageDraw.ImageDraw, title: str, portrait: bool) -> No
             d.ellipse((xx + 21, yy - 83, xx + 35, yy - 69), outline=WATER, width=4)
     elif title == "Gió":
         for x, y in ((220, 680), (375, 530), (660, 650)):
-            d.arc((x, y + shift_y - 45, x + 180, y + shift_y + 45),
-                  193, 15, fill=WATER, width=9)
+            d.arc(
+                (x, y + shift_y - 45, x + 180, y + shift_y + 45),
+                193,
+                15,
+                fill=WATER,
+                width=9,
+            )
     elif title == "Ánh nắng":
         for x, y in ((460, 485), (620, 525), (765, 465)):
-            d.line((x - 35, y - 90 + shift_y, x + 20, y - 28 + shift_y),
-                   fill="#EECF79", width=10)
+            d.line(
+                (x - 35, y - 90 + shift_y, x + 20, y - 28 + shift_y),
+                fill="#EECF79",
+                width=10,
+            )
