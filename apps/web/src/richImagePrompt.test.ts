@@ -42,6 +42,7 @@ describe('opt-in detailed illustration preset', () => {
     expect(result).toContain('Tắt quạt khi ra khỏi phòng.');
     expect(result).toContain('generic icon');
   });
+
   it('uses spoken action when an optional visual description contains only whitespace', () => {
     const result = suggestDetailedImagePrompt({
       ...source,
@@ -57,5 +58,4 @@ describe('opt-in detailed illustration preset', () => {
     expect(result.startsWith(original)).toBe(true);
     expect(result).toContain(RICH_DETAIL_MARKER);
   });
-
 });
