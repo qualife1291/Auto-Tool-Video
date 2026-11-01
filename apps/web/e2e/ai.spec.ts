@@ -109,9 +109,7 @@ test('mock image candidate keeps current image until explicitly applied', async 
           edge_fraction: 0.001,
           occupied_tile_fraction: 0.08,
           coarse_palette_bins: 5,
-          warnings: [
-            { code: 'sparse_simple_art', message: 'Ảnh nguồn ít chi tiết, cần xem trước.' },
-          ],
+          warnings: [{ code: 'sparse_simple_art', message: 'Ảnh nguồn ít chi tiết, cần xem trước.' }],
           semantic_review: 'not_performed',
           aesthetic_review: 'not_performed',
           human_approval: 'pending',
