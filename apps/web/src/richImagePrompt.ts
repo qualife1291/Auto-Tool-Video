@@ -22,7 +22,7 @@ export function suggestDetailedImagePrompt(
   const original = scene.image_prompt;
   if (original.includes(RICH_DETAIL_MARKER)) return scene.image_prompt;
   const focus = [scene.visual_description, scene.narration, scene.title]
-    .map((value) => value.trim())
+    .map((value) => value?.trim() || '')
     .find(Boolean);
   const addition = [
     RICH_DETAIL_MARKER,
