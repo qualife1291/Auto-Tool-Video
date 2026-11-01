@@ -25,7 +25,7 @@ def _read_json(path: Path) -> dict:
         raise ValueError(f"Missing/unsafe evidence: {path.name}")
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
-        raise ValueError(f"Invalid evidence: {path.name}")
+        raise TypeError(f"Invalid evidence type: {path.name}")
     return data
 
 
