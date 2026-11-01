@@ -10,7 +10,6 @@ from __future__ import annotations
 import io
 
 from PIL import Image, ImageDraw, ImageOps
-
 from qa_rich_context_art import (
     cue_fabric_effects,
     garment_detail,
