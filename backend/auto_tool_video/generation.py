@@ -230,6 +230,7 @@ def run_generation(
                     "seed": job["options"]["seed"],
                     "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
                     "aspect": project["aspect"],
+                    "resolution_profile": config.get("resolution_profile", "standard"),
                 },
             )
             result = {

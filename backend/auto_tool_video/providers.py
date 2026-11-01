@@ -199,6 +199,14 @@ class Ollama(LocalTransport):
         return content
 
 
+# Intentional, low-risk choice: no arbitrary model-provided canvas sizes.
+# High-detail is opt-in via a trusted local workflow config and uses more VRAM.
+COMFY_RESOLUTION_PROFILES: dict[str, dict[str, tuple[int, int]]] = {
+    "standard": {"portrait": (768, 1344), "landscape": (1344, 768)},
+    "high_detail": {"portrait": (1024, 1792), "landscape": (1792, 1024)},
+}
+
+
 def load_workflow() -> dict[str, Any]:
     path = os.environ.get("COMFY_WORKFLOW_PATH")
     if not path:
@@ -237,6 +245,9 @@ def load_workflow() -> dict[str, Any]:
                 raise ValueError("binding")
         if not isinstance(value.get("checkpoint"), str) or not value["checkpoint"].strip():
             raise ValueError("checkpoint")
+        profile = value.get("resolution_profile", "standard")
+        if not isinstance(profile, str) or profile not in COMFY_RESOLUTION_PROFILES:
+            raise ValueError("resolution_profile")
         value["sha256"] = hashlib.sha256(file.read_bytes()).hexdigest()
         return value
     except (OSError, ValueError, KeyError, TypeError):
@@ -271,13 +282,23 @@ class Comfy(LocalTransport):
     @staticmethod
     def graph(config: dict[str, Any], prompt: str, negative: str, seed: int, aspect: str) -> dict:
         graph = copy.deepcopy(config["workflow"])
-        # Native portrait/landscape generation, without asking the model to draw overlay text.
+        # Trusted local config controls a bounded source resolution, not user/model text.
+        profile = config.get("resolution_profile", "standard")
+        if (
+            not isinstance(profile, str)
+            or profile not in COMFY_RESOLUTION_PROFILES
+            or aspect not in {"portrait", "landscape"}
+        ):
+            raise DomainError(
+                "PROVIDER_CONFIG_ERROR", "Hồ sơ độ phân giải ComfyUI không hợp lệ.", 503
+            )
+        width, height = COMFY_RESOLUTION_PROFILES[profile][aspect]
         values = {
             "positive": prompt,
             "negative": negative,
             "seed": seed,
-            "width": 768 if aspect == "portrait" else 1344,
-            "height": 1344 if aspect == "portrait" else 768,
+            "width": width,
+            "height": height,
             "checkpoint": config["checkpoint"],
         }
         for field, value in values.items():

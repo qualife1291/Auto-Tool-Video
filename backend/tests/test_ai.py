@@ -249,6 +249,7 @@ def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
     run_generation(store, store.claim(), comfy=Images())
     result = store.get("jobs", job["id"])
     assert result["state"] == "succeeded"
+    assert result["result"]["provenance"]["resolution_profile"] == "standard"
     candidate = store.get("assets", result["result"]["candidate_id"])
     assert candidate["review_required"]
     assert (

@@ -36,6 +36,12 @@ Chất lượng thực tế phụ thuộc **checkpoint/model, workflow API, VRAM
 
 Quy trình review: so ảnh candidate với lời thoại từng cảnh và style/character bible; xem đủ hình ở 9:16 và 16:9, vùng chữ, bề mặt vải/tay/vật thể và tính liên tục. Ảnh đủ pixel nhưng quá thô, sai vật thể hoặc đồ họa chỉ thay màu phải được thay trước khi xác nhận dùng. **AI generated candidate, QA fixture và codec PASS đều không tự tạo G10 PASS.**
 
+### Độ phân giải ảnh nguồn cao hơn (tùy chọn)
+
+Workflow ComfyUI cục bộ có thể khai báo `"resolution_profile": "high_detail"` ở **cấp gốc** file JSON tin cậy của quản trị. Ứng dụng sẽ yêu cầu ảnh nguồn portrait **1024×1792** hoặc landscape **1792×1024**, thay vì mặc định **768×1344/1344×768**. Kích thước không do prompt, model hoặc trình duyệt tùy ý thay đổi; giá trị khác `standard` hoặc `high_detail` bị từ chối. Mặc định cũ giữ nguyên cho máy không đủ RAM/VRAM.
+
+Tùy chọn này chỉ tăng số pixel nguồn có thể giữ lại khi dựng FullHD; **không bảo đảm tăng chi tiết có ý nghĩa**, không tự upscale từ ảnh thấp nét và không chứng minh đã tạo thành công trên GPU. Ở cùng tham số model, số pixel tăng xấp xỉ 1,78×, nên có thể tăng VRAM và thời gian xử lý. Hãy kiểm thử với checkpoint có giấy phép hợp lệ, so sánh nguồn/MP4 cùng seed và đánh giá khả năng bám lời thoại, nét nhỏ, nhiễu, bàn tay và bố cục. SDXL thường tối ưu quanh 1024×1024; ảnh cao tỷ lệ dọc phải đánh giá kỹ vì độ phân giải cao hơn không luôn cho chất lượng tốt hơn. Tài liệu: [SDXL của Hugging Face](https://huggingface.co/docs/diffusers/main/using-diffusers/sdxl) và [ComfyUI Empty Latent Image](https://comfyui.dev/docs/guides/nodes/empty-latent-image/).
+
 ## Ranh giới kết nối
 
 Provider chỉ chấp nhận HTTP loopback với cổng rõ, không user/password/path/query/fragment; không redirect. Transport local này bỏ egress proxy sau kiểm loopback để script riêng không gửi ra ngoài. Không nhận URL provider từ model hoặc form creator. Muốn chạy trên máy khác cần thiết kế mạng/auth riêng, không mở wildcard chỉ để vượt ràng buộc.
