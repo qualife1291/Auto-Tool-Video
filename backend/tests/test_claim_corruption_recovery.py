@@ -11,7 +11,6 @@ from auto_tool_video.store import Store
     "damaged_data",
     [
         "{invalid-json",
-        b"\xff",  # SQLite can persist invalid UTF-8 BLOBs in a TEXT column.
         "[]",
         "[" * 10_000 + "0" + "]" * 10_000,  # JSON nesting beyond decoder limit
         '{"id":"wrong-id","project_id":"project","state":"queued","options":{"kind":"export"}}',
@@ -56,7 +55,6 @@ def test_claim_quarantines_malformed_queued_row_and_claims_next(tmp_path, damage
     "damaged_data",
     [
         "{invalid-json",
-        b"\xff",  # SQLite can persist invalid UTF-8 BLOBs in a TEXT column.
         "[]",
         "[" * 10_000 + "0" + "]" * 10_000,  # JSON nesting beyond decoder limit
         '{"id":"wrong-id","project_id":"project","state":"running","options":{}}',
@@ -97,3 +95,37 @@ def test_startup_quarantines_corrupt_running_row(tmp_path, damaged_data):
     assert store.get("jobs", "healthy")["state"] == "interrupted"
     assert store.get("jobs", "queued")["state"] == "queued"
     assert store.claim()["id"] == "queued"
+
+
+@pytest.mark.parametrize("state", ["queued", "running"])
+def test_corrupt_blob_project_id_does_not_stop_queue_or_startup(tmp_path, state):
+    """SQLite TEXT columns can contain BLOBs after a damaged/direct DB write."""
+    store = Store(tmp_path)
+    damaged = {
+        "id": "damaged",
+        "project_id": "project",
+        "state": state,
+        "options": {"kind": "export"},
+    }
+    healthy = {
+        "id": "healthy",
+        "project_id": "project",
+        "state": "queued",
+        "options": {"kind": "export"},
+    }
+    with store.connect() as conn:
+        conn.execute(
+            "INSERT INTO jobs VALUES(?,?,?,?,?,?)",
+            ("damaged", b"\xff", "bad-key", "hash", state, json.dumps(damaged)),
+        )
+        conn.execute(
+            "INSERT INTO jobs VALUES(?,?,?,?,?,?)",
+            ("healthy", "project", "good-key", "hash", "queued", json.dumps(healthy)),
+        )
+
+    if state == "running":
+        store.interrupt_running()
+    claimed = store.claim()
+    assert claimed is not None and claimed["id"] == "healthy"
+    assert store.get("jobs", "damaged")["state"] == "failed"
+    assert store.get("jobs", "damaged")["error_code"] == "INVALID_JOB_DATA"
