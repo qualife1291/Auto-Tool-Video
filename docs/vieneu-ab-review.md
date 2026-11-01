@@ -12,24 +12,33 @@ Không thay thế việc QA eSpeak offline trong CI bằng model nặng hoặc t
 Ví dụ (sau khi đã dựng đúng cấu hình venv và tải weights pin, được quản trị xác minh nguồn và giấy phép):
 
 ```bash
-# Từ root repo, copy cùng story.json vào mỗi thư mục trước khi synth.
-cp .data/story-upgrade/story.json .data/voice-ab-hai-dang/story.json
-cp .data/story-upgrade/story.json .data/voice-ab-minh-quan/story.json
+# Từ root repo, copy cùng story, hình nguồn vào hai thư mục độc lập.
+mkdir -p .data/voice-ab-hai-dang .data/voice-ab-minh-quan
+for d in .data/voice-ab-hai-dang .data/voice-ab-minh-quan; do
+  cp .data/story-upgrade/story.json "$d/story.json"
+  cp -a .data/story-upgrade/art "$d/art"
+done
 
 .tools/review-tts/bin/python scripts/review-tts/generate.py \
   --output-dir .data/voice-ab-hai-dang --model-dir .data/review-models --voice 'Hải Đăng'
 .tools/review-tts/bin/python scripts/review-tts/generate.py \
   --output-dir .data/voice-ab-minh-quan --model-dir .data/review-models --voice 'Minh Quân'
 
-# Xuất hai MP4 thật ở 1080p dọc và ngang với cùng hình/cảnh,
-# và verify.py cho từng thư mục. Chỉ sau đó mới so bằng lệnh:
+# Dựng bằng importer/renderer thật rồi đo lại AAC và ASR trên MP4 cuối.
+for d in .data/voice-ab-hai-dang .data/voice-ab-minh-quan; do
+  PYTHONPATH=backend backend/.venv/bin/python scripts/create_story_video.py --output-dir "$d" --timeline
+  PYTHONPATH=backend backend/.venv/bin/python scripts/create_story_video.py --output-dir "$d"
+  .tools/review-tts/bin/python scripts/review-tts/verify.py --output-dir "$d" --model-dir .data/review-models
+done
+
+# Sau khi mỗi folder có đủ hai MP4 và verification, mới so:
 python scripts/review-tts/compare.py \
   --baseline .data/voice-ab-hai-dang \
   --candidate .data/voice-ab-minh-quan \
   --output .data/voice-ab-results.json
 ```
 
-**Lưu ý:** các lệnh `generate.py` tạo WAV; mỗi thư mục cần thêm `review-portrait.mp4`, `review-landscape.mp4`, `verification.json` thực do pipeline dựng và `verify.py` chạy thành công trước khi compare. Không dùng lệnh compare như lệnh dựng video. Thư mục nêu là ví dụ, không phải hiện vật đã tồn tại. Không copy MP4 từ giọng A sang giọng B.
+**Lưu ý:** mẫu lệnh đòi thư mục nguồn `.data/story-upgrade/` đã được chuẩn bị đúng theo [hướng dẫn QA](qa-review.md), có `story.json` và `art/wet.png`/`art/dry.png`; các công cụ/backend venv phải cài xong. `generate.py` chỉ tạo WAV; `create_story_video.py` tạo hai MP4 bằng renderer thật và `verify.py` giải mã, đo và chạy ASR. Thư mục nêu là ví dụ **chưa được tạo trong phiên này**, không copy MP4 từ giọng A sang giọng B.
 
 ## Điều kiện nghiệm thu
 
