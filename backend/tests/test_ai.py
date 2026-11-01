@@ -497,7 +497,6 @@ def test_api_brief_validation_backwards_save_and_job_privacy(client):
     )
 
 
-
 def test_planner_prompts_require_semantic_visual_detail_not_repeated_icons():
     assert "material detail" in SYSTEM_PROMPT
     assert "foreground/midground/" in SYSTEM_PROMPT
