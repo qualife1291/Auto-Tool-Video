@@ -13,6 +13,15 @@ from uuid import uuid4
 from .timing import DURATION_EPS
 
 
+def _persistable_row_id(value: Any) -> str:
+    """Keep corrupted SQLite BLOB identifiers out of JSON failure records."""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, bytes):
+        return f"invalid-blob:{value[:32].hex()}"
+    return str(value)
+
+
 def now() -> str:
     return datetime.now(UTC).isoformat()
 
@@ -207,8 +216,8 @@ class Store:
                     # A corrupt row must not poison the entire FIFO queue.
                     # Quarantine it atomically before claiming the next job.
                     failed = {
-                        "id": row["id"],
-                        "project_id": row["project_id"],
+                        "id": _persistable_row_id(row["id"]),
+                        "project_id": _persistable_row_id(row["project_id"]),
                         "state": "failed",
                         "progress": 0,
                         "options": {},
@@ -249,8 +258,8 @@ class Store:
                 except (ValueError, TypeError, RecursionError):
                     # Do not let one poisoned running row prevent worker startup.
                     job = {
-                        "id": row["id"],
-                        "project_id": row["project_id"],
+                        "id": _persistable_row_id(row["id"]),
+                        "project_id": _persistable_row_id(row["project_id"]),
                         "state": "failed",
                         "progress": 0,
                         "options": {},
