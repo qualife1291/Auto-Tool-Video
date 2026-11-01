@@ -98,7 +98,25 @@ test('mock image candidate keeps current image until explicitly applied', async 
       revision: current.revision,
       state: 'succeeded',
       options: { kind: 'image', seed: 42 },
-      result: { candidate_id: 'mock-candidate', provenance: { checkpoint: 'test-checkpoint' } },
+      result: {
+        candidate_id: 'mock-candidate',
+        provenance: { checkpoint: 'test-checkpoint' },
+        visual_review: {
+          policy: 'candidate-visual-advisory-1',
+          method: 'Canny grayscale',
+          width: 768,
+          height: 1344,
+          edge_fraction: 0.001,
+          occupied_tile_fraction: 0.08,
+          coarse_palette_bins: 5,
+          warnings: [
+            { code: 'sparse_simple_art', message: 'Ảnh nguồn ít chi tiết, cần xem trước.' },
+          ],
+          semantic_review: 'not_performed',
+          aesthetic_review: 'not_performed',
+          human_approval: 'pending',
+        },
+      },
     };
     await route.fulfill({ status: 202, json: job });
   });
@@ -140,6 +158,10 @@ test('mock image candidate keeps current image until explicitly applied', async 
   await page.getByRole('button', { name: 'Tạo một ảnh xem thử' }).click();
   await expect(page.locator('.candidate-review img')).toBeVisible();
   await expect(page.locator('.portrait-image img')).toHaveAttribute('src', oldSource!);
+  await expect(page.getByText('Ảnh nguồn ít chi tiết, cần xem trước.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Dùng ảnh đề xuất cho cảnh' })).toBeDisabled();
+  await expect(page.getByText(/Không phải điểm thẩm mỹ/)).toBeVisible();
+  await page.getByLabel('Tôi đã mở và xem ảnh gốc; tự quyết định có dùng ảnh còn cảnh báo.').check();
   await page.getByRole('button', { name: 'Dùng ảnh đề xuất cho cảnh' }).click();
   await expect(page.locator('.portrait-image img')).toHaveAttribute(
     'src',
