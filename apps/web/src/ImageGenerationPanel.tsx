@@ -202,10 +202,8 @@ export function ImageGenerationPanel({
                   <input
                     type="checkbox"
                     checked={visualWarningsAcknowledged}
-                    disabled={busy || disabled || !!job.applied_revision || needsVisualAcknowledgment}
-                    onChange={(event) =>
-                      setVisualWarningsAcknowledged(event.target.checked)
-                    }
+                    disabled={busy || disabled || !!job.applied_revision}
+                    onChange={(event) => setVisualWarningsAcknowledged(event.target.checked)}
                   />
                   Tôi đã mở và xem ảnh gốc; tự quyết định có dùng ảnh còn cảnh báo.
                 </label>
@@ -214,7 +212,7 @@ export function ImageGenerationPanel({
           )}
           <button
             className="button primary"
-            disabled={busy || disabled || !!job.applied_revision}
+            disabled={busy || disabled || !!job.applied_revision || needsVisualAcknowledgment}
             onClick={() => void action(apply)}
           >
             {job.applied_revision ? 'Đã chọn ảnh này' : 'Dùng ảnh đề xuất cho cảnh'}
