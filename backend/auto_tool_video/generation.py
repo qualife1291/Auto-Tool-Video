@@ -112,7 +112,9 @@ def candidate_asset(store: Store, job: dict, content: bytes, provenance: dict) -
         raise DomainError(
             "MODEL_OUTPUT_INVALID", "Ảnh model lỗi hoặc quá 20 megapixel.", 502
         ) from None
-    visual_review = inspect_candidate_visual(image)
+    visual_review = inspect_candidate_visual(
+        image, expected_aspect=job["snapshot"]["aspect"]
+    )
     identifier = str(uuid4())
     path = store.root / "assets" / f"{identifier}.png"
     asset = {
@@ -313,7 +315,7 @@ def apply_generation(
             if warnings and not request.visual_warnings_acknowledged:
                 raise DomainError(
                     "VISUAL_REVIEW_REQUIRED",
-                    "Ảnh còn cảnh báo ít chi tiết. Hãy xem ảnh gốc và xác nhận trước khi dùng.",
+                    "Ảnh còn cảnh báo chất lượng hoặc tỷ lệ. Hãy xem ảnh gốc và xác nhận trước khi dùng.",
                     409,
                 )
             scene["image_id"] = asset["id"]
