@@ -16,7 +16,7 @@ def boxes(width: int, height: int, layout: str = "board") -> dict:
     if landscape:
         caption = (240, 860, 1440, 150)
     elif layout == "full_frame":
-        caption = (90, 1630, 810, 170)
+        caption = (90, 1400, 810, 170)
     else:
         caption = (90, 1335, 810, 170)
     return {
