@@ -117,7 +117,11 @@ def portrait_environment(d: ImageDraw.ImageDraw, title: str) -> None:
         amount = (y - 1350) / 200
         d.rectangle(
             (92, y, 908, min(y + 10, 1550)),
-            fill=(round(220 - 11 * amount), round(232 - 7 * amount), round(212 - 8 * amount)),
+            fill=(
+                round(220 - 11 * amount),
+                round(232 - 7 * amount),
+                round(212 - 8 * amount),
+            ),
         )
     d.ellipse((103, 856, 464, 991), fill="#CADFCB")
     d.ellipse((635, 861, 895, 1000), fill="#CADFCB")
@@ -150,8 +154,11 @@ def portrait_environment(d: ImageDraw.ImageDraw, title: str) -> None:
     for row, y in enumerate((1402, 1493)):
         for x in range(167 + (row % 2) * 34, 845, 113):
             d.rounded_rectangle(
-                (x, y, x + 65, y + 32), 10,
-                fill="#BAC9AA", outline="#94AC95", width=3,
+                (x, y, x + 65, y + 32),
+                10,
+                fill="#BAC9AA",
+                outline="#94AC95",
+                width=3,
             )
             d.line((x + 12, y + 8, x + 44, y + 8), fill="#E2ECD7", width=3)
     for x in range(122, 886, 51):
