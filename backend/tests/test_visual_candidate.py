@@ -60,7 +60,6 @@ def test_empty_image_rejected(size):
         inspect_candidate_visual(Image.new("RGB", size))
 
 
-
 def test_new_story_uses_layered_art_direction_without_overwriting_legacy_projects():
     style = CreativeBrief().style_bible
     assert "nhiều lớp" in style
