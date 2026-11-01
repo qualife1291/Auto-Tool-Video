@@ -283,29 +283,39 @@ def _laundry_setting(d: ImageDraw.ImageDraw, title: str) -> None:
     d.rounded_rectangle((170, 151, 1230, 640), 36, fill="#E5F1F1")
     for x, y, r in ((300, 295, 96), (1080, 320, 116), (230, 415, 68)):
         d.ellipse((x - r, y - r, x + r, y + r), fill="#C7DFC9")
-        d.ellipse((x - r + 17, y - r + 24, x + r - 12, y + r - 10), outline="#8FB69B", width=9)
+        d.ellipse(
+            (x - r + 17, y - r + 24, x + r - 12, y + r - 10), outline="#8FB69B", width=9
+        )
     d.rectangle((169, 632, 1231, 823), fill="#DBE5CF")
     for x in range(188, 1230, 98):
         d.line((x, 632, x, 805), fill="#C0CEB7", width=8)
     d.line((170, 687, 1230, 687), fill="#B6C9B2", width=9)
     # Foreground clothesline and two timber posts: stable across all six cues.
     for x in (225, 1170):
-        d.rounded_rectangle((x - 17, 255, x + 17, 820), 11, fill="#B77F59", outline=INK, width=6)
+        d.rounded_rectangle(
+            (x - 17, 255, x + 17, 820), 11, fill="#B77F59", outline=INK, width=6
+        )
         d.line((x - 7, 284, x - 7, 770), fill="#E7B18E", width=6)
     d.line((242, 261, 1153, 261), fill="#53685A", width=10)
     # Foreground daisies establish a near plane and distinct drawn strokes.
     for x, y in ((280, 754), (1088, 765), (1146, 746)):
         d.line((x, y + 54, x, y), fill="#6A9D73", width=8)
         for dx, dy in ((-15, 0), (15, 0), (0, -15), (0, 15)):
-            d.ellipse((x + dx - 13, y + dy - 13, x + dx + 13, y + dy + 13), fill="#FFFFFF")
+            d.ellipse(
+                (x + dx - 13, y + dy - 13, x + dx + 13, y + dy + 13), fill="#FFFFFF"
+            )
         d.ellipse((x - 12, y - 12, x + 12, y + 12), fill=YELLOW)
 
     if title == "Áo ướt":
         # Basin, bubbles, water surface and droplets show *recent washing*.
-        d.rounded_rectangle((172, 682, 475, 806), 27, fill="#77BED1", outline=INK, width=11)
+        d.rounded_rectangle(
+            (172, 682, 475, 806), 27, fill="#77BED1", outline=INK, width=11
+        )
         d.arc((186, 680, 463, 718), 0, 180, fill="#E9F9FB", width=12)
         for x, y, r in ((235, 667, 16), (298, 648, 22), (356, 675, 14), (417, 650, 20)):
-            d.ellipse((x - r, y - r, x + r, y + r), fill="#FFFFFF", outline="#69A9B8", width=5)
+            d.ellipse(
+                (x - r, y - r, x + r, y + r), fill="#FFFFFF", outline="#69A9B8", width=5
+            )
         for x in (605, 730, 855):
             _drop(d, x, 831, 17)
     elif title == "Ánh nắng":
@@ -339,7 +349,9 @@ def _laundry_setting(d: ImageDraw.ImageDraw, title: str) -> None:
             d.arc((x - 55, y - 35, x + 55, y + 35), 170, 355, fill=BLUE, width=11)
     elif title == "Áo khô":
         # Clean wicker basket and blue sky differentiate the end state.
-        d.rounded_rectangle((1002, 695, 1196, 800), 17, fill="#DDAB75", outline=INK, width=10)
+        d.rounded_rectangle(
+            (1002, 695, 1196, 800), 17, fill="#DDAB75", outline=INK, width=10
+        )
         for x in range(1032, 1190, 31):
             d.line((x, 709, x, 784), fill="#A77551", width=7)
         d.line((1020, 744, 1180, 744), fill="#A77551", width=7)
@@ -356,7 +368,11 @@ def _laundry_fabric_detail(d: ImageDraw.ImageDraw, wet: int, spread: bool) -> No
         d.arc((545, y - 17, 833, y + 19), 3, 177, fill="#689B86", width=7)
     # Subtle curved fabric folds are more informative than a solid polygon.
     for x, top, end in ((570, 375, 645), (690, 347, 700), (814, 370, 645)):
-        d.line(((x, top), (x - 19, (top + end) // 2), (x + 10, end)), fill="#659B8A", width=7)
+        d.line(
+            ((x, top), (x - 19, (top + end) // 2), (x + 10, end)),
+            fill="#659B8A",
+            width=7,
+        )
     d.rounded_rectangle((746, 432, 840, 548), 10, outline="#508473", width=8)
     d.line((762, 459, 825, 459), fill="#508473", width=7)
     # Stitch marks on sleeves and under the hem.
@@ -372,8 +388,10 @@ def _laundry_fabric_detail(d: ImageDraw.ImageDraw, wet: int, spread: bool) -> No
 
 def _laundry_clothespins(d: ImageDraw.ImageDraw, spread: bool) -> None:
     # These pegs visibly attach the shoulder seams to the actual line.
-    for x in ((510, 880) if spread else (535, 852)):
-        d.rounded_rectangle((x - 17, 235, x + 17, 299), 8, fill="#DAA46B", outline=INK, width=7)
+    for x in (510, 880) if spread else (535, 852):
+        d.rounded_rectangle(
+            (x - 17, 235, x + 17, 299), 8, fill="#DAA46B", outline=INK, width=7
+        )
         d.line((x, 241, x, 289), fill="#F7D9A5", width=6)
 
 
