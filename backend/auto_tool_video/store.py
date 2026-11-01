@@ -197,7 +197,7 @@ class Store:
             conn.execute("BEGIN IMMEDIATE")
             while True:
                 row = conn.execute(
-                    "SELECT id,project_id,data FROM jobs WHERE state='queued' ORDER BY rowid LIMIT 1"
+                    "SELECT rowid AS queue_rowid,id,project_id,data FROM jobs WHERE state='queued' ORDER BY rowid LIMIT 1"
                 ).fetchone()
                 if row is None:
                     return None
@@ -205,6 +205,8 @@ class Store:
                     job = json.loads(row["data"])
                     if (
                         not isinstance(job, dict)
+                        or not isinstance(row["id"], str)
+                        or not row["id"]
                         or job.get("id") != row["id"]
                         or job.get("project_id") != row["project_id"]
                         or job.get("state") != "queued"
@@ -227,14 +229,14 @@ class Store:
                         "heartbeat": now(),
                     }
                     conn.execute(
-                        "UPDATE jobs SET state='failed',data=? WHERE id=?",
-                        (json.dumps(failed), row["id"]),
+                        "UPDATE jobs SET state='failed',data=? WHERE rowid=?",
+                        (json.dumps(failed), row["queue_rowid"]),
                     )
                     continue
                 job.update(state="running", heartbeat=now())
                 conn.execute(
-                    "UPDATE jobs SET state='running',data=? WHERE id=?",
-                    (json.dumps(job), row["id"]),
+                    "UPDATE jobs SET state='running',data=? WHERE rowid=?",
+                    (json.dumps(job), row["queue_rowid"]),
                 )
                 return job
 
@@ -243,13 +245,15 @@ class Store:
         with self.connect() as conn:
             conn.execute("BEGIN IMMEDIATE")
             rows = conn.execute(
-                "SELECT id, project_id, data FROM jobs WHERE state='running'"
+                "SELECT rowid AS queue_rowid, id, project_id, data FROM jobs WHERE state='running'"
             ).fetchall()
             for row in rows:
                 try:
                     job = json.loads(row["data"])
                     if (
                         not isinstance(job, dict)
+                        or not isinstance(row["id"], str)
+                        or not row["id"]
                         or job.get("id") != row["id"]
                         or job.get("project_id") != row["project_id"]
                         or job.get("state") != "running"
@@ -275,6 +279,6 @@ class Store:
                         error="Worker đã dừng. Hãy xuất lại khi sẵn sàng.",
                     )
                 conn.execute(
-                    "UPDATE jobs SET state=?, data=? WHERE id=?",
-                    (job["state"], json.dumps(job), row["id"]),
+                    "UPDATE jobs SET state=?, data=? WHERE rowid=?",
+                    (job["state"], json.dumps(job), row["queue_rowid"]),
                 )
