@@ -289,9 +289,7 @@ def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
             (json.dumps(candidate), candidate["id"]),
         )
     with pytest.raises(DomainError) as blocked:
-        apply_generation(
-            store, p["id"], job["id"], ApplyInput(revision=1, confirm=True), "image"
-        )
+        apply_generation(store, p["id"], job["id"], ApplyInput(revision=1, confirm=True), "image")
     assert blocked.value.code == "VISUAL_REVIEW_REQUIRED"
     assert store.get("projects", p["id"]) == p
     saved = apply_generation(
