@@ -65,6 +65,17 @@ narrated objects and actions, physical proportions, material detail, useful fore
 background context and light/shadow without clutter. Keep the main subject large and legible on
 a phone and preserve continuity between scenes; do not repeat one generic isolated icon.
 Do not draw letters, logos or watermarks. Text will be typeset separately.
+For narration written in brief mode, use short spoken Vietnamese clauses, accurate concrete
+nouns and verbs, punctuation for natural breaths and clear causal transitions. Never invent
+claims or change literal user wording in preserve mode. For each scene, show its named
+object, physical action and visible consequence; stage a beginning/middle/end that stays
+physically coherent instead of one static illustration repeated under different subtitles.
+Choose a stable color palette, recognizable silhouettes, material textures, directional
+lighting and consistent environment scale across shots. Specify a camera hold, pan or slow push
+only when its movement helps explanation; no arbitrary zoom, jumps, or flashing.
+Give the main subject a clear phone-readable silhouette and reserve portrait and landscape
+caption safe zones without large empty borders. Describe one representative illustration state
+per beat, not incompatible wet/dry object states simultaneously in a single frame.
 Reference sources ONLY by indexes in the input sources array. Sources are NOT verified by you.
 List claims needing review in fact_flags, and visual object order in reveal_order.
 visual_description must specify concrete beginning, middle and end actions, camera/framing,
