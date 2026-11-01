@@ -49,7 +49,17 @@ def run_once(store: Store) -> bool:
 
 
 def main() -> None:
-    store = Store()
+    # Store() itself opens SQLite to initialize the schema. A temporary lock or
+    # database error here must not terminate the only worker before recovery.
+    backoff = 0.5
+    while True:
+        try:
+            store = Store()
+            break
+        except sqlite3.DatabaseError:
+            logger.exception("Database initialization failed; retrying after %.1fs", backoff)
+            time.sleep(backoff)
+            backoff = min(backoff * 2, 8.0)
     with (store.root / "worker.lock").open("w") as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
