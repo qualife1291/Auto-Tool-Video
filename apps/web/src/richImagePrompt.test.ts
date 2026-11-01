@@ -42,4 +42,28 @@ describe('opt-in detailed illustration preset', () => {
     expect(result).toContain('Tắt quạt khi ra khỏi phòng.');
     expect(result).toContain('generic icon');
   });
+
+  it('uses spoken action when an optional visual description contains only whitespace', () => {
+    const result = suggestDetailedImagePrompt({
+      ...source,
+      visual_description: '   ',
+    });
+    expect(result).toContain('Visible narrative action: Nước bay hơi từ sợi vải.');
+    expect(result).not.toContain('Visible narrative action: .');
+  });
+
+  it('handles a missing optional visual description without crashing', () => {
+    const result = suggestDetailedImagePrompt({
+      ...source,
+      visual_description: undefined,
+    });
+    expect(result).toContain('Visible narrative action: Nước bay hơi từ sợi vải.');
+  });
+
+  it('keeps authored leading and trailing whitespace instead of silently rewriting it', () => {
+    const original = '  Original shirt, custom notes\n';
+    const result = suggestDetailedImagePrompt({ ...source, image_prompt: original });
+    expect(result.startsWith(original)).toBe(true);
+    expect(result).toContain(RICH_DETAIL_MARKER);
+  });
 });
