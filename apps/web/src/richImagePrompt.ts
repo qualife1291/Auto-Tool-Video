@@ -19,16 +19,18 @@ const ART_DIRECTION = [
 export function suggestDetailedImagePrompt(
   scene: Pick<Scene, 'title' | 'narration' | 'visual_description' | 'image_prompt'>,
 ): string {
-  const original = scene.image_prompt.trim();
+  const original = scene.image_prompt;
   if (original.includes(RICH_DETAIL_MARKER)) return scene.image_prompt;
-  const focus = (scene.visual_description || scene.narration || scene.title).trim().slice(0, 240);
+  const focus = [scene.visual_description, scene.narration, scene.title]
+    .map((value) => value.trim())
+    .find(Boolean);
   const addition = [
     RICH_DETAIL_MARKER,
     `Scene: ${scene.title.trim().slice(0, 100)}.`,
-    `Visible narrative action: ${focus}.`,
+    `Visible narrative action: ${(focus || '').slice(0, 240)}.`,
     ART_DIRECTION,
   ].join('\n');
-  const enriched = [original, addition].filter(Boolean).join('\n\n');
+  const enriched = [original.trim() ? original : '', addition].filter(Boolean).join('\n\n');
   // The server's ImageInput/Scene schema caps prompt length at 2,000 characters.
   // Never cut or silently discard any user-authored prompt to fit a preset.
   return enriched.length <= 2000 ? enriched : scene.image_prompt;
