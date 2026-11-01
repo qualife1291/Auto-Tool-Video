@@ -50,7 +50,7 @@ class CreativeBrief(StrictModel):
     )
     avoid: str = Field(default="", max_length=1000)
     style_bible: str = Field(
-        default="Nét đen sạch, ít màu, nền kem, không chữ trong ảnh", max_length=1500
+        default="Minh họa giáo dục giàu chất liệu, nhiều lớp tiền/trung/hậu cảnh; chủ thể chính lớn, đúng tỷ lệ, nét tinh, ánh sáng và bóng đổ rõ; vật thể phụ phải giải thích hành động trong lời thoại, không lặp icon đơn giản; bố cục đầy đặn nhưng chừa vùng chữ, không chữ/logo trong ảnh.", max_length=1500
     )
     character_bible: str = Field(default="", max_length=1000)
 
