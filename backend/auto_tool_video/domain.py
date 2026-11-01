@@ -204,6 +204,7 @@ class ImageInput(StrictModel):
 class ApplyInput(StrictModel):
     revision: int = Field(ge=0)
     confirm: bool = False
+    visual_warnings_acknowledged: bool = False
 
 
 def split_script(text: str) -> list[Scene]:

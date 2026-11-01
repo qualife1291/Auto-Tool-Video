@@ -308,6 +308,14 @@ def apply_generation(
             )
             if not scene or (asset["project_id"], asset["scene_id"]) != (project_id, scene["id"]):
                 raise DomainError("INVALID_ASSET", "Ảnh không thuộc cảnh hiện tại.")
+            review = asset.get("visual_review")
+            warnings = review.get("warnings", []) if isinstance(review, dict) else []
+            if warnings and not request.visual_warnings_acknowledged:
+                raise DomainError(
+                    "VISUAL_REVIEW_REQUIRED",
+                    "Ảnh còn cảnh báo ít chi tiết. Hãy xem ảnh gốc và xác nhận trước khi dùng.",
+                    409,
+                )
             scene["image_id"] = asset["id"]
             asset["review_required"] = False
             conn.execute("UPDATE assets SET data=? WHERE id=?", (json.dumps(asset), asset["id"]))

@@ -86,7 +86,11 @@ export function ImageGenerationPanel({
     const p = await saveProject();
     const saved = await api<Project>(`/projects/${p.id}/images/${job.id}/apply`, {
       method: 'POST',
-      body: JSON.stringify({ revision: p.revision, confirm: true }),
+      body: JSON.stringify({
+        revision: p.revision,
+        confirm: true,
+        visual_warnings_acknowledged: visualWarningsAcknowledged,
+      }),
     });
     await onApplied(saved);
     setJob({ ...job, applied_revision: saved.revision });
