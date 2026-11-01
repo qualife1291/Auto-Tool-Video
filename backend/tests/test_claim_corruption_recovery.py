@@ -11,6 +11,7 @@ from auto_tool_video.store import Store
     "damaged_data",
     [
         "{invalid-json",
+        b"\xff",  # SQLite can persist invalid UTF-8 BLOBs in a TEXT column.
         "[]",
         "[" * 10_000 + "0" + "]" * 10_000,  # JSON nesting beyond decoder limit
         '{"id":"wrong-id","project_id":"project","state":"queued","options":{"kind":"export"}}',
@@ -55,6 +56,7 @@ def test_claim_quarantines_malformed_queued_row_and_claims_next(tmp_path, damage
     "damaged_data",
     [
         "{invalid-json",
+        b"\xff",  # SQLite can persist invalid UTF-8 BLOBs in a TEXT column.
         "[]",
         "[" * 10_000 + "0" + "]" * 10_000,  # JSON nesting beyond decoder limit
         '{"id":"wrong-id","project_id":"project","state":"running","options":{}}',
