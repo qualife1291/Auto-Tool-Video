@@ -231,11 +231,24 @@ def test_cancel_and_restart_keep_original_project(tmp_path):
 def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
     store = Store(tmp_path)
     p = project(store)
-    p = store.save(p["id"], {**p, "scenes": [Scene(image_prompt="blue shirt").model_dump()]})
+    p = store.save(
+        p["id"],
+        {
+            **p,
+            "scenes": [
+                Scene(
+                    image_prompt="blue shirt",
+                    visual_description="Close-up cotton fabric drying in a breezy garden",
+                ).model_dump()
+            ],
+        },
+    )
     scene = p["scenes"][0]
     job = enqueue_generation(
         store, p["id"], ImageInput(revision=1, idempotency_key=str(uuid4())), scene["id"]
     )
+
+    generated = {}
 
     class Images:
         def identity(self, config):
@@ -244,6 +257,7 @@ def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
         graph = staticmethod(Comfy.graph)
 
         def generate(self, config, graph, client_id, check, submitted):
+            generated["prompt"] = graph["6"]["inputs"]["text"]
             submitted("our-prompt")
             check()
             return image_bytes
@@ -254,6 +268,7 @@ def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
     run_generation(store, store.claim(), comfy=Images())
     result = store.get("jobs", job["id"])
     assert result["state"] == "succeeded"
+    assert "Close-up cotton fabric drying in a breezy garden" in generated["prompt"]
     assert result["result"]["provenance"]["resolution_profile"] == "standard"
     candidate = store.get("assets", result["result"]["candidate_id"])
     assert candidate["review_required"]
