@@ -252,6 +252,9 @@ def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
     assert result["result"]["provenance"]["resolution_profile"] == "standard"
     candidate = store.get("assets", result["result"]["candidate_id"])
     assert candidate["review_required"]
+    assert result["result"]["visual_review"] == candidate["visual_review"]
+    assert result["result"]["visual_review"]["aesthetic_review"] == "not_performed"
+    assert result["result"]["visual_review"]["human_approval"] == "pending"
     assert (
         candidate["sha256"] == hashlib.sha256(store.asset_path(candidate).read_bytes()).hexdigest()
     )
