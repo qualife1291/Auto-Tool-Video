@@ -79,9 +79,7 @@ def test_new_story_uses_layered_art_direction_without_overwriting_legacy_project
     ],
 )
 def test_supported_source_dimensions_do_not_raise_framing_warnings(size, aspect):
-    result = inspect_candidate_visual(
-        Image.new("RGB", size, "white"), expected_aspect=aspect
-    )
+    result = inspect_candidate_visual(Image.new("RGB", size, "white"), expected_aspect=aspect)
     codes = {warning["code"] for warning in result["warnings"]}
     assert "aspect_mismatch" not in codes
     assert "low_source_resolution" not in codes
