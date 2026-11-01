@@ -10,7 +10,7 @@ from itertools import combinations
 from pathlib import Path
 
 import pytest
-from PIL import Image, ImageChops, ImageFilter, ImageStat
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageStat
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -88,3 +88,34 @@ def test_a04_portrait_fit_preserves_full_subject_and_context():
             assert ImageStat.Stat(portrait.crop((170, 275, 830, 745))).stddev[0] > 15
             assert ImageStat.Stat(portrait.crop((175, 800, 825, 1110))).stddev[0] > 7
     assert len(portrait_hashes) == len(CUES)
+
+
+
+def test_a04_source_art_has_cohesive_yard_depth_and_fabric_stitching():
+    # The actual previous A04 MP4 showed tiny two-card pictograms surrounded
+    # by blank cream. Require a physical yard, clothing texture and cue context.
+    landscape = Image.open(io.BytesIO(render_cue_art("Nước bay hơi"))).convert("RGB")
+    portrait = Image.open(io.BytesIO(render_portrait_cue_art("Nước bay hơi"))).convert(
+        "RGB"
+    )
+    from qa_rich_context_art import garment_detail
+
+    assert landscape.getpixel((245, 485)) != landscape.getpixel((70, 485))
+    assert portrait.getpixel((125, 650)) != portrait.getpixel((35, 650))
+    # New native portrait art reaches beyond the old top-card and bottom-card
+    # with visible yard/fence detail, rather than leaving 70% cream.
+    top = portrait.crop((120, 275, 880, 810))
+    lower = portrait.crop((120, 880, 880, 1310))
+    assert ImageStat.Stat(top).stddev[0] > 18
+    assert ImageStat.Stat(lower).stddev[0] > 16
+
+    plain = Image.new("RGB", (1400, 1000), "#FFF9ED")
+    detailed = plain.copy()
+    from qa_voice_review_art import _shirt
+
+    _shirt(ImageDraw.Draw(plain), wet=3)
+    pen = ImageDraw.Draw(detailed)
+    _shirt(pen, wet=3)
+    garment_detail(pen, origin=(325, 275), scale=1, wet=3, spread=False)
+    difference = ImageChops.difference(plain, detailed)
+    assert ImageStat.Stat(difference.crop((425, 380, 755, 788))).mean[0] > 1.0
