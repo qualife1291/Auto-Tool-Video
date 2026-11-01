@@ -12,6 +12,7 @@ from auto_tool_video.store import Store
     [
         "{invalid-json",
         "[]",
+        "[" * 10_000 + "0" + "]" * 10_000,  # JSON nesting beyond decoder limit
         '{"id":"wrong-id","project_id":"project","state":"queued","options":{"kind":"export"}}',
         '{"id":"damaged","project_id":"another-project","state":"queued","options":{"kind":"export"}}',
         '{"id":"damaged","project_id":"project","state":"queued","options":[]}',
@@ -55,6 +56,7 @@ def test_claim_quarantines_malformed_queued_row_and_claims_next(tmp_path, damage
     [
         "{invalid-json",
         "[]",
+        "[" * 10_000 + "0" + "]" * 10_000,  # JSON nesting beyond decoder limit
         '{"id":"wrong-id","project_id":"project","state":"running","options":{}}',
         '{"id":"damaged","project_id":"project","state":"queued","options":{}}',
     ],
