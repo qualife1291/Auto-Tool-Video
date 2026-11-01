@@ -63,9 +63,7 @@ def main() -> None:
                 store.interrupt_running()
                 break
             except sqlite3.DatabaseError:
-                logger.exception(
-                    "Startup queue recovery failed; retrying after %.1fs", backoff
-                )
+                logger.exception("Startup queue recovery failed; retrying after %.1fs", backoff)
                 time.sleep(backoff)
                 backoff = min(backoff * 2, 8.0)
         try:
