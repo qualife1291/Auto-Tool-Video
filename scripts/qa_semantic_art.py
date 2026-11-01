@@ -271,7 +271,6 @@ def _draw_water(d: ImageDraw.ImageDraw, title: str) -> None:
                 _arrow(d, x, 665, 0, -190)
 
 
-
 def _laundry_setting(d: ImageDraw.ImageDraw, title: str) -> None:
     """Original layered laundry-yard scene, not a reused flat topic pictogram.
 
