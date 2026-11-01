@@ -18,6 +18,7 @@ on:
       - scripts/qa_semantic_art.py
       - backend/tests/test_qa_video_scenarios.py
       - backend/tests/test_crosswalk_art.py
+      - backend/tests/test_laundry_detail_art.py
       - .github/workflows/qa-scenario-matrix.yml
   workflow_dispatch:
 
@@ -53,17 +54,20 @@ jobs:
           uv run --project backend ruff check \
             scripts/qa_video_scenarios.py scripts/qa_semantic_art.py \
             backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py \
+            backend/tests/test_laundry_detail_art.py \
             backend/tests/test_caption_visual_safe_zone.py \
             backend/tests/test_repeated_scene_visual_screen.py \
             backend/auto_tool_video/quality.py backend/auto_tool_video/semantic_screen.py
           uv run --project backend ruff format --check \
             scripts/qa_video_scenarios.py scripts/qa_semantic_art.py \
             backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py \
+            backend/tests/test_laundry_detail_art.py \
             backend/tests/test_caption_visual_safe_zone.py \
             backend/tests/test_repeated_scene_visual_screen.py \
             backend/auto_tool_video/quality.py backend/auto_tool_video/semantic_screen.py
           uv run --project backend pytest \
             backend/tests/test_qa_video_scenarios.py backend/tests/test_crosswalk_art.py \
+            backend/tests/test_laundry_detail_art.py \
             backend/tests/test_caption_visual_safe_zone.py \
             backend/tests/test_repeated_scene_visual_screen.py -q
       - name: Render and validate both aspect ratio MP4 files
