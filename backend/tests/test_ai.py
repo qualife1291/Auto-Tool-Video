@@ -264,8 +264,27 @@ def test_image_candidate_review_hash_and_apply(tmp_path, workflow, image_bytes):
         candidate["sha256"] == hashlib.sha256(store.asset_path(candidate).read_bytes()).hexdigest()
     )
     assert store.get("projects", p["id"]) == p
+    # A flagged candidate must not be applicable via direct API confirm=True alone.
+    candidate["visual_review"]["warnings"] = [
+        {"code": "sparse_simple_art", "message": "Review sparse source art."}
+    ]
+    with store.connect() as conn:
+        conn.execute(
+            "UPDATE assets SET data=? WHERE id=?",
+            (json.dumps(candidate), candidate["id"]),
+        )
+    with pytest.raises(DomainError) as blocked:
+        apply_generation(
+            store, p["id"], job["id"], ApplyInput(revision=1, confirm=True), "image"
+        )
+    assert blocked.value.code == "VISUAL_REVIEW_REQUIRED"
+    assert store.get("projects", p["id"]) == p
     saved = apply_generation(
-        store, p["id"], job["id"], ApplyInput(revision=1, confirm=True), "image"
+        store,
+        p["id"],
+        job["id"],
+        ApplyInput(revision=1, confirm=True, visual_warnings_acknowledged=True),
+        "image",
     )
     assert saved["scenes"][0]["image_id"] == candidate["id"]
     assert not store.get("assets", candidate["id"])["review_required"]
