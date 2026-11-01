@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 from auto_tool_video.domain import CreativeBrief
 from auto_tool_video.visual_candidate import POLICY, inspect_candidate_visual
@@ -68,3 +68,49 @@ def test_new_story_uses_layered_art_direction_without_overwriting_legacy_project
     assert "không chữ/logo" in style
     old = CreativeBrief(style_bible="Nét đen sạch, ít màu, nền kem")
     assert old.style_bible == "Nét đen sạch, ít màu, nền kem"
+
+
+@pytest.mark.parametrize(
+    ("size", "aspect"),
+    [
+        ((768, 1344), "portrait"),
+        ((1344, 768), "landscape"),
+        ((1024, 1792), "portrait"),
+    ],
+)
+def test_supported_source_dimensions_do_not_raise_framing_warnings(size, aspect):
+    result = inspect_candidate_visual(
+        Image.new("RGB", size, "white"), expected_aspect=aspect
+    )
+    codes = {warning["code"] for warning in result["warnings"]}
+    assert "aspect_mismatch" not in codes
+    assert "low_source_resolution" not in codes
+
+
+def test_wrong_aspect_candidate_requests_review_before_portrait_crop():
+    result = inspect_candidate_visual(
+        Image.new("RGB", (1344, 768), "white"), expected_aspect="portrait"
+    )
+    assert "aspect_mismatch" in {warning["code"] for warning in result["warnings"]}
+    assert result["human_approval"] == "pending"
+
+
+def test_small_source_candidate_requests_resolution_review():
+    result = inspect_candidate_visual(
+        Image.new("RGB", (384, 672), "white"), expected_aspect="portrait"
+    )
+    assert "low_source_resolution" in {warning["code"] for warning in result["warnings"]}
+
+
+def test_soft_focus_candidate_warns_without_claiming_aesthetic_failure():
+    image = Image.new("RGB", (768, 1344), "white")
+    draw = ImageDraw.Draw(image)
+    for y in range(0, 1344, 140):
+        draw.rectangle((0, y, 768, y + 70), fill="black")
+    sharp = inspect_candidate_visual(image, expected_aspect="portrait")
+    blurred = inspect_candidate_visual(
+        image.filter(ImageFilter.GaussianBlur(30)), expected_aspect="portrait"
+    )
+    assert "possible_soft_focus" not in {w["code"] for w in sharp["warnings"]}
+    assert "possible_soft_focus" in {w["code"] for w in blurred["warnings"]}
+    assert blurred["aesthetic_review"] == "not_performed"
