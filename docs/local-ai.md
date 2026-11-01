@@ -36,6 +36,12 @@ Chất lượng thực tế phụ thuộc **checkpoint/model, workflow API, VRAM
 
 Quy trình review: so ảnh candidate với lời thoại từng cảnh và style/character bible; xem đủ hình ở 9:16 và 16:9, vùng chữ, bề mặt vải/tay/vật thể và tính liên tục. Ảnh đủ pixel nhưng quá thô, sai vật thể hoặc đồ họa chỉ thay màu phải được thay trước khi xác nhận dùng. **AI generated candidate, QA fixture và codec PASS đều không tự tạo G10 PASS.**
 
+### Kiểm hình ứng viên trước khi đưa vào video
+
+Ảnh thực từ ComfyUI được phân tích **trên pixel của chính ảnh ứng viên** (Canny ở 192×192, vùng lưới 8×8 có nét và bảng màu lượng tử). Nếu ảnh gần trống hoặc hình quá ít nét/phân bố quá hẹp, giao diện hiển thị cảnh báo và yêu cầu người tạo **mở ảnh gốc ở kích thước thật**, đánh dấu đã xem trước khi dùng. Ảnh cũ và dữ liệu người dùng không bị ghi đè khi tạo candidate. Các số đo và mã cảnh báo được lưu với asset và job; chúng **không phải** thang điểm ảnh đẹp, không đánh giá ngữ nghĩa, tính khoa học, bản quyền hoặc G10. Hình đơn giản có chủ đích vẫn có thể được duyệt thủ công sau khi xác nhận đã xem.
+
+Brief mặc định của dự án mới chuyển từ tranh nền kem ít màu sang **minh họa giàu chi tiết, nhiều lớp, vật thể/động tác bám lời thoại, đủ rõ khi xem trên điện thoại**. Brief/style người dùng đã tạo hoặc đã chỉnh ở dự án cũ không bị di chuyển hay sửa ngầm. Nếu muốn giữ whiteboard tối giản, vẫn có thể chỉnh trực tiếp style_bible.
+
 ### Độ phân giải ảnh nguồn cao hơn (tùy chọn)
 
 Workflow ComfyUI cục bộ có thể khai báo `"resolution_profile": "high_detail"` ở **cấp gốc** file JSON tin cậy của quản trị. Ứng dụng sẽ yêu cầu ảnh nguồn portrait **1024×1792** hoặc landscape **1792×1024**, thay vì mặc định **768×1344/1344×768**. Kích thước không do prompt, model hoặc trình duyệt tùy ý thay đổi; giá trị khác `standard` hoặc `high_detail` bị từ chối. Mặc định cũ giữ nguyên cho máy không đủ RAM/VRAM.
