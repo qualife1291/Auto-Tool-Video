@@ -159,8 +159,6 @@ describe('estimated caption pages (browser preview, not pixel-exact export)', ()
   });
 });
 
-
-
 it('defaults new briefs to layered art without losing older creator-authored styles', () => {
   expect(emptyBrief.style_bible).toContain('nhiều lớp');
   expect(emptyBrief.style_bible).toContain('chất liệu');
