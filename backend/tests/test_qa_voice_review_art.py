@@ -90,14 +90,11 @@ def test_a04_portrait_fit_preserves_full_subject_and_context():
     assert len(portrait_hashes) == len(CUES)
 
 
-
 def test_a04_source_art_has_cohesive_yard_depth_and_fabric_stitching():
     # The actual previous A04 MP4 showed tiny two-card pictograms surrounded
     # by blank cream. Require a physical yard, clothing texture and cue context.
     landscape = Image.open(io.BytesIO(render_cue_art("Nước bay hơi"))).convert("RGB")
-    portrait = Image.open(io.BytesIO(render_portrait_cue_art("Nước bay hơi"))).convert(
-        "RGB"
-    )
+    portrait = Image.open(io.BytesIO(render_portrait_cue_art("Nước bay hơi"))).convert("RGB")
     from qa_rich_context_art import garment_detail
 
     assert landscape.getpixel((245, 485)) != landscape.getpixel((70, 485))
