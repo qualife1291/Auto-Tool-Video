@@ -109,6 +109,7 @@ def test_probe_validates_real_timestamp_contract(
         commands.append(args)
         stdout = make_ffprobe_metadata() if args[0] == "ffprobe" else ""
         return subprocess.CompletedProcess(args, 0, stdout, "")
+
     monkeypatch.setattr(benchmark.subprocess, "run", fake_run)
     check = benchmark.probe_video("ffprobe", "ffmpeg", tmp_path / "fake.mp4", 30, 32, 32, 5)
     assert check["full_decode"] == "PASS"
