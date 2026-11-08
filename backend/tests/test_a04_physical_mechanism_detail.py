@@ -16,8 +16,6 @@ import pytest
 from PIL import Image, ImageChops, ImageFilter, ImageStat
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-from qa_physical_mechanisms import MECHANISM_CUES, render_mechanism_detail
-from qa_voice_review_art import render_portrait_cue_art
 
 
 MECHANISM_TITLES = (
@@ -31,6 +29,8 @@ MECHANISM_TITLES = (
 
 
 def test_all_six_mechanisms_are_specific_original_drawings():
+    from qa_physical_mechanisms import MECHANISM_CUES, render_mechanism_detail
+
     assert tuple(MECHANISM_CUES) == MECHANISM_TITLES
     hashes: set[str] = set()
     rendered = []
@@ -49,12 +49,17 @@ def test_all_six_mechanisms_are_specific_original_drawings():
 
 
 def test_unknown_mechanism_cannot_be_passed_off_as_original_art():
+    from qa_physical_mechanisms import render_mechanism_detail
+
     with pytest.raises(ValueError, match="No authored physical detail"):
         render_mechanism_detail("Không có cảnh này")
 
 
 @pytest.mark.parametrize("title", MECHANISM_TITLES)
 def test_portrait_source_uses_mechanism_closeup_not_old_icon_crop(title):
+    from qa_physical_mechanisms import render_mechanism_detail
+    from qa_voice_review_art import render_portrait_cue_art
+
     image = Image.open(io.BytesIO(render_portrait_cue_art(title))).convert("RGB")
     # The existing note is 341 x 318; the new 310 x 265 detail is centered.
     original_detail = render_mechanism_detail(title)
