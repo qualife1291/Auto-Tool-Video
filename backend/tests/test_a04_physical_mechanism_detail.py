@@ -16,7 +16,6 @@ import pytest
 from PIL import Image, ImageChops, ImageFilter, ImageStat
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-
 from qa_physical_mechanisms import MECHANISM_CUES, render_mechanism_detail
 from qa_voice_review_art import render_portrait_cue_art
 
