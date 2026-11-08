@@ -26,7 +26,9 @@ THREAD = "#72AEB8"
 GOLD = "#F3C76C"
 
 
-def _weave(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], *, dry: bool) -> None:
+def _weave(
+    draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], *, dry: bool
+) -> None:
     x1, y1, x2, y2 = box
     draw.rounded_rectangle((x1 + 6, y1 + 14, x2 + 18, y2 + 20), 30, fill="#9FB9AC")
     draw.rounded_rectangle(
@@ -42,7 +44,9 @@ def _weave(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], *, dry: bo
         draw.line((x1 + 18, y, x2 - 18, y - 3), fill=bright, width=5)
         draw.line((x1 + 22, y + 6, x2 - 21, y + 4), fill=shade, width=3)
     for x in range(x1 + 27, x2 - 13, 22):
-        coords = [(x + round(3 * math.sin(y / 12)), y) for y in range(y1 + 16, y2 - 13, 10)]
+        coords = [
+            (x + round(3 * math.sin(y / 12)), y) for y in range(y1 + 16, y2 - 13, 10)
+        ]
         draw.line(coords, fill=shade, width=3, joint="curve")
     draw.arc((x1 + 15, y1 + 11, x2 - 15, y1 + 49), 0, 180, fill=bright, width=5)
 
@@ -58,7 +62,9 @@ def _bead(draw: ImageDraw.ImageDraw, x: int, y: int, radius: int = 14) -> None:
 
 
 def _air(draw: ImageDraw.ImageDraw, y: int, *, start: int = 50, end: int = 550) -> None:
-    pts = [(x, round(y + 18 * math.sin((x - start) / 73))) for x in range(start, end, 9)]
+    pts = [
+        (x, round(y + 18 * math.sin((x - start) / 73))) for x in range(start, end, 9)
+    ]
     draw.line(pts, fill="#5BA9B3", width=8, joint="curve")
     draw.line([(x, yy + 7) for x, yy in pts], fill="#D6EEF0", width=3)
 
@@ -118,7 +124,12 @@ def render_mechanism_detail(title: str) -> Image.Image:
             _weave(d, (42, 239, 571, 476), dry=False)
 
         if title == "Nước bay hơi":
-            for x, y, r in ((170, 351, 17), (307, 392, 13), (441, 329, 16), (529, 404, 10)):
+            for x, y, r in (
+                (170, 351, 17),
+                (307, 392, 13),
+                (441, 329, 16),
+                (529, 404, 10),
+            ):
                 _bead(d, x, y, r)
             # Gas is invisible: particles indicate diffusion, NOT visible boiling steam.
             for i, x in enumerate((172, 285, 410, 525)):
@@ -158,7 +169,16 @@ def render_mechanism_detail(title: str) -> Image.Image:
 
         elif title == "Bóng râm":
             d.polygon(
-                [(0, 0), (620, 0), (620, 114), (502, 155), (388, 98), (255, 165), (142, 121), (0, 175)],
+                [
+                    (0, 0),
+                    (620, 0),
+                    (620, 114),
+                    (502, 155),
+                    (388, 98),
+                    (255, 165),
+                    (142, 121),
+                    (0, 175),
+                ],
                 fill="#81AE89",
             )
             for x, y in ((70, 127), (193, 116), (348, 94), (487, 119), (571, 156)):
