@@ -234,15 +234,24 @@ def render_portrait_cue_art(title: str) -> bytes:
     # A scene-specific observed mechanism appears as a small visual note on the
     # yard instead of occupying an isolated half-height second card.
     if title in MECHANISM_CUES:
-        # Original close-up of the physical process, not a recycled icon.
-        detail = render_mechanism_detail(title)
+        # The old 310px inset became ~90px wide on a 360px phone. Give
+        # a physical close-up enough screen area without covering the shirt.
+        detail = render_mechanism_detail(title).resize(
+            (395, 337), Image.Resampling.LANCZOS
+        )
+        note = (470, 895, 910, 1325)
     else:
         detail = original.crop(_PORTRAIT_CONTEXT_CROPS[title])
         detail = ImageOps.contain(detail, (310, 265), Image.Resampling.LANCZOS)
-    note = (555, 952, 896, 1270)
+        note = (555, 952, 896, 1270)
     draw.rounded_rectangle(note, radius=24, fill="#F7F4EB", outline="#C9D1BF", width=6)
-    output.paste(detail, (note[0] + (341 - detail.width) // 2,
-                          note[1] + (318 - detail.height) // 2))
+    output.paste(
+        detail,
+        (
+            note[0] + (note[2] - note[0] - detail.width) // 2,
+            note[1] + (note[3] - note[1] - detail.height) // 2,
+        ),
+    )
     buffer = io.BytesIO()
     output.save(buffer, "PNG")
     return buffer.getvalue()
