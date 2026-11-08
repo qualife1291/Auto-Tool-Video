@@ -10,6 +10,7 @@ from __future__ import annotations
 import io
 
 from PIL import Image, ImageDraw, ImageOps
+from qa_physical_mechanisms import MECHANISM_CUES, render_mechanism_detail
 from qa_rich_context_art import (
     cue_fabric_effects,
     garment_detail,
@@ -232,8 +233,12 @@ def render_portrait_cue_art(title: str) -> bytes:
     cue_fabric_effects(draw, title, portrait=True)
     # A scene-specific observed mechanism appears as a small visual note on the
     # yard instead of occupying an isolated half-height second card.
-    detail = original.crop(_PORTRAIT_CONTEXT_CROPS[title])
-    detail = ImageOps.contain(detail, (310, 265), Image.Resampling.LANCZOS)
+    if title in MECHANISM_CUES:
+        # Original close-up of the physical process, not a recycled icon.
+        detail = render_mechanism_detail(title)
+    else:
+        detail = original.crop(_PORTRAIT_CONTEXT_CROPS[title])
+        detail = ImageOps.contain(detail, (310, 265), Image.Resampling.LANCZOS)
     note = (555, 952, 896, 1270)
     draw.rounded_rectangle(note, radius=24, fill="#F7F4EB", outline="#C9D1BF", width=6)
     output.paste(detail, (note[0] + (341 - detail.width) // 2,
