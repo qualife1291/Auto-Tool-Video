@@ -63,9 +63,7 @@ def test_portrait_source_uses_mechanism_closeup_not_old_icon_crop(title):
     image = Image.open(io.BytesIO(render_portrait_cue_art(title))).convert("RGB")
     # Larger macro note must be legible at the actual 360px phone output;
     # other cues keep their old note box and the creator caption is unaffected.
-    original_detail = render_mechanism_detail(title).resize(
-        (395, 337), Image.Resampling.LANCZOS
-    )
+    original_detail = render_mechanism_detail(title).resize((395, 337), Image.Resampling.LANCZOS)
     actual = image.crop((492, 941, 887, 1278))
     assert ImageChops.difference(actual, original_detail).getbbox() is None
     phone_width = original_detail.width * (1376 / 1600) * (360 / 1080)
