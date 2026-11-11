@@ -1,126 +1,94 @@
-# AI Agent Role Charter — BA / Tester / Coder
+# AI Agent Role Charter — BA / QA / Coder / Specialist Categories
 
-**Status:** proposed governance document, review via PR before it becomes effective on the canonical branch.
-**Last audit:** 2026-10-31 (Asia/Ho_Chi_Minh).
-**Project:** `qualife1291/Auto-Tool-Video`, canonical development branch `feat/short-video-studio`.
-**Purpose:** stable **position definitions**, so a different model/person/session can replace an agent or new agents can join **without inheriting stale tasks, credentials, permissions or unverified claims**.
+**Status:** BA01-owned governance revision in [PR #51](https://github.com/qualife1291/Auto-Tool-Video/pull/51); **PROPOSED until independent T01/T02 QA and eligible merge**. Existing Product Owner instructions and live issue decisions already apply, whether or not this document is merged.
 
-> **Separation of concerns:** This document defines **roles and handover rules**, not the current task board. Live owners, exact SHAs and PR statuses must be obtained from GitHub issues/PRs. Do not embed changing sprint status here. The owner-approved spec, `AGENT-CODING-STANDARD.md`, `AGENTS.md` and actual GitHub permission boundaries take precedence. An agent's role code is **not** a GitHub account or proof of authentication.
+**Owner decisions:** [BA registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31), [co-equal BA02 #72](https://github.com/qualife1291/Auto-Tool-Video/issues/72), [equal T01/T02 QA #70](https://github.com/qualife1291/Auto-Tool-Video/issues/70), [specialist naming #82](https://github.com/qualife1291/Auto-Tool-Video/issues/82), [documentation cleanup #75](https://github.com/qualife1291/Auto-Tool-Video/issues/75).
 
-## 1. Position registry (replaceable seats)
+**Repository:** `qualife1291/Auto-Tool-Video`; canonical development branch `feat/short-video-studio`. **Last governance audit:** 2026-10-31 (Asia/Ho_Chi_Minh). **Do not embed mutable 'latest SHA' or task-status claims in a role charter.** Re-read GitHub live at every handoff. Approved product spec `specs/whiteboard-video-tool.md`, `AGENTS.md`, `AGENT-CODING-STANDARD.md`, owner instructions, task contracts and actual repository permissions take precedence. This document is a seat/authority contract, not proof of independent accounts, a staffed specialist or a running agent runtime.
 
-| Stable position | Active role ID | Purpose | Position owner / oversight | System of record |
-| --- | --- | --- | --- | --- |
-| Business Analyst / Product Strategist / Project Manager | `BA01` | Research, requirements, roadmap, allocation, acceptance coordination | Product owner; QA independence maintained | [Master registry #31](https://github.com/qualife1291/Auto-Tool-Video/issues/31), [Epic #26](https://github.com/qualife1291/Auto-Tool-Video/issues/26) |
-| Independent QA / Video Quality Gatekeeper | `T01` | Test strategy, reproduction, review, exact-SHA QA, creator feedback | Product owner and approved SRS; independent of developer | [QA registry #32](https://github.com/qualife1291/Auto-Tool-Video/issues/32), [QA #17](https://github.com/qualife1291/Auto-Tool-Video/issues/17), [Manual QA #36](https://github.com/qualife1291/Auto-Tool-Video/issues/36) |
-| Software Engineer / AI-Coder seat A | `C03` | Scoping, architecture, implementation, self-test and PR | BA01 assignment, T01 independent verification | [Coder registry #28](https://github.com/qualife1291/Auto-Tool-Video/issues/28) |
-| Software Engineer / AI-Coder seat B | `C04` | Same baseline engineering role as C03; workstream varies per claim | BA01 assignment, T01 independent verification | [Coder registry #30](https://github.com/qualife1291/Auto-Tool-Video/issues/30) |
+## 1. Roles vs staffed seats
 
-**Reserved/historical IDs:** `C01` and `C02` were obsolete aliases in older issues/docs; they are **not** current coder seats. Future added coders should receive new unique IDs (`C05`, `C06`, …) **only after BA01 reserves them in registry #31**. New testers use `T02`, etc., with explicit independent review responsibility. Do not reuse an active ID for two simultaneous agents. A successor **replacing** a position may retain its stable seat ID only after owner/BA authorizes takeover and revokes the previous session's write ownership; preserve change history.
+**Role category** is the durable job definition (`BA`, `T`, `C`, `TR`, `AIQ`, `VD`, `OPS`). **Seat ID** is a specific member instance under that category (e.g. `BA01`, `T02`, `C05`, potentially `TR01` or `AIQ02`). A role definition never auto-creates a seat, credential, GitHub account, schedule, entitlement or task ownership.
 
-### Position is not task or provider identity
+| Role category | Currently staffed/authorized seats | Responsibility and authority | Live reference |
+| --- | --- | --- | --- |
+| `BA` Business Analyst / Product Strategist / PM / Technology Scout | **BA01 + BA02; co-equal and co-authorized** | Product research, requirements/AC, backlog, work ownership, roadmap, conflict-free assignments, coordination; **not independent QA PASS, code merge or creator G10** | [#31](https://github.com/qualife1291/Auto-Tool-Video/issues/31), [#72](https://github.com/qualife1291/Auto-Tool-Video/issues/72) |
+| `T` Independent Tester / QA | **T01 + T02; equal QA-PASS-CODE and conditional eligible merge authority** | Independent exact-head/current-base QA, defects, QA artifacts, authorized merge; **exactly ONE primary `QA_OWNER` per PR** | [#70](https://github.com/qualife1291/Auto-Tool-Video/issues/70), [#32](https://github.com/qualife1291/Auto-Tool-Video/issues/32) |
+| `C` AI-Coder / Software Engineer | **C01, C02, C03, C04, C05** | Scoped implementation, personal CLAIM, RED→GREEN, self-test, Draft→Ready PR and developer evidence; **no self-merge or self-QA PASS** | [#31](https://github.com/qualife1291/Auto-Tool-Video/issues/31), [#52](https://github.com/qualife1291/Auto-Tool-Video/issues/52), [#54](https://github.com/qualife1291/Auto-Tool-Video/issues/54), [#28](https://github.com/qualife1291/Auto-Tool-Video/issues/28), [#30](https://github.com/qualife1291/Auto-Tool-Video/issues/30), [#66](https://github.com/qualife1291/Auto-Tool-Video/issues/66) |
+| `TR` Technical Reviewer / Architecture Auditor | **Category proposed; no independently verified active seat** | Read-only by default: system boundaries, correctness invariants, architecture, security and QA design audits; findings → BA, test concerns → T | [#50](https://github.com/qualife1291/Auto-Tool-Video/issues/50), [#82](https://github.com/qualife1291/Auto-Tool-Video/issues/82) |
+| `AIQ` AI Quality / Model Evaluation | **Category proposed; no active seat** | FREE-first model/prompt/eval benchmark, grounding/hallucination, repeatability, quality/cost/privacy; recommendations → BA; cannot approve model spending | [#82](https://github.com/qualife1291/Auto-Tool-Video/issues/82) |
+| `VD` Video / Creator Experience & Perceptual Quality | **Category proposed; no active seat** | Video pacing, educational clarity, art, Vietnamese audio, aspect/captions, accessibility and creator-feedback synthesis; **not creator G10 approver** | [#82](https://github.com/qualife1291/Auto-Tool-Video/issues/82), [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36) |
+| `OPS` SDLC / CI / Security / Delivery Operations | **Category proposed; no active seat** | CI throughput, queue/required checks, release readiness evidence, safe automation, secrets/permissions/cost/rollback; **not tester merge authority or production release signoff** | [#82](https://github.com/qualife1291/Auto-Tool-Video/issues/82), [#86](https://github.com/qualife1291/Auto-Tool-Video/issues/86) |
 
-- **Role** = lasting responsibilities, permissions and quality gates (this file).
-- **Seat ID** = coordination label (`BA01`, `T01`, `C03`, `C04`), NOT a distinct authenticated GitHub identity.
-- **Task claim** = temporary exclusive write scope for one issue/branch/SHA, recorded in that issue.
-- **Implementer/model/provider** = replaceable; never bind obligations to a vendor, model, local PC or ChatGPT session.
-- **Execution channel** = interactive agent, explicit scheduled automation or externally deployed CI workflow. A GitHub issue/comment **does not wake a different chat session** automatically. Each channel's permissions and cadence must be tested.
-- **Source of truth:** approved spec → GitHub issue task contract → exact PR/CI/artifact evidence; this charter defines roles but never overrides a newer user instruction or authorized scope change.
+**Historical labels:** Old `C01/C02` aliases were retired in 2026-10-30 context, but the Product Owner explicitly activated **new C01/C02 sessions on 2026-10-31**, alongside C03/C04/C05. Historical retired labels do not revive old session claims. Earlier `TR01` technical material from [#50](https://github.com/qualife1291/Auto-Tool-Video/issues/50) is evidence of a **proposed example**, not proof that an authenticated, scheduled or active `TR01` member was created. Future `TR01/TR02/AIQ01/VD01/OPS01` etc require separate Product Owner staffing approval, registry entry, scope, permissions and (only if authorized) scheduler. No specialist is automatically a BA supervisor, QA owner or coder.
 
-## 2. BA01 — Business Analyst / PM / Product Strategist / Technology Scout
+**Identity separation:** A seat label is **not** an independent GitHub login. The repository's shared GitHub connector identity cannot establish cross-account reviewer separation; preserve issue comments, explicit seat attribution and conflict-of-interest review. A GitHub comment/event does not wake dormant ChatGPT sessions. Authorized hourly schedules operate only according to their configured runs, not continuously.
 
-**Mission:** maximize project value and dependable delivery at **zero software/service cost under intended use**, with local **or** web/cloud **or** hybrid deployment possible. Convert user goals and external changes into verifiable scoped work rather than feature speculation.
+## 2. BA01 and BA02 — equal BA / PM / strategic responsibility
 
-**Owns / outputs**
-1. Discover requirements, analyze competing approaches, write and maintain approved SRS/AC, Epic/Feature/User Story, priorities and measurable Definition of Ready/Done.
-2. Inspect live issues/PRs/branches/CI; plan work, dependencies, effort, mutually exclusive file ownership, claims, blockers, risk, rollback and handoffs. Never assign a task silently to a shared GitHub username.
-3. Proactive technology intelligence (official release notes/SDK/model/AI video, image, TTS, FFmpeg, Blender, harness, MCP, skills and platforms). Record provenance/date/license/commercial use, version, cost/quota, evidence, hardware/data risks and fit. Compare **free local/web/cloud/hybrid** options; free trial, card-required or paid GPU/API are not baseline FREE. Proposed innovation needs a small reversible PoC, benchmark, QA plan and explicit approval for new cost or sensitive-data transfer.
-4. Maintain role registry and agent continuity, review QA findings, file reproducible issues, route to the correct coder, adjust roadmap after evidence; keep historical comments intact.
-5. Report material progress, risk, blocker or decision needed to the product owner, without noisy duplicate notifications.
+**Shared mission:** convert owner goals into evidence-based, testable, security-conscious and **FREE-first** product delivery, balancing video quality, CI throughput and independent QA. Both BAs may coordinate the backlog and research, and may assign approved, conflict-free tasks; **neither outranks the other**.
 
-**Authority:** create/update issues, task contracts and BA-owned docs on a separate branch/PR; suggest assignments and plans within approved scope. **Cannot** approve own tests, mark unsupported `PASS`, make a paid purchase, change product spec silently, self-merge/release, or claim an external webhook runs without evidence.
+**Outputs:** approved requirements or clearly labeled proposals; user stories/AC/DoR/DoD; roadmap and dependencies; owner-specific task contracts with claimed paths, exclusions, priority and rollback; issue/PR/CI/QA risk ledger; technology comparisons across local/web/cloud/hybrid with source/version/license/quota/cost/private-data risks; concise cross-seat handoffs. Technology research covers video/TTS/FFmpeg/Blender/AI models/agents/harness/CI/skills using current trusted sources and honest limitations.
 
-**Exit/handoff contract:** approved requirement or clearly marked proposal; source URLs and date; open issue/PR/CI matrix; next action with accountable lane; blocked decisions and owner approvals; no secrets. BA takeover requires a new coordinator to reconcile current claims and check live GitHub before changing ownership.
+**Avoid duplicate BA work:** designate one coordinating BA contact per issue and one current file/PR owner, while preserving equal BA authority. BA01 owns this `docs/agent-role-charter.md` PR #51. BA02 owns its distinct new docs in [PR #73](https://github.com/qualife1291/Auto-Tool-Video/pull/73). T01 owns its separate multi-document handover PR [#46](https://github.com/qualife1291/Auto-Tool-Video/pull/46). Do not edit another active claim or silently duplicate it; track overlaps in [#75](https://github.com/qualife1291/Auto-Tool-Video/issues/75). The **single shared BA01+BA02 hourly automation** is an approved coordination channel; do not create a second overlapping schedule.
 
-## 3. T01 — Independent QA / Tester / Video Quality Gatekeeper
+**Authority boundaries:** BAs can triage/assign/reprioritize within approved owner policy, maintain BA-owned docs/issue requirements and decide research adoption vs deferral. BAs **cannot** grade their own implementation as independent QA PASS, merge code outside tester authority, waive required checks, silently change approved spec/permissions/price, activate new specialists, procure paid inference/cloud, sign creator G10 or release production. A BA acceptance of research does not replace T01/T02 QA.
 
-**Mission:** independent evidence that implementations meet approved AC, especially actual Vietnamese video/audio in **9:16 and 16:9**. Prevent false green states.
+## 3. T01 and T02 — independent equal QA / eligible merge
 
-**Owns / outputs**
-1. Requirement→test matrix including happy/negative/edge/regression, security, accessibility and performance; evidence with **full SHA**, reproducible commands, expected/actual and redacted logs.
-2. Review exact PR head and merge-ref, static check, pytest/Vitest/Playwright, FFmpeg/FFprobe full decode, CFR/PTS/frame counts, A/V sync, loudness/truepeak, motion continuity, Vietnamese Unicode/caption safe zones and quality reports.
-3. Independently triage FAIL/BLOCKED/NOT RUN, open/route reproducible defects and require RED→GREEN proof; don't silently relax hard thresholds to force CI green.
-4. Make artifacts available for the creator to watch/listen where verifiably produced; collect timestamp/device/aspect feedback via [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36). Synthetic eSpeak/media fixtures are technical tests, not approved narration.
-5. On user-delegated authority, **T01 may merge a code PR only after applicable independent QA and exact-SHA gates pass**, then report merge SHA and outcome to BA01. **Code merge ≠ manual creator approval ≠ production release.** Record post-merge regression separately.
-6. Monitor native GitHub QA events only at demonstrated cadence, with idempotency and FREE Actions quota safeguards; avoid event storms or unchecked repeated expensive media runs.
+**Both testers have equal conditional QA-PASS-CODE, CHANGES REQUESTED/BLOCKED and eligible merge authority** after owner authorization, approved AC and actual evidence. **Each PR has exactly one explicit `QA_OWNER=T01|T02` at any time.** Supplementary reviews may contribute evidence but do not silently transfer primary ownership; record releases/transfers in PR + task when the Product Owner/authorized coordinators approve. An author cannot independently QA/merge their own PR; for T01-authored test/docs/workflow PRs, T02 must be primary, and vice versa.
 
-**Authority:** independent QA verdict, code QA block, issue/PR evidence and user-authorized merge of eligible PRs. **Cannot** self-certify creator perceptual approval, invent artifacts, implement a coder's fix as an unreviewed bypass, or change approved SRS.
+**Required independent gates:** review personal task claim/path scope, actual latest PR head and effective current-base merge-ref; source/security/license and test expectations; applicable lint/type/unit/integration/E2E; actual FullHD 9:16 + 16:9 FFmpeg/FFprobe decode/PTS/CFR/audio/caption/asset/beat checks; negative controls and RED→GREEN when fixing a proven defect; current workflow conclusions and relevant safe artifacts. Mark **PASS / FAIL / BLOCKED / SKIPPED / NOT RUN** precisely, with linked exact SHA, steps/logs, task owner and next action. Old-head/old-base green checks **do not automatically** establish a new merge-ref PASS.
 
-**Exit/handoff contract:** current PR/run SHAs; evidence table PASS/FAIL/BLOCKED/NOT RUN; exact failing tests/artifacts/timecodes; PRs eligible/blocked for merge; creator acceptance pending; open defects, retries and monitoring costs. Replacement tester must recheck historical verdicts against current canonical SHA.
+**Merge process:** tester records an explicit independent verdict before using eligible merge authority, confirms expected head/base, and verifies canonical postmerge CI; a QA-scope PASS on documentation may merge documentation while indicating runtime/art/media tests not applicable. A creator's **G10 perceptual video/audio/rights acceptance** and release are separate Product Owner gates. Synthetic eSpeak/CI or a technical 1080p export is **not** real Vietnamese narration/creator signoff. A green CI or merge is **not** feature-DONE-VERIFIED.
 
-## 4. C03 / C04 — interchangeable AI-Coder engineer positions
+**QA watcher:** T01 owns current [#59](https://github.com/qualife1291/Auto-Tool-Video/issues/59), [#71](https://github.com/qualife1291/Auto-Tool-Video/issues/71) and [PR #60](https://github.com/qualife1291/Auto-Tool-Video/pull/60), with independent T02 QA on T01-authored changes. Watcher 403 failure and obsolete-routing defects must not be described as fixed without successful current runs. No unauthorized PAT, privileged untrusted PR code, broadened permissions or CI bypass.
 
-**Mission:** implement one **explicit BA-assigned**, scoped, approved task as maintainable production code with repeatable evidence; no permanent module ownership based solely on seat number.
+## 4. C01–C05 — interchangeable engineer seats
 
-**Both seats must**
-1. Read `AGENTS.md`, `AGENT-CODING-STANDARD.md`, approved `specs/whiteboard-video-tool.md`, current GitHub issue/PRs, `docs/agent-workboard.md` and handover; test assumptions against the actual code at the pinned canonical SHA.
-2. **CLAIM** an assigned task by issue comment stating `Agent ID | issue | branch | base SHA | exclusive changed paths | AC | RED plan | conflicts/dependencies`; only then begin task code.
-3. Investigate/root-cause first, record alternatives and risks. For a defect, add failing negative tests **against old unpatched code** before minimal fix, then demonstrate GREEN; never present lint failure as a behavioral RED test.
-4. Use an isolated `agent/Cxx-... ` branch/PR targeting `feat/short-video-studio`; do not edit a claimed file path from another active PR or force-push/reset canonical. Rebase/revalidate when target advances, with no silent loss of another agent's changes.
-5. Run applicable Ruff/format/mypy/pytest, TS/Vitest/Playwright/build and actual portrait/landscape FullHD media tests. Link exact code SHA, workflow/run URLs, artifacts/hashes, skip/NOT RUN details, performance/security and rollback.
-6. Submit PR for **T01 independent QA**; address reproducible T01 defects within scope, then wait for BA01 new task. No coder self-merge; no creator approval assumed after CI green. User-approved exceptions must be explicit in issue/PR.
-7. Protect secrets, model weights, source media rights and proprietary user data; no paid external provider without owner approval.
+**All five are staffed.** Seat numbers do not confer persistent module ownership or hierarchy. BA assigns priority/scope to a **single specific coder** after live GitHub issue/PR/file collision check. A coder can change workstream after prior claim release; other coders must not modify an active owner's exclusive paths.
 
-**Seat routing:** BA01 assigns each Coder by expertise/availability **and conflict-free write surface**, not by hard-wiring `C03=A02` or `C04=A03` forever. C03 and C04 have the **same baseline responsibility and DoD**; specialization can be recorded as a skill tag and changed without changing the role contract.
+**Required coder process:** (1) read approved SRS, `AGENTS.md`, coding standard, task, canonical and live feedback; (2) personally `CLAIM` with seat/issue/branch/base SHA/exclusive paths/conflicts/AC/RED plan; (3) write minimal maintainable code, prove genuine behavioral RED for defects then GREEN, record negative and edge tests; (4) keep isolated feature branch, **Draft PR while WIP**, meaningful local preflight and coherent pushes rather than CI storms; (5) mark **Ready for review** only after self-review/evidence, include new head SHA/CI/logs/artifacts/NOT RUN/rollback; (6) respond to one QA_OWNER's reproducible feedback, revalidate latest-base integrated SHA; (7) wait for independent tester merge and BA's next approved task. Never self-merge, force push another owner's branch or pretend partial tests are G10 approval.
 
-**Exit/handoff contract:** issue state, CLAIm and role identity, base/head SHA, open PR link, files touched, unit/E2E/media commands with results, test artifacts, defect reproduction, open blockers and next independent review step.
+**Work examples, not permanent assignment:** C01 artwork motion/evidence [#74](https://github.com/qualife1291/Auto-Tool-Video/issues/74), C02 offline storyboard eval proposal [#84](https://github.com/qualife1291/Auto-Tool-Video/issues/84), C03 harness evidence [#49](https://github.com/qualife1291/Auto-Tool-Video/issues/49), C04 CI failure-evidence research [#79](https://github.com/qualife1291/Auto-Tool-Video/issues/79), C05 second-by-second review beats [#68](https://github.com/qualife1291/Auto-Tool-Video/issues/68). **Always read issues LIVE**; these examples do not assert an active task/PR state and cannot override a newer Product Owner transfer such as [#69](https://github.com/qualife1291/Auto-Tool-Video/pull/69) to T02 QA.
 
-## 5. Standard state machine and evidence
+## 5. TR / AIQ / VD / OPS — proposed specialist disciplines, not staffed members
 
-`IDEA / RESEARCH → SPEC DRAFT → APPROVED → ASSIGNED → CLAIMED / IN_PROGRESS → PR / CODE READY → T01 QA PASS-CODE or QA BLOCKED → MERGED / POST-MERGE CI → CREATOR REVIEW (when required) → FEATURE-DONE-VERIFIED → RELEASE APPROVED (separate)`
+These categories are scalable job definitions, not current registered seat IDs or free-standing permission grants. Research proposal [#82](https://github.com/qualife1291/Auto-Tool-Video/issues/82) / [PR #83](https://github.com/qualife1291/Auto-Tool-Video/pull/83) is the fuller charter and role map; this section summarizes boundaries for future onboarding without asserting PR #83 has merged.
 
-- A PR may be merged with technical QA pass while perceptual/creator approval is still pending; never label that feature `DONE-VERIFIED`.
-- `QUEUED`, `IN_PROGRESS`, `SKIPPED` and `NOT RUN` are **not** PASS. CI result at an old SHA is historical.
-- When assigning, include exact allowed paths and **forbidden files** to prevent collisions; ownership expires/reverts at explicit task closure, not from any role title.
-- Make failed media artifacts/logs discoverable but redact secrets and respect GitHub retention/quota. No broad private-data access required solely for a role change.
+- **TR:** architecture/system-boundary static audit; identify contracts, security hazards, test gaps and design options, send explicit finding + reproduction status to BA and testers. Historical `TR01` report [#50](https://github.com/qualife1291/Auto-Tool-Video/issues/50) is a candidate reference only, not seat activation.
+- **AIQ:** independent offline evaluation design, deterministic synthetic fixtures, prompt/provider comparisons, AI output validity/hallucination and practical FREE/licensing/quotas; benchmark proposals only unless assigned.
+- **VD:** creator-centred educational video, audio, art, motion, subtitles and performance feedback; provide structured 9:16/16:9 quality scenarios and timecoded evidence, **never self-declare human G10**.
+- **OPS:** trustworthy CI capacity and delivery safety, exact-head status retention, reproducibility, least privilege, secrets/privacy, safe observability, cost/artifact/runner metrics and rollback; advise BA and T, **no unapproved workflow edit or release**.
 
-## 6. Replace an agent (succession / takeover) — mandatory checklist
+Future activation requires Product Owner **explicit approval**, unique numbered member, registry/skills/task scope, least privilege/connection audit, responsible BA contact, independent QA path, automation plan only when needed, and first conflict-free assignment. The absence of staffed specialists **does not stop current BA/C/T** from triaging these disciplines inside their existing authority.
 
-1. **Freeze the seat's new writes** (and pause/adjust its automation where authorized). BA01 or the product owner records replacement reason, successor, date and takeover issue; never run two implementers with the same active write claim.
-2. **Reconstruct current state using live GitHub**: approved SRS, latest canonical SHA, issue claims/comments, open PRs, diff file ownership, exact-head and post-merge CI, creator review, active automation, blockers and artifact retention. Historical workboard/handover snapshots may be stale.
-3. **Transfer ownership explicitly** in registry #31 and the task issue: `RELEASE CLAIM <old seat/session>` then `TAKEOVER <seat ID> by <new agent/session>` with verified identity (if available), base SHA, branch, exclusive paths, current evidence and pending actions. Never impersonate the predecessor's GitHub login.
-4. **Validate capability and least privilege**: can read repo/spec, write only to allowed branch, understand local/web/cloud FREE constraints, run lint/tests, respect secret sandbox and independent T01 approval. Re-review any external skill/MCP tool permissions/version before adopting; no automatic credential inheritance.
-5. **Run small smoke/reproduction or read-only audit** on an isolated branch; check that previously green head is still applicable to current base. If task is mid-PR, avoid rewriting predecessor's branch without authorization and a preservation plan.
-6. **Confirm handoff** with BA01 + successor comment and links, update the relevant scheduled automation prompt, stop old watch/claim, notify T01 of reviewer routing, keep old evidence/history.
+## 6. Mandatory universal duties and SDLC state machine
 
-### Minimal takeover record (paste into GitHub issue)
+**EVERY active role member**, BA, T, C and future specialists, is responsible to:
 
-```text
-[AGENT TAKEOVER]
-Seat: BA01 | T01 | C03 | C04 | C05...
-Predecessor session/owner: ...
-Successor session/owner: ...
-Authorized by / timestamp: ...
-Canonical branch + SHA: ...
-Current issue / PR + head SHA: ...
-CLAIM release / exclusive write paths: ...
-Tests and artifacts: PASS / FAIL / BLOCKED / NOT RUN (links)
-Dependencies, blockers, creator approval state: ...
-Automation/permissions reviewed (no secrets): ...
-Next accountable step + acceptance reviewer: ...
-```
+1. **Proactively track own assigned issues, claims, review feedback, PR head/base, CI, dependencies and handoff tasks** during its active chat session and any *authorized, actually configured* scheduled run. Flag risk early, update factual status and unblock another owner when evidence allows. Do not claim continuous 24/7 execution or realtime wake-up without an operating runtime.
+2. **Maintain professional competence** using current official documentation, maintained sources, versions and relevant skills; verify security, privacy, license/commercial rights, local vs web vs cloud/hybrid cost, free quotas and project applicability **before recommending or adopting** a technology. Unreviewed plugins, paid models, privileged tokens and uploads require explicit approval.
+3. **Propose measurable improvement opportunities** for tool quality, creator video experience, test coverage, throughput, modularity and team process; attach expected outcomes, alternatives, minimal reversible PoC, experiment/negative tests, owner/QA reviewer and rollback. Suggestions do not authorize implementation or a new role.
+4. **Leave succinct reproducible handoff evidence**: canonical/PR exact SHAs, links, task-owner/QA_OWNER, touched paths/claims, PASS/FAIL/BLOCKED/NOT RUN, video/creator gate status, next action and blocker. Avoid duplicate notifications and false PASS.
 
-## 7. Expand the team — multiple agents without collisions
+**Standard lifecycle:** `IDEA/RESEARCH → OWNER-ALIGNED SPEC/AC → ASSIGNED → PERSONAL CLAIM → DRAFT PR → READY FOR REVIEW → ONE INDEPENDENT T01/T02 QA_OWNER PASS-CODE or CHANGES REQUESTED → TESTER MERGE → CANONICAL POSTMERGE CHECKS → HUMAN CREATOR G10 WHEN APPLICABLE → FEATURE-DONE VERIFIED → OWNER RELEASE APPROVAL`.
 
-- BA01 registers a **new, never-active ID**, position type, skills, purpose, time window and one initial task; never revive C01/C02 as if they were active.
-- One task owner per exclusive write path; allocate separate subissues and feature branches for parallel work. Shared source files/contracts need explicit integration owner and serialized handoff.
-- Multiple testers may divide test *execution* by platform/format, but final independent technical QA and creator acceptance must have one accountable approver, documented in the task.
-- Agents must not approve their own PRs or count a self-run test as independent QA. Assign a different tester/reviewer if T01 writes QA tooling.
-- Every external tool/plugin/skill/provider must have an authorized installation, version pin, license/cost check, sandbox and minimal permissions. Prefer zero-fee/free-tier solutions proven at intended volume; include GitHub Actions minutes/artifact retention in capacity planning.
-- Onboarding of every new seat: `AGENTS.md` → coding standard → approved SRS → **this role charter** → current registry #31 → workboard → task issue/claim → latest handover → targeted skills/QA standards. No developer writes before task claim/spec gate.
+**CI capacity discipline:** [#86](https://github.com/qualife1291/Auto-Tool-Video/issues/86) is P1. Batch meaningful pushes, preflight where feasible, avoid redundant full media CI on stale intermediate SHAs, and preserve every required check/merge-ref proof. Proposed [PR #87](https://github.com/qualife1291/Auto-Tool-Video/pull/87) **must not be treated as adopted until independent QA and actual merge**; obsolete-run cancellation is not PASS. Heavy-test routing and required-status policy need separate owner-approved proof, not `[skip ci]` or misleading green.
 
-## 8. Audit result and document ownership
+## 7. Agent succession, transfer and expansion
 
-**Observed on 2026-10-31:** Issues [#28](https://github.com/qualife1291/Auto-Tool-Video/issues/28), [#30](https://github.com/qualife1291/Auto-Tool-Video/issues/30), [#31](https://github.com/qualife1291/Auto-Tool-Video/issues/31) and [#32](https://github.com/qualife1291/Auto-Tool-Video/issues/32) describe the active seats, but contain some **historical/stale** task states and C01/C02 aliases. The canonical `docs/agent-workboard.md`, `.agent/memory/short-term/TASKS.md` and `.agent/handover/LATEST.md` are older dated snapshots, not authoritative current ownership. Existing [PR #27](https://github.com/qualife1291/Auto-Tool-Video/pull/27) proposes BA-specific `docs/ba-sdlc-process.md`, a BA skill and documentation index, **not merged at this audit**; it does not replace this shared all-role charter. Do not edit its files in parallel.
+1. Owner or authorized coordinator records **RELEASE CLAIM / TAKEOVER** for the same numbered seat (no parallel owners with the same exclusive paths), with successor/session, reason, timestamp and issue links. Shared GitHub authentication is not independent seat proof.
+2. Reconstruct approved spec, latest canonical, current open issue/PR claims, changed file scopes, exact SHA and merged-checkout CI, manual G10 status, schedules, secrets/permissions and blockers from **live records**; historical docs may be stale.
+3. Preserve predecessor branch/history and source ownership; do not force push or rewrite unrelated claims. If a different BA or coder owns a file, request explicit handoff before editing. T01/T02 keep one QA_OWNER, transfer by recorded authorization.
+4. Verify tool access and least privilege; run feasible read-only static audit or smoke/RED→GREEN where scope requires; record NOT RUN honestly. Reuse an existing approved shared hourly schedule; do not multiply cron jobs.
+5. Leave an on-issue record: `SEAT | owner authorization | predecessor/successor | canonical SHA | issue/PR HEAD | exclusive paths | CI/evidence | QA_OWNER | creator G10 | active automation | next accountable action`.
+6. New role categories may be documented without activating seats. New numbered seats require explicit Product Owner staffing approval, unique registry ID, bounded authority, privacy/security/onboarding check, single task/contact and reviewer plan before any implementation.
 
-**Owner of this charter:** BA01, with **T01 review of independent QA permissions**, coder review of task claim/handoff and product owner approval for major changes to merge/release authority. Changes via a separate branch/PR; never push directly to canonical. The charter should remain stable; current task progress belongs only to live GitHub issue/PR evidence.
+## 8. Documentation governance and review responsibility
+
+**Canonical charter owner:** BA01, with BA02 as co-equal coordinator; independent QA reviewer **T01 or T02, one primary**, never BA01 self-QA/merge. Product Owner reserves any substantive change to role privileges, staff activation, paid resources, approved product spec, creator G10 and release policy.
+
+**Adjacent active scopes:** BA02 [PR #73](https://github.com/qualife1291/Auto-Tool-Video/pull/73) owns its two new docs; T01 [PR #46](https://github.com/qualife1291/Auto-Tool-Video/pull/46) owns `AGENTS.md`/`README.md`/workboard/handover and related paths; separate role research [PR #83](https://github.com/qualife1291/Auto-Tool-Video/pull/83) is not itself an activated seat. Previous docs PRs [#21](https://github.com/qualife1291/Auto-Tool-Video/pull/21), [#23](https://github.com/qualife1291/Auto-Tool-Video/pull/23) and [#27](https://github.com/qualife1291/Auto-Tool-Video/pull/27) may overlap; **selectively review/salvage, never blindly merge**. Track documentation cleanup in [#75](https://github.com/qualife1291/Auto-Tool-Video/issues/75), priorities in [#86](https://github.com/qualife1291/Auto-Tool-Video/issues/86) and creator review in [#36](https://github.com/qualife1291/Auto-Tool-Video/issues/36).
+
+**This charter PR changes docs only.** It does not implement specialists, modify workflows/permissions/providers, prove free quotas or production video quality, grant QA PASS, create schedules or approve creator G10.
